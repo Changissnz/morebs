@@ -8,9 +8,7 @@ ndim_point_distance = lambda p1, p2: np.sum([np.sqrt((p1 - p2)**2)])
 def tie_sets_for_vector(vector):
     """
     Iterate through sorted vector for sets of
-    indices.
-
-    Tie-sets are represented as a sequence of
+    indices. Tie-sets are represented as a sequence of
     (startIndex,endIndex) pairs due to vector
     being ordered.
     """
@@ -82,13 +80,9 @@ def sorted_vector_value_search(vector, value, irange = None):
 
 class PointSorter:
     '''
-class can be used by one of these ways:
-- instantiate class w/ vector of data, and sort data using
-  method<sort_it>
-- instantiate class w/ empty vector, call method<insert_point>
-  to add to data
-
-- sorted vector point data will be variable<newData>
+    class can be used by one of these ways: (1) instantiate class w/ vector of data, and sort data using
+    method<sort_it>, (2) instantiate class w/ empty vector, call method<insert_point>
+    to add to data. The sorted vector point data will be variable<newData>.
     '''
 
     def __init__(self,data):

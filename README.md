@@ -10,4 +10,4 @@ sudo python3 setup.py install
 Features
 =========
 - `main.py` file not yet coded.
-- `docs` coming soon.
+- some information on the code can be found in the `docs` @ `docs/build/index.html`.
