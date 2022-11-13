@@ -2,12 +2,13 @@ from morebs2 import rssi
 import numpy as np
 import operator
 
-"""
-a version of the first chain; used in unit testing
-
-rchl := cf function identifier
-"""
 def test_rch_chain_1(rchl = 1):
+    """
+    a version of the first chain; used in unit testing
+
+    :param rchl: 0|1|*, cf function identifier
+    :type rch1: int
+    """
 
     rf = np.array([8.0,2.3,3.1,4.5,8.8])
     dm = rssi.euclidean_point_distance

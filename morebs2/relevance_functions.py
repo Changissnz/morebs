@@ -164,7 +164,16 @@ def addon_singleton__bool__criteria_distance_from_reference(rf, dm, dt,cf):
 
 class RCInst:
     """
-    class that acts as a node-like structure, node is designed to be used w/ both (1) referential data (from .outside of chain) and (2) (standard operator,operand)
+    class that acts as a node-like structure and a function, node is designed to be used w/ either
+    
+    (1) referential data (from .outside of chain)
+    
+    (2) (standard operator,operand)
+
+    This class is a function on an argument `x` that works by one of the two paths:
+    (1) deciding path:
+
+    (2) non-deciding path: 
 
     :attribute rf: reference value, as argument to dm(v,rf)
     :attribute dm: function f(v,rf)
@@ -173,7 +182,6 @@ class RCInst:
     """
 
     def __init__(self):
-        #self.instName = instructionName
         self.rf = None
         self.dm = None
         self.cf = None
@@ -199,6 +207,15 @@ class RCInst:
         self.updateInfo = updateInfo
 
     def update_var(self,k,v):
+        '''
+        updates one of the class attributes `rf`,`dm`,`cf`,or `dt`
+        with value `v`.
+
+        :param k: attribute name
+        :type k: str
+        :param v: new update value
+        :type v: ?
+        '''
         if k == "rf":
             self.rf = v
         elif k == "dm":
@@ -272,7 +289,16 @@ class RCInst:
 class RChainHead:
     """
     RChainHead is a node-like structure
+
+    :param s: the chain of `RCInst` instances
+    :type s: list(`RCInst`)
+    :param vpath: the sequence of transformation values that a value `v` goes through at each node in
+    `s`. 
+    :type vpath: list(values) 
+    :param updatePath: 
+    :type updatePath:
     """
+    
     def __init__(self):
         self.s = []
         self.vpath = []
@@ -284,7 +310,7 @@ class RChainHead:
 
     def load_update_path(self,up):
         '''
-    loads an update_path
+        loads an update_path
         '''
         self.updatePath = up
         return
@@ -297,15 +323,6 @@ class RChainHead:
                     vl.append(v2)
             self.s[k].load_update_info(vl)
 
-    ####---
-
-    """
-    es := expression string,
-    """
-    @staticmethod
-    def make_linker_func(es):
-        return -1
-
     def link_rch(self,rch,linkerFunc, prev = False):
         if prev:
             return linkerFunc(self,rch)
@@ -315,6 +332,9 @@ class RChainHead:
         return [x for (i2,x) in enumerate(self.vpath) if i2 in si]
 
     def load_cf_(self, rci,cfq):
+        '''
+
+        '''
         if type(cfq) == type(()):
             xs = tuple(self.vpath_subset(cfq[1]))
             cf = cfq[0](*xs)
@@ -324,27 +344,20 @@ class RChainHead:
         else:
             rci.load_var_cf(cfq)
 
-    """
-    list of all possible functions:
-    -
-
-    kwargz:
-
-    [0] := r|nr
-
-        if r:
-            [1] rf
-            [2] dm | (dm,selectorIndices)
-            [3] cf | (cf,selectorIndices)
-            [?4] dt
-
-        if nr:
-            [1] cf | (cf,selectorIndices)
-            [?2] dt
-
-    * selectorIndices refer values in vpath
-    """
     def make_node(self,kwargz):
+        """
+        instantiates an `RCInst` node using the argument
+        sequence `kwargz`.
+        Note: selectorIndices refer to values in `vpath`.
+
+        :param kwargz: If index 0 is `r` (node uses reference values), then
+                format is (`r`,rf,dm|(dm,selector indices),cf|(cf,selectorIndices),?dt?).
+                If index 0 is `nr` (node does use reference values), then
+                format is (`nr`,cf|(cf,selectorIndices),?dt?).
+                
+                Please see the description for `RCInst` for details on these values.
+        :type kwargz: iterable
+        """
         assert kwargz[0] in ["r","r+","nr"]
 
         rci = RCInst()
@@ -376,9 +389,12 @@ class RChainHead:
             self.s.insert(index,n)
         return -1
 
-    def apply(self,v, index = 0):
+    def apply(self,v):
         '''
-        applies the composite function (full function path) onto v
+        main function of RChainHead; applies the composite function (full function path) onto v
+        
+        :param v: argument into chain function
+        :type v: ?
         '''
 
         i = 0
@@ -513,11 +529,10 @@ def RCHF__point_in_bounds_subvector_selector(b):
 
 from .poly_struct import *
 
-
+"""
+constructs an RCH function, 2+ nodes, node 1 outputs a float value from .arg<v>, last node outputs a bool|float
+"""
 def RCHF__ISPoly(x:'float',largs):
-    """
-    constructs an RCH function, 2+ nodes, node 1 outputs a float value from .arg<v>, last node outputs a bool|float
-    """
     rc = RChainHead()
 
     isp = ISPoly(x)
@@ -532,10 +547,10 @@ def RCHF__ISPoly(x:'float',largs):
         rc.add_node_at(a)
     return rc.apply
 
+"""
+outputs the func for in bounds
+"""
 def RCHF___in_bounds(bounds0):
-    """
-    outputs the func for in bounds
-    """
     kwargs = ['nr', lambda_pointinbounds, bounds0]
     # f : v -> v::bool
     rc = RChainHead()
@@ -558,10 +573,10 @@ def RCHF___in_bounds(bounds0):
 
     return rc.apply
 
+"""
+pass string is boolean expression and the chains is pass vector<distances> -> <bool> --> pass-string -> bool
+"""
 def RCHF__point_distance_to_references_dec(r,ed0,passString):
-    """
-    pass string is boolean expression and the chains is pass vector<distances> -> <bool> --> pass-string -> bool
-    """
     return -1
 
 def ffilter(v,f):
@@ -606,12 +621,20 @@ def rpmem_func(rf,rOp):
 
     return p
 
+"""
+is permutation map valid?
+"""
 def is_valid_pm(pm):
     assert pm.shape[1] == 2, "invalid pm shape"
     tf1 = len(np.unique(pm[:,0])) == pm.shape[0]
     tf2 = len(np.unique(pm[:,1])) == pm.shape[0]
     return tf1 and tf2
 
+"""
+is permutation map proper?
+
+"proper" := valid and all valids in range [0,n-1]
+"""
 def is_proper_pm(pm):
     s = is_valid_pm(pm)
     if not s: return s

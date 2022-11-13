@@ -202,14 +202,13 @@ def k_random_points_in_bounds(minVec,maxVec,k):
     '''
     A method that generates `k` points in bounds [`minVec`,`maxVec`] by random.random().
 
-    :param minVec:
-    :type minVec:
-    :param maxVec:
-    :type maxVec:
-    :param k:
-    :type k:
+    :param minVec: n-dimensional vector with each dimension the minumum value
+    :type minVec: np.ndarray
+    :param maxVec: n-dimensional vector with each dimension the maximal value
+    :type maxVec: np.ndarray
+    :param k: number of points to generate
+    :type k: int, > 0
     '''
-
     assert np.all(maxVec - minVec >= 0.0), "invalid arguments min.,max. vec"
 
     d = maxVec - minVec
@@ -221,7 +220,9 @@ def k_random_points_in_bounds(minVec,maxVec,k):
 
 def one_random_noise(bounds,noiseRange):
     """
-noiseRange := 2dmatrix, len is 1 or len(point)
+    :param bounds: bounds matrix
+    :type bounds: np.ndarray, n x 2 matrix
+    :param noiseRange: 2dmatrix, len is 1 or bounds.shape[0]
     """
     assert is_proper_bounds_vector(bounds), "invalid bounds"
 

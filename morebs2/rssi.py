@@ -11,8 +11,10 @@ class ResplattingSearchSpaceIterator:
     """
     class<ResplattingSearchSpaceIterator> is a data-structure
     that relies on class<SearchSpaceIterator>. There are two modes for this class when it resplats on
-    the original bounds. They are "relevance zoom" that requires an RCH to determine relevance of
-    each point, and "prg",pseudo-random generator.
+    the original bounds:
+    - "relevance zoom": requires an RChainHead to determine relevance of
+    each point
+    - "prg": pseudo-random generator of points in relevant bounds
     """
 
     def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7,\

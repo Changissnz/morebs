@@ -142,11 +142,6 @@ class BallOperator:
         """
         Continually splits the ball into sub-balls until all points lie w/in 1+ sub-ball.
 
-        arguments:
-        - split := (float,literal|dividor)
-        - subballRadiusType := static|minimal
-
-
         :param split: "literal","dividor"
         :type split: str
         :param subballRadiusType: "static","minimal"

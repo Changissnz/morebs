@@ -1,5 +1,5 @@
 """
-generates the next value to be searched and logged
+generates the next value to be searched and logged sadfsadfsadf
 """
 from .hop_pattern import *
 from .measures import *

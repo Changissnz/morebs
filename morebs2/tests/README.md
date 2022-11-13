@@ -9,6 +9,6 @@ python3 -m tests.*
 EX:
 
 ```
-> In folder `morebs2` 
-python3 -m tests.numerical_generator_test
+> In folder `morebs` 
+python3 -m morebs2.tests.numerical_generator_test
 ```

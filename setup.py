@@ -11,6 +11,6 @@ setup(
     author='Richard Pham',
     author_email='phamrichard45@gmail.com',
     url='https://github.com/Changissnz/morebs2',
-    license=license,
+    #license=license,
     packages=find_packages(exclude=('tests','docs'))
 )
