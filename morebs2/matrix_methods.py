@@ -783,6 +783,14 @@ def extremum_for_points(a):
     return b
 
 def point_in_bounds(b,p):
+    '''
+    determines if point `p` in bounds `b`
+
+    :param b: proper bounds vector
+    :param p: vector
+    :rtype: bool
+    '''
+
     assert is_proper_bounds_vector(b), "invalid bounds vector"
     assert is_vector(p), "invalid point"
     assert b.shape[0] == p.shape[0]
@@ -863,11 +871,8 @@ def point_on_improper_bounds_by_ratio_vector(parentBounds,bounds,rv,roundDepth =
 
     if is_proper_bounds_vector(bounds):
         return point_on_bounds_by_ratio_vector(bounds,rv)
-        ##raise ValueError("WRONG")
 
     ib = split_improper_bound(parentBounds,bounds,checkPoints = True)
-
-
     q = point_difference_of_improper_bounds(bounds,parentBounds)
     pd1 = ib[0][:,1] - ib[0][:,0] # point diff
     s = rv * q # point add

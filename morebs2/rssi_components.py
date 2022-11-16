@@ -55,17 +55,19 @@ class CenterResplat:
         self.rch = rch
         self.noiseRange = noiseRange
 
-        # restrict cache to non-deletion
+        #: cache of relevant points passed from class<ResplattingInstructor>.
         self.relevantPointsCache = []
+        #: counter for index of relevant point in `self.relevantPointsCache` to the number of times the value was selected by class<ResplattingInstructor> for re-splatting purposes.
         self.rpIndexCounter = defaultdict(int) # index
-
-        # TODO: counter for r.p. selection
 
     def output(self,p):
         if self.rch.apply(p):
             self.relevantPointsCache.append(p)
 
     def __next__(self):
+        '''
+        outputs a next value based on 
+        '''
 
         if len(self.relevantPointsCache) == 0:
             return None
@@ -93,7 +95,6 @@ class ResplattingInstructor:
         self.rzoom = rzoom
         self.rzoomBoundsCache = [] # pop(0), push(-1)
         self.centerResplat = centerResplat
-        ##self.relevantPointsCache = []
 
     def check_args(self):
         return type(self.rzoom) == type(None) or type(self.centerResplat) == type(None)

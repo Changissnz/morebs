@@ -5,6 +5,7 @@ from .rssi_components import *
 # use for adding noise
 from .numerical_generator import *
 
+#: default range of relative randomness to add to a point in a relevant bound; used for mode `prg`
 DEFAULT_RSSI__CR__NOISE_ADDER = np.array([[0.01,0.15]])
 
 class ResplattingSearchSpaceIterator:
@@ -15,6 +16,21 @@ class ResplattingSearchSpaceIterator:
     - "relevance zoom": requires an RChainHead to determine relevance of
     each point
     - "prg": pseudo-random generator of points in relevant bounds
+    
+    :param bounds: all generated points lie in this matrix
+    :type bounds: np.ndarray, n x 2 matrix
+    :param startPoint: n-point
+    :type startPoint: np.ndarray
+    :param columnOrder: order by which the columns of the reference value carry over values.
+    :type columnOrder: iterable
+    :param SSIHop: partition for each column of bounds
+    :type SSIHop: int
+    :param resplattingMode: determines how the data structure will generate new values after iterating through
+                            the previous bounds and collecting relevant bounds.
+    :type resplattingMode: ("relevance zoom"|"prg",class<RChainHead>)
+    :param additionalUpdateArgs: additional arguments used to update class<RChainHead> when updating
+        class<ResplattingInstructor> 
+    :type additionalUpdateArgs: tuple
     """
 
     def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7,\
@@ -34,7 +50,7 @@ class ResplattingSearchSpaceIterator:
         self.iteratedOnce = False # if SSI iterated over bounds once
         self.iterateIt = False
         self.terminated = False
-        self.rprv = None # relevant point ratio vector
+        #: sequence of all sub-bounds in `self.bounds` that data structure has iterated over by class<SearchSpaceIterator>. 
         self.rangeHistory = [np.copy(self.bounds)]
 
         self.declare_new_ssi(np.copy(self.bounds), np.copy(self.startPoint))
@@ -43,8 +59,6 @@ class ResplattingSearchSpaceIterator:
         assert type(additionalUpdateArgs) == tuple, "invalid additionalUpdateArgs"
         self.aua = additionalUpdateArgs
         self.update_resplatting_instructor()
-
-        self.ic = [] # iteration cache
         return
 
     @staticmethod
@@ -108,6 +122,11 @@ class ResplattingSearchSpaceIterator:
         '''
         Declares either a class<SearchSpaceIterator> or class<SkewedSearchSpaceIterator>
         instance for the given bounds.
+
+        :param bounds:
+        :type bounds: 
+        :param startPoint:
+        :type startPoint:  
         '''
 
         # if no specified order, default is descending
@@ -121,7 +140,8 @@ class ResplattingSearchSpaceIterator:
 
     def update_resplatting_instructor(self,nbs = None):
         """
-        updates resplatting instructor
+        Updates class<ResplattingInstructor> `self.ri`. If `self.ri` is None,
+        then instantiates a new class<ResplattingInstructor> based on the mode `self.rm\[0\]`.
 
         :param nbs: new bounds vector
         :return nbs: np.ndarray
@@ -166,6 +186,11 @@ class ResplattingSearchSpaceIterator:
         return False
 
     def check_duplicate_range(self,d):
+        '''
+        checks if range `d` is already present in `self.rangeHistory`.
+
+        :rtype: bool
+        '''
         for d_ in self.rangeHistory:
             if equal_iterables(d_,d): return True
         return False
@@ -205,7 +230,7 @@ class ResplattingSearchSpaceIterator:
             # pop the activation range
             ar = self.ri.rzoom.activationRanges.pop(0)
 
-            # case: 0-size, modify activation range
+            # case: 0-size bound, modify activation range
             if equal_iterables(ar[:,0],ar[:,1]):
                 ar = self.fix_zero_size_activation_range(ar)
 
@@ -213,9 +238,14 @@ class ResplattingSearchSpaceIterator:
                 self.ri.rzoomBoundsCache.append(ar)
 
     def fix_zero_size_activation_range(self, ar):
-        """
-        new activation range is ar[0], midpoint(ar[0],next(ar[0]))
-        """
+        '''
+        fixes the zero-size activation range `ar`; new activation range is ar[0], midpoint(ar[0],next(ar[0]))
+        
+        :param ar: zero-size activation range
+        :type ar: np.ndarray, proper bounds
+        :return: a range r with r\[0\] equal to ar\[0\] that is not a zero-sized range
+        :rtype: np.ndarray, proper bounds
+        '''
 
         assert equal_iterables(ar[:,0],ar[:,1]), "not zero-size"
 
@@ -245,6 +275,11 @@ class ResplattingSearchSpaceIterator:
 
     @staticmethod
     def column_order(k,mode = "random"):
+        '''
+        Outputs an ordering for k columns based on `mode`, one of
+        `random`, `ascending`, `descending`.
+        '''
+        
         assert mode in ["random","ascending","descending"]
         s = [i for i in range(k)]
         if mode == "random":

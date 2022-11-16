@@ -21,24 +21,21 @@ def opposing_deviation_on_sequence(npSeq):
 
 zero_div = lambda num, denum, default: default if denum == 0 else num / denum
 
-"""
-description:
-- standard point-distance formula
-
-arguments:
-- p1, p2: 2-d iterables, points
-"""
 point_distance = lambda p1, p2: math.sqrt((p1[0] - p2[0]) **2 + (p1[1] - p2[1]) ** 2)
+'''
+standard point-distance formula
 
-"""
-description:
-- summation of total distances from .one point to iterable of points
+:param p1: two-dimensional point
+:param p2: two-dimensional point
+'''
 
-arguments:
-- p1: 2-d iterable
-- ps: iterable, 2-d points
-"""
 point_distance_one_to_rest = lambda p1, ps: sum(point_distance(p1, ps_) for ps_ in ps)
+'''
+summation of total distances from one point to iterable of points
+
+:param p1: 2-d iterable
+:param ps: iterable<2-d points>
+'''
 
 """
 description:

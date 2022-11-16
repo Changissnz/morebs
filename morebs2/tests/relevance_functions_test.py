@@ -1,4 +1,5 @@
 from morebs2 import relevance_functions
+from morebs2 import search_space_iterator
 import unittest
 import numpy as np
 import operator
@@ -161,6 +162,41 @@ class TestRelevanceFunctions(unittest.TestCase):
 
         # 3.1
         assert q(p2) == True, "incorrect ISPoly case 1.1"
+
+    def test__sample_rch_3_with_update(self):
+            
+        def new_sample_ssi(): 
+            bounds = np.array([[-5.,15.],
+                                [-10.,25.],
+                                [16.,71.],
+                                [30.,130.]])
+            ssiHop = 5
+            columnOrder = [0,1,2,3]
+            return search_space_iterator.SearchSpaceIterator(bounds, np.copy(bounds[:,0]), columnOrder, ssiHop,True,0)
+
+        s = new_sample_ssi()
+        r = relevance_functions.sample_rch_3_with_update(9,7,14,[2,8])
+
+        ts = []
+        for i in range(10):
+            v = next(s)
+            t = r.apply(v)
+            ts.append(t)
+
+        answers = [True,True,True,True,True,True,True,False,True,False]
+        assert ts == answers, "incorrect, first 10 samples"
+
+        r.update_rch()
+
+        ts = []
+        for i in range(10):
+            v = next(s)
+            t = r.apply(v)
+            ts.append(t) 
+
+        answers2 = [False,False,False,False,False,False,False,False,False,False]
+        assert ts == answers2, "incorrect, seconds 10 samples,\nwant {}\ngot {}".format(answers2,ts)
+
 
 
 ################################

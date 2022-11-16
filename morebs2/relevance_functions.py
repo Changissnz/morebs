@@ -1,8 +1,9 @@
 from collections import defaultdict
-from .line import *
 import random
 from copy import  deepcopy
 import operator
+from .line import *
+from .relevance_functions_extended import *
 
 # NOTE: when devising euclidean_point_distance measures
 '''
@@ -164,16 +165,25 @@ def addon_singleton__bool__criteria_distance_from_reference(rf, dm, dt,cf):
 
 class RCInst:
     """
-    class that acts as a node-like structure and a function, node is designed to be used w/ either
+    class that acts as a node-like structure and a function, node is designed to be used w/ the capabilities:
     
-    (1) referential data (from .outside of chain)
+    (1) referential data (from outside of chain)
     
     (2) (standard operator,operand)
 
-    This class is a function on an argument `x` that works by one of the two paths:
-    (1) deciding path:
+    This class is a function on a vector `v` that works by one of the four paths:
+    
+    (1) deciding path with reference : `cf(dm(rf,v),dt)`.
+    
+    (2) deciding path w/o reference: `cf(v,dt)`.
+    
+    (3) non-deciding path w/ reference: `cf(dm(rf,v))`.
+    
+    (4) non-deciding path w/o reference: `cf(v)`.
 
-    (2) non-deciding path: 
+    Deciding paths require a none-null threshold value `dt`.
+
+    In addition to these capabilities,  
 
     :attribute rf: reference value, as argument to dm(v,rf)
     :attribute dm: function f(v,rf)
@@ -186,11 +196,25 @@ class RCInst:
         self.dm = None
         self.cf = None
         self.dt = None
+        #: key is one of `rf`, `dt`; value is update function for that variable
         self.updateFunc = {}
+        #: list of values used in accordance with update function in `self.updateFunc` by indices specified in `self.updatePath`
         self.updateInfo = None
-        self.updatePath = {} # k = index -> function argument indices in updateInfo
+        #: key is one of `rf`, `dt`; value is list of indices corresponding to values in `self.updateInfo`
+        self.updatePath = {}
+
+    def __str__(self):
+        s = "* RCInst contents\n\t"
+        s += str(self.rf) + "\n\t"
+        s += str(self.dm) + "\n\t"
+        s += str(self.cf) + "\n\t"
+        s += str(self.dt) + "\n\t"
+        return s
 
     def inst_update_var(self):
+        '''
+        updates each variable in `self.updatePath`.
+        '''
 
         for k,v in self.updatePath.items():
 
@@ -208,7 +232,7 @@ class RCInst:
 
     def update_var(self,k,v):
         '''
-        updates one of the class attributes `rf`,`dm`,`cf`,or `dt`
+        updates one of the class attributes `rf`, `dm`, `cf`,or `dt`
         with value `v`.
 
         :param k: attribute name
@@ -216,6 +240,7 @@ class RCInst:
         :param v: new update value
         :type v: ?
         '''
+
         if k == "rf":
             self.rf = v
         elif k == "dm":
@@ -232,6 +257,7 @@ class RCInst:
         return
 
     def set_reference_data(self,rf,dm):
+        
         self.load_var_ref(rf)
         self.load_var_dm(dm)
         return
@@ -248,9 +274,10 @@ class RCInst:
         self.cf = cf
 
     def load_var_dt(self,dt):
-        """
-        threshold variable, use as cf(v,dt)
-        """
+        '''
+        loads a new deciding threshold value `dt`; used as `cf(v,dt)`
+        '''
+
         self.dt = dt
 
     def path_type(self):
@@ -269,6 +296,11 @@ class RCInst:
         self.dm = dm
 
     def load_path(self):
+        '''
+        instantiates the main function `self.f` by one of the four specifications
+        in the description for this class
+        '''
+        
         # deciding path
         if type(self.dt) != type(None):
             # for output type bool|float
@@ -288,34 +320,51 @@ class RCInst:
 
 class RChainHead:
     """
-    RChainHead is a node-like structure
+    RChainHead is a sequence of functions with each element a node-like structure represented by `RCInst`.
 
-    :param s: the chain of `RCInst` instances
+    :attribute s: the chain of class<RCInst> instances.
     :type s: list(`RCInst`)
-    :param vpath: the sequence of transformation values that a value `v` goes through at each node in
-    `s`. 
+    :attribute vpath: the sequence of transformation values that a value `v` goes through at each node in `s`. 
     :type vpath: list(values) 
-    :param updatePath: 
-    :type updatePath:
+    :param updatePath: a dictionary of the key-value form `node index -> sequence of indices in arg<varList>`.
+    :type updatePath: dict
+    :param verbose: for print-display at each class<RCInst> transformation.
+    :type verbose: bool
     """
     
-    def __init__(self):
+    def __init__(self,verbose = False):
         self.s = []
         self.vpath = []
-        self.updatePath = {} # node index -> update indices
+        self.updatePath = {}
+        self.verbose = verbose
 
     def update_rch(self):
+        '''
+        Updates variables of each node class<RCInst>.
+
+        - example:
+        class<ResplattingSearchSpaceIterator> calls this method on its class<RChainHead> instance
+        after iterating through one pertinent bound. 
+        '''
+
         for s_ in self.s:
             s_.inst_update_var()
 
     def load_update_path(self,up):
         '''
-        loads an update_path
+        loads a `self.updatePath`
+
+        :param updatePath: update information (see )
         '''
+
         self.updatePath = up
         return
 
     def load_update_vars(self,varList):
+        '''
+        :param varList: tuple of update-variables
+        '''
+
         for k,v in self.updatePath.items():
             vl = []
             for (i,v2) in enumerate(varList):
@@ -333,8 +382,8 @@ class RChainHead:
 
     def load_cf_(self, rci,cfq):
         '''
-
         '''
+
         if type(cfq) == type(()):
             xs = tuple(self.vpath_subset(cfq[1]))
             cf = cfq[0](*xs)
@@ -345,7 +394,7 @@ class RChainHead:
             rci.load_var_cf(cfq)
 
     def make_node(self,kwargz):
-        """
+        '''
         instantiates an `RCInst` node using the argument
         sequence `kwargz`.
         Note: selectorIndices refer to values in `vpath`.
@@ -357,7 +406,8 @@ class RChainHead:
                 
                 Please see the description for `RCInst` for details on these values.
         :type kwargz: iterable
-        """
+        '''
+
         assert kwargz[0] in ["r","r+","nr"]
 
         rci = RCInst()
@@ -381,6 +431,10 @@ class RChainHead:
         return rci
 
     def add_node_at(self, kwargz, index = -1):
+        '''
+
+        '''
+
         assert index >= -1, "invalid index"
         n = self.make_node(kwargz)
         if index == -1:
@@ -400,10 +454,16 @@ class RChainHead:
         i = 0
         v_ = np.copy(v)
         self.vpath = [v_]
+        
+        if self.verbose:
+            print("-- applying function on {}".format(v))
 
         while i < len(self.s):
             q = self.s[i]
             v_ = q.f(v_)
+            if self.verbose:
+                print("\t-- new value: {}".format(v_))
+
             self.vpath.append(v_)
             i += 1
         return v_
@@ -422,6 +482,11 @@ class RChainHead:
 ###### START: helper functions for next section
 
 def boolies(v_):
+    '''
+    :return: is boolean vector all true?
+    :rtype: bool
+    '''
+
     return v_ == True
 
 def column_selector(columns, flatten = False):
@@ -461,16 +526,16 @@ def hops_to_default_noise_range(h):
 
 #################################### start : ostracio && deletira
 
-"""
-
-arguments:
-- k :=
-- h := hop value of SSI
-
-return:
-- matrix, dim (m,k), m the required number of points
-"""
 def hops_to_coverage_points__standard(k,h):
+    """
+
+    arguments:
+    - k :=
+    - h := hop value of SSI
+
+    return:
+    - matrix, dim (m,k), m the required number of points
+    """
 
     z = np.zeros((k,))
     o = np.ones((k,))
@@ -499,10 +564,19 @@ def hops_to_coverage_points_in_bounds(parentBounds,bounds,h):
             parentBounds,bounds,c) for c in cp]
     return np.array(s)
 
-'''
-
-'''
 def coverage_ratio_to_distance(boundsEDistance, h,cr):
+    '''
+    given a coverage ratio `cr`, calculates its corresponding distance to the
+    euclidean distance of a bounds `boundsEDistance`. 
+    
+    :param boundsEDistance: euclidean distance pertaining to a bounds
+    :type boundsEDistance: float
+    :param h: hop
+    :type h: int|float
+    :param cr: 0 <= x <= 1
+    :type cr: float
+    '''
+
     assert h >= 1.0, "invalid h"
     assert cr >= 0.0 and cr <= 1.0, "invalid cr"
 
@@ -529,10 +603,18 @@ def RCHF__point_in_bounds_subvector_selector(b):
 
 from .poly_struct import *
 
-"""
-constructs an RCH function, 2+ nodes, node 1 outputs a float value from .arg<v>, last node outputs a bool|float
-"""
 def RCHF__ISPoly(x:'float',largs):
+    '''
+    constructs a class<RChainHead> function that has as its first function
+    a polynomial function represented by class<ISPoly> over float `x`. The
+    remaining nodes of the class<RChainHead> instance are constructed by the
+    sequence of arguments `largs` to produce a class<RChainHead> with 1+ nodes.
+    
+    :param x: value that single-variable polynomial applies over
+    :type x: float
+    :param largs: sequence of `kwargs` used by method<RChainHead.make_node>.
+    '''
+
     rc = RChainHead()
 
     isp = ISPoly(x)
@@ -551,6 +633,10 @@ def RCHF__ISPoly(x:'float',largs):
 outputs the func for in bounds
 """
 def RCHF___in_bounds(bounds0):
+    '''
+    non-referential class<RChainHead> instance that 
+    '''
+
     kwargs = ['nr', lambda_pointinbounds, bounds0]
     # f : v -> v::bool
     rc = RChainHead()
@@ -692,7 +778,9 @@ vector -> ed vector -> (ed in bounds):bool
     dm = dm
     cf = cf
     ed = euclidean_point_distance_of_bounds(parentBounds,bounds)
-    dt = coverage_ratio_to_distance(ed,9,coverageRatio)
+    # WRONG
+    #dt = coverage_ratio_to_distance(ed,9,coverageRatio)
+    dt = coverage_ratio_to_distance(ed,float(h),coverageRatio)
 
     kwargs = ['r',rf,dm,cf,dt]
     rch.add_node_at(kwargs)
@@ -720,7 +808,6 @@ def sample_rch_2_with_update(parentBounds, bounds):
 
         B1 = np.vstack((b1s,b1e)).T
         B2 = np.vstack((b2s,b2e)).T
-
         return B1,B2
 
     def update_dt_function(parentBounds,bounds):
@@ -748,3 +835,46 @@ def sample_rch_2_with_update(parentBounds, bounds):
     rch.updatePath = {0: [0,1]}
 
     return rch
+
+def sample_rch_3_with_update(modulo,updateAdder,updateModulo,targetValueRange):
+    '''
+    class<RChainHead> instance has one node that updates reference values and deciding threshold
+    using function<vector_summation_modulo>. 
+
+    use simple bounds and selector indices.
+
+    NOTE: class<RChainHead> is not compatible with class<ResplattingSearchSpaceIterator> and is used
+    to test accuracy and capability of class<RChainHead>.  
+    '''
+
+    assert targetValueRange[0] <= targetValueRange[1], "invalid targetValueRange"
+    
+    
+    def cf(x,t):
+        return x >= t[0] and x <= t[1]
+    
+    """
+    def cf(x): 
+        return x
+    """
+    rch = RChainHead(False)
+
+    # declare the node
+    kwargs = ['r',modulo,vector_summation_modulo,cf,targetValueRange]
+    #kwargs = ['r',modulo,vector_summation_modulo,cf]
+
+    rch.add_node_at(kwargs)
+
+    # add the update function for argument `modulo`; 
+    # update function does not require additional variable
+    update_dt_function = update_modulo_function(updateAdder,updateModulo)
+    rch.s[0].updateFunc = {'rf': update_dt_function}
+    rch.s[0].updatePath = {'rf':[0]}
+    rch.updatePath = {0: [0]}
+    rch.load_update_vars([modulo]) 
+
+    return rch
+
+# try another w/ alternating index subsets 
+
+# simple bounds, test w/ SSI and separate RCH

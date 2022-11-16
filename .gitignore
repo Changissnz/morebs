@@ -1,2 +1,4 @@
 interface.py
 distributions.py
+__pycache__
+.gitignore
