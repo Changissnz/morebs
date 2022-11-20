@@ -125,9 +125,9 @@ class BallComp:
 
     def update_neighbors_of_ball(self,idn):
         '''
-    calculates the new neighbor set N1 of the bl'th ball that used to have the neighbor
-    set N0. Then update the `neighbors` variable for all affected neighbors of the
-    bl'th ball.
+        calculates the new neighbor set N1 of the bl'th ball that used to have the neighbor
+        set N0. Then update the `neighbors` variable for all affected neighbors of the
+        bl'th ball.
 
         :param idn:
         :type idn: int
@@ -141,9 +141,11 @@ class BallComp:
 
     def update_ball_neighbors_var(self,idn,n0,n1):
         '''
-    - positive difference set N1 - N0: adds bl to these balls' neighbors.
-    - negative difference set N0 - N1: subtracts bl from .these balls' neighbors.
+        updates the neighbors of each ball after a ball has a radius change by the rule: 
+        - positive difference set N1 - N0: adds `idn` to these balls' neighbors.
+        - negative difference set N0 - N1: subtracts `idn` from .these balls' neighbors.
         '''
+
         pd = n1 - n0
         nd = n0 - n1
         for p in pd:
@@ -167,8 +169,6 @@ class BallComp:
             if v.is_neighbor(b): n.add(k)
         return n
 
-    """
-    """
     def add_point_to_ball(self,p,idn):
         self.balls[idn].add_element(p)
         return
@@ -254,9 +254,6 @@ class BallComp:
 
     def pre_decision_1_(self,p,idn):
 
-        ###print("CACHE")
-        ###print(self.dve.cache1)
-
         # add point to ball
         self.add_point_to_ball(p,idn)
 
@@ -269,17 +266,11 @@ class BallComp:
         if self.verbose >= 1:
             print("\t\tnew neighbors:\n\t",vector_to_string(sorted(self.balls[idn].neighbors)))
 
-        ##print("BEFORE VOLUME UPDATE")
-        ##self.summarize_volume_measures()
-
         # update target ball volume
         self.update_target_ball_volume(idn)
 
         # update target ball 2-int
         self.update_target_ball_2int(idn)
-
-        ##print("AFTER VOLUME UPDATE")
-        ##self.summarize_volume_measures()
 
         return
 
@@ -301,12 +292,6 @@ class BallComp:
         self.balls[idn].revert_add_point()
             # target ball neighbors
         self.revert_update_neighbors_of_ball()
-
-            # target ball volume and its 2-intersection volumes
-        ###print(self.dve.ballVolumes)
-        ###print("REVERTING CACHE DELTA 1")
-        ###print(self.dve.cache1)
-
         self.dve.revert_cache_delta(1)
         self.dve.revert_cache_delta(2)
 
@@ -560,15 +545,3 @@ class BallComp:
         else:
             self.maxRadius = newArg[1]
         return
-
-
-
-    ####
-
-"""
-test data:
-
-- n points spaced far apart
-- '           '   near
-- ball clump data generator
-"""

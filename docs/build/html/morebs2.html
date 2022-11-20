@@ -292,6 +292,8 @@
 <dt class="sig sig-object py" id="morebs2.ball_clump_data_generator.BallClumpDataGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.ball_clump_data_generator.</span></span><span class="sig-name descname"><span class="pre">BallClumpDataGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ballRadii</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusterInfo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filePath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.ball_clump_data_generator.BallClumpDataGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>generates points of n-dimensional balls based on parameters that detail the bounds
+of the balls, their radii, and then writes those points into a file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -582,10 +584,9 @@ euclidean point distance</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.ball_comp.BallComp.update_ball_neighbors_var">
 <span class="sig-name descname"><span class="pre">update_ball_neighbors_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.ball_comp.BallComp.update_ball_neighbors_var" title="Permalink to this definition">¶</a></dt>
-<dd><ul class="simple">
-<li><p>positive difference set N1 - N0: adds bl to these balls’ neighbors.</p></li>
-<li><p>negative difference set N0 - N1: subtracts bl from .these balls’ neighbors.</p></li>
-</ul>
+<dd><p>updates the neighbors of each ball after a ball has a radius change by the rule: 
+- positive difference set N1 - N0: adds <cite>idn</cite> to these balls’ neighbors.
+- negative difference set N0 - N1: subtracts <cite>idn</cite> from .these balls’ neighbors.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -594,15 +595,11 @@ euclidean point distance</p>
 <dd><p>calculates the new neighbor set N1 of the bl’th ball that used to have the neighbor
 set N0. Then update the <cite>neighbors</cite> variable for all affected neighbors of the
 bl’th ball.</p>
-<blockquote>
-<div><dl class="field-list simple">
-<dt class="field-odd">param idn<span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">type idn<span class="colon">:</span></dt>
-<dd class="field-even"><p>int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idn</strong> (<em>int</em>) – </p>
 </dd>
 </dl>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
@@ -1044,7 +1041,7 @@ methods will get transferred to test after completion</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.ball_volume_estimators.</span></span><span class="sig-name descname"><span class="pre">DisjunctionVolumeEstimator</span></span><a class="headerlink" href="#morebs2.ball_volume_estimators.DisjunctionVolumeEstimator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Estimates the disjunction of a set of balls based on
-induction at 2-intersection volumes.</p>
+induction using 2-intersection volumes.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.ball_volume_estimators.DisjunctionVolumeEstimator.clear_cache">
 <span class="sig-name descname"><span class="pre">clear_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.ball_volume_estimators.DisjunctionVolumeEstimator.clear_cache" title="Permalink to this definition">¶</a></dt>
@@ -1142,10 +1139,20 @@ intersection sets.</p>
 <dt class="sig sig-object py" id="morebs2.chained_poly_interpolation.ChainedLagrangePolySolver">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.chained_poly_interpolation.</span></span><span class="sig-name descname"><span class="pre">ChainedLagrangePolySolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.chained_poly_interpolation.ChainedLagrangePolySolver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>point-set conditions for use:
-- non-duplicate values for each dimension</p>
-<p>requires a valid axis order of interpolation:
-- path that allows for lagrange interpolation in n-dim.</p>
+<p>extended version of <code class="xref py py-class docutils literal notranslate"><span class="pre">LagrangePolySolver</span></code> that interpolates points
+over n dimensions.</p>
+<ul class="simple">
+<li><p>Point-set conditions for use:</p></li>
+</ul>
+<ul class="simple">
+<li><p>non-duplicate values for each dimension</p></li>
+</ul>
+<ul class="simple">
+<li><p>Requires a valid axis order of interpolation:</p></li>
+</ul>
+<ul class="simple">
+<li><p>path that allows for lagrange interpolation in n-dim.</p></li>
+</ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.chained_poly_interpolation.ChainedLagrangePolySolver.assert_valid_points">
 <span class="sig-name descname"><span class="pre">assert_valid_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.chained_poly_interpolation.ChainedLagrangePolySolver.assert_valid_points" title="Permalink to this definition">¶</a></dt>
@@ -2414,9 +2421,19 @@ Generates data into file according to instructions given by arguments.</p>
 <dt class="sig sig-object py" id="morebs2.point_sorter.PointSorter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.point_sorter.</span></span><span class="sig-name descname"><span class="pre">PointSorter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.point_sorter.PointSorter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>class can be used by one of these ways: (1) instantiate class w/ vector of data, and sort data using
-method&lt;sort_it&gt;, (2) instantiate class w/ empty vector, call method&lt;insert_point&gt;
-to add to data. The sorted vector point data will be variable&lt;newData&gt;.</p>
+<p>class can be used by one of these ways:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>instantiate class w/ vector of data, and sort data using</p></li>
+</ol>
+</div></blockquote>
+<dl class="simple">
+<dt>method&lt;sort_it&gt;, </dt><dd><ol class="arabic simple" start="2">
+<li><p>instantiate class w/ empty vector, call method&lt;insert_point&gt;</p></li>
+</ol>
+</dd>
+</dl>
+<p>to add to data. The sorted vector point data will be variable&lt;newData&gt;.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.point_sorter.PointSorter.calculate_extremum">
 <span class="sig-name descname"><span class="pre">calculate_extremum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">referencePoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.point_sorter.PointSorter.calculate_extremum" title="Permalink to this definition">¶</a></dt>
@@ -2639,11 +2656,24 @@ measure the similarity between two vectors.</p>
 </section>
 <section id="module-morebs2.poly_interpolation">
 <span id="morebs2-poly-interpolation-module"></span><h2>morebs2.poly_interpolation module<a class="headerlink" href="#module-morebs2.poly_interpolation" title="Permalink to this heading">¶</a></h2>
-<p>basic polynomial solver by Lagrange basis functions</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="morebs2.poly_interpolation.LagrangePolySolver">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.poly_interpolation.</span></span><span class="sig-name descname"><span class="pre">LagrangePolySolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefetch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_interpolation.LagrangePolySolver" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>basic polynomial solver by Lagrange basis functions</p>
+<p>polynomial solver class that finds an interpolating function for a set of
+2-dimensional points.</p>
+<p><a class="reference internal" href="#morebs2.poly_interpolation.LagrangePolySolver" title="morebs2.poly_interpolation.LagrangePolySolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">LagrangePolySolver</span></code></a> also has the capability to calculate information concerning
+the curve such as velocity data (using an initial velocity) by the gravity variable <cite>GRAVITY_AT_INSTANT</cite>,
+in which it collates that information into <code class="xref py py-class docutils literal notranslate"><span class="pre">TravelData</span></code> instances.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> – sequence of n-dimensional points</p></li>
+<li><p><strong>prefetch</strong> (<em>bool</em>) – perform pre-processing (x-bounds and integral length) on points?</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.poly_interpolation.LagrangePolySolver.acceleration_between_points">
 <span class="sig-name descname"><span class="pre">acceleration_between_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_interpolation.LagrangePolySolver.acceleration_between_points" title="Permalink to this definition">¶</a></dt>
@@ -2865,7 +2895,12 @@ measure the similarity between two vectors.</p>
 <dt class="sig sig-object py" id="morebs2.poly_struct.SPoly">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.poly_struct.</span></span><span class="sig-name descname"><span class="pre">SPoly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.SPoly" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>v := vector of values, length l -1 is power, index 0 is greatest power</p>
+<p>polynomial operator over 1 float variable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v</strong> – vector of values, length l -1 is power, index 0 is greatest power</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.poly_struct.SPoly.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.SPoly.apply" title="Permalink to this definition">¶</a></dt>
@@ -2988,7 +3023,7 @@ sequence of arguments <cite>largs</cite> to produce a class&lt;RChainHead&gt; wi
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>float</em>) – value that single-variable polynomial applies over</p></li>
-<li><p><strong>largs</strong> – sequence of <cite>kwargs</cite> used by method&lt;RChainHead.make_node&gt;.</p></li>
+<li><p><strong>largs</strong> – sequence of <cite>kwargs</cite> used by method&lt;RChainHead.make_node&gt;</p></li>
 </ul>
 </dd>
 </dl>
@@ -3502,7 +3537,6 @@ to test accuracy and capability of class&lt;RChainHead&gt;.</p>
 </section>
 <section id="module-morebs2.rssi">
 <span id="morebs2-rssi-module"></span><h2>morebs2.rssi module<a class="headerlink" href="#module-morebs2.rssi" title="Permalink to this heading">¶</a></h2>
-<p>this is a re-write of RSSI</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="morebs2.rssi.DEFAULT_RSSI__CR__NOISE_ADDER">
 <span class="sig-prename descclassname"><span class="pre">morebs2.rssi.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_RSSI__CR__NOISE_ADDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">array([[0.01,</span> <span class="pre">0.15]])</span></em><a class="headerlink" href="#morebs2.rssi.DEFAULT_RSSI__CR__NOISE_ADDER" title="Permalink to this definition">¶</a></dt>
@@ -3513,12 +3547,22 @@ to test accuracy and capability of class&lt;RChainHead&gt;.</p>
 <dt class="sig sig-object py" id="morebs2.rssi.ResplattingSearchSpaceIterator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.rssi.</span></span><span class="sig-name descname"><span class="pre">ResplattingSearchSpaceIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startPoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columnOrder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SSIHop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resplattingMode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('relevance</span> <span class="pre">zoom',</span> <span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additionalUpdateArgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.rssi.ResplattingSearchSpaceIterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>class&lt;ResplattingSearchSpaceIterator&gt; is a data-structure
-that relies on class&lt;SearchSpaceIterator&gt;. There are two modes for this class when it resplats on
+<p><a class="reference internal" href="#morebs2.rssi.ResplattingSearchSpaceIterator" title="morebs2.rssi.ResplattingSearchSpaceIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator</span></code></a> is a data-structure
+that relies on :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>SearchSpaceIterator&gt;. There are two modes for this class when it resplats on
 the original bounds:
 - “relevance zoom”: requires an RChainHead to determine relevance of
 each point
 - “prg”: pseudo-random generator of points in relevant bounds</p>
+<p>At timestamp 0, there is one relevant bound, the <cite>bounds</cite> parameter. 
+<a class="reference internal" href="#morebs2.rssi.ResplattingSearchSpaceIterator" title="morebs2.rssi.ResplattingSearchSpaceIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator</span></code></a> iterates through each bounds it considers
+relevant. When this class iterates through a bound and collects relevant points,
+a relevant sub-bound is one with a minumum relevant point and maximum relevant point
+such that the value preceding (if forward iteration) or succeeding (if backward iteration)
+the minumum relevant point is not relevant and the value succeeding (if forward iteration)
+or preceding (if backward iteration) the maximum relevant point is not relevant.</p>
+<p>A generalization of the behavior of <a class="reference internal" href="#morebs2.rssi.ResplattingSearchSpaceIterator" title="morebs2.rssi.ResplattingSearchSpaceIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator</span></code></a> is that it narrows
+down the relevant space in an initial bound using the <code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code> relevance function,
+and the points it generates can be exact (if “rezoom”) or pseudo-random (if “prg”).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3526,10 +3570,10 @@ each point
 <li><p><strong>startPoint</strong> (<em>np.ndarray</em>) – n-point</p></li>
 <li><p><strong>columnOrder</strong> (<em>iterable</em>) – order by which the columns of the reference value carry over values.</p></li>
 <li><p><strong>SSIHop</strong> (<em>int</em>) – partition for each column of bounds</p></li>
-<li><p><strong>resplattingMode</strong> (<em>(</em><em>&quot;relevance zoom&quot;</em><em>|</em><em>&quot;prg&quot;</em><em>,</em><em>class&lt;RChainHead&gt;</em><em>)</em>) – determines how the data structure will generate new values after iterating through
+<li><p><strong>resplattingMode</strong> ((“relevance zoom”|”prg”,:class:<cite>RChainHead</cite>)) – determines how the data structure will generate new values after iterating through
 the previous bounds and collecting relevant bounds.</p></li>
-<li><p><strong>additionalUpdateArgs</strong> (<em>tuple</em>) – additional arguments used to update class&lt;RChainHead&gt; when updating
-class&lt;ResplattingInstructor&gt;</p></li>
+<li><p><strong>additionalUpdateArgs</strong> (<em>tuple</em>) – additional arguments used to update <code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code> when updating
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingInstructor</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -3554,7 +3598,7 @@ class&lt;ResplattingInstructor&gt;</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.rssi.ResplattingSearchSpaceIterator.declare_new_ssi">
 <span class="sig-name descname"><span class="pre">declare_new_ssi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startPoint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.rssi.ResplattingSearchSpaceIterator.declare_new_ssi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Declares either a class&lt;SearchSpaceIterator&gt; or class&lt;SkewedSearchSpaceIterator&gt;
+<dd><p>Declares either a <code class="xref py py-class docutils literal notranslate"><span class="pre">SearchSpaceIterator</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">SkewedSearchSpaceIterator</span></code>
 instance for the given bounds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3624,7 +3668,7 @@ instance for the given bounds.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="morebs2.rssi.ResplattingSearchSpaceIterator.rangeHistory">
 <span class="sig-name descname"><span class="pre">rangeHistory</span></span><a class="headerlink" href="#morebs2.rssi.ResplattingSearchSpaceIterator.rangeHistory" title="Permalink to this definition">¶</a></dt>
-<dd><p>sequence of all sub-bounds in <cite>self.bounds</cite> that data structure has iterated over by class&lt;SearchSpaceIterator&gt;.</p>
+<dd><p>sequence of all sub-bounds in <cite>self.bounds</cite> that data structure has iterated over by <code class="xref py py-class docutils literal notranslate"><span class="pre">SearchSpaceIterator`</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3637,8 +3681,8 @@ the most recent relevant bounds</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.rssi.ResplattingSearchSpaceIterator.update_resplatting_instructor">
 <span class="sig-name descname"><span class="pre">update_resplatting_instructor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.rssi.ResplattingSearchSpaceIterator.update_resplatting_instructor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates class&lt;ResplattingInstructor&gt; <cite>self.ri</cite>. If <cite>self.ri</cite> is None,
-then instantiates a new class&lt;ResplattingInstructor&gt; based on the mode <cite>self.rm[0]</cite>.</p>
+<dd><p>Updates <code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingInstructor</span></code> <cite>self.ri</cite>. If <cite>self.ri</cite> is None,
+then instantiates a new <code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingInstructor</span></code> based on the mode <cite>self.rm[0]</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>nbs</strong> – new bounds vector</p>
@@ -3735,48 +3779,73 @@ If mode is “prg”, then will output random point from .CenterResplat.</p>
 </section>
 <section id="module-morebs2.search_space_iterator">
 <span id="morebs2-search-space-iterator-module"></span><h2>morebs2.search_space_iterator module<a class="headerlink" href="#module-morebs2.search_space_iterator" title="Permalink to this heading">¶</a></h2>
-<p>generates the next value to be searched and logged sadfsadfsadf</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.search_space_iterator.</span></span><span class="sig-name descname"><span class="pre">SearchSpaceIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startPoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columnOrder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SSIHop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycleOn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycleIs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SearchSpaceIterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>iterator operates in a sequential/linear manner.</p>
+<p>iterator operates in a sequential/linear manner over an n-dimensional
+space with an m partition on each space. For a bounds with <cite>n by m</cite> specifications,
+outputs <cite>n x m - 1</cite> unique points in a forward (start is minumum bound point) or 
+backwards order (start is maximum bound point)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>bounds</strong> – </p></li>
-<li><p><strong>startPoint</strong> – </p></li>
+<li><p><strong>bounds</strong> (proper bounds, <cite>m x 2</cite>) – target bounds</p></li>
+<li><p><strong>startPoint</strong> (<em>vector</em><em>, </em><em>m-sized</em>) – initial point</p></li>
 <li><p><strong>columnOrder</strong> (<em>vector&lt;int&gt;</em>) – vector&lt;column indices&gt;, first is left head</p></li>
 <li><p><strong>SSIHop</strong> (<em>int</em>) – hop over total distance ratio for each increment</p></li>
 <li><p><strong>cycleOn</strong> (<em>bool</em>) – keep going after cycle?</p></li>
-<li><p><strong>cycleIs</strong> (<em>bool</em>) – which end is cycle?</p></li>
+<li><p><strong>cycleIs</strong> (<em>bool</em>) – cycle is maximum of bounds?</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.adjust_hop_pattern_heads">
 <span class="sig-name descname"><span class="pre">adjust_hop_pattern_heads</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SearchSpaceIterator.adjust_hop_pattern_heads" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>adjusts the heads of hop pattern instances to match
+<cite>cycleIs</cite></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.analyze_startpoint_in_bounds">
 <span class="sig-name descname"><span class="pre">analyze_startpoint_in_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SearchSpaceIterator.analyze_startpoint_in_bounds" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>determines ratio of each element in startpoint with respect to
+their column size and hop partition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>vector of floats v in [0,1]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.calculate_endpoint">
 <span class="sig-name descname"><span class="pre">calculate_endpoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SearchSpaceIterator.calculate_endpoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>method called before iteration to obtain iterating endpoint</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.carry_over">
 <span class="sig-name descname"><span class="pre">carry_over</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lastIndex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">carryOverType</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'finite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SearchSpaceIterator.carry_over" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>method used to carry over column values to affect the next column in the
+ordering <cite>self.columnOrder</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lastIndex</strong> (<em>int</em>) – index that corresponds to column in <cite>self.columnOrdering</cite> where
+the most recent delta to <cite>self.referencePoint</cite> occurred.</p></li>
+<li><p><strong>carryOverType</strong> (str, <cite>infinite</cite> or <cite>finite</cite>.) – specifies if carry-over operation can cycle back to the first element in column ordering.</p></li>
+<li><p><strong>rev</strong> (<em>bool</em>) – carry-over in column-ordering is in decreasing order?</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.close_cycle">
 <span class="sig-name descname"><span class="pre">close_cycle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SearchSpaceIterator.close_cycle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>outputs the element after the last, and sets !terminate</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.de_bounds">
@@ -3801,7 +3870,13 @@ If mode is “prg”, then will output random point from .CenterResplat.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.finished">
 <span class="sig-name descname"><span class="pre">finished</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SearchSpaceIterator.finished" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>determines if iterator is finished</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.inc1">
@@ -3821,7 +3896,8 @@ If mode is “prg”, then will output random point from .CenterResplat.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.reached_end">
 <span class="sig-name descname"><span class="pre">reached_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SearchSpaceIterator.reached_end" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>determines if reference point has reached endpoint</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.rev__next__">
@@ -3841,7 +3917,13 @@ If mode is “prg”, then will output random point from .CenterResplat.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.set_hop_pattern_for_columns">
 <span class="sig-name descname"><span class="pre">set_hop_pattern_for_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dividor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SearchSpaceIterator.set_hop_pattern_for_columns" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>declares n <code class="xref py py-class docutils literal notranslate"><span class="pre">HopPattern</span></code> instances each with partition <cite>dividor</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dividor</strong> (<em>int</em>) – partition value for each <code class="xref py py-class docutils literal notranslate"><span class="pre">HopPattern</span></code> instance.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SearchSpaceIterator.set_value">
@@ -3854,8 +3936,20 @@ If mode is “prg”, then will output random point from .CenterResplat.</p>
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SkewedSearchSpaceIterator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.search_space_iterator.</span></span><span class="sig-name descname"><span class="pre">SkewedSearchSpaceIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parentBounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startPoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columnOrder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SSIHop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycleOn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycleIs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SkewedSearchSpaceIterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#morebs2.search_space_iterator.SearchSpaceIterator" title="morebs2.search_space_iterator.SearchSpaceIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchSpaceIterator</span></code></a></p>
-<p>bounds :=
-parentBounds :=</p>
+<p><a class="reference internal" href="#morebs2.search_space_iterator.SearchSpaceIterator" title="morebs2.search_space_iterator.SearchSpaceIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchSpaceIterator</span></code></a>-like class used to iterate over improper bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bounds</strong> (improper bounds, <cite>m x 2</cite>) – target bounds</p></li>
+<li><p><strong>parentBounds</strong> (proper bounds, <cite>m x 2</cite>) – reference bounds for <cite>self.bounds</cite></p></li>
+<li><p><strong>startPoint</strong> (<em>vector</em><em>, </em><em>m-sized</em>) – initial point</p></li>
+<li><p><strong>columnOrder</strong> (<em>vector&lt;int&gt;</em>) – vector&lt;column indices&gt;, first is left head</p></li>
+<li><p><strong>SSIHop</strong> (<em>int</em>) – hop over total distance ratio for each increment</p></li>
+<li><p><strong>cycleOn</strong> (<em>bool</em>) – keep going after cycle?</p></li>
+<li><p><strong>cycleIs</strong> (<em>bool</em>) – cycle is maximum of bounds?</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SkewedSearchSpaceIterator.de_bounds">
 <span class="sig-name descname"><span class="pre">de_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SkewedSearchSpaceIterator.de_bounds" title="Permalink to this definition">¶</a></dt>
@@ -3879,7 +3973,8 @@ parentBounds :=</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SkewedSearchSpaceIterator.inverse_round_value">
 <span class="sig-name descname"><span class="pre">inverse_round_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SkewedSearchSpaceIterator.inverse_round_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>inverse round value in <cite>referenceBounds</cite> to value in <cite>iBounds</cite></p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SkewedSearchSpaceIterator.k_random_points_in_bounds">
@@ -3889,7 +3984,8 @@ parentBounds :=</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SkewedSearchSpaceIterator.reached_end">
 <span class="sig-name descname"><span class="pre">reached_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SkewedSearchSpaceIterator.reached_end" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>determines if reference point has reached endpoint</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SkewedSearchSpaceIterator.rev__next__">
@@ -3904,12 +4000,20 @@ parentBounds :=</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SkewedSearchSpaceIterator.set_skew">
 <span class="sig-name descname"><span class="pre">set_skew</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SkewedSearchSpaceIterator.set_skew" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>sets skew value and its index template;
+Skew value used to calibrate value from .`self.ssi`.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.search_space_iterator.SkewedSearchSpaceIterator.set_value">
 <span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.search_space_iterator.SkewedSearchSpaceIterator.set_value" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>sets value v as reference point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v</strong> – vector, value in <cite>self.referenceBounds</cite></p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -4001,8 +4105,18 @@ parentBounds :=</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.travel_data.</span></span><span class="sig-name descname"><span class="pre">TravelData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pointData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">durationData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">velocityData</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hopRanges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startVelocity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.travel_data.TravelData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Data structure that can be used to record travellistada es datas.</p>
-<p>arguments:
-- hopRanges: list::((int::min, int::max), float::hop)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idn</strong> (<em>typically int</em>) – identifier for travel data</p></li>
+<li><p><strong>pointData</strong> – m x 2 matrix, m is the number of samples</p></li>
+<li><p><strong>durationData</strong> – m-iterable, timestamp data corresponding to <cite>self.pointData</cite></p></li>
+<li><p><strong>velocityData</strong> – velocity of some agent at each point in <cite>self.pointData</cite></p></li>
+<li><p><strong>hopRanges</strong> – list::((int::min, int::max), float::hop)</p></li>
+<li><p><strong>startVelocity</strong> (<em>float</em>) – initial velocity</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.travel_data.TravelData.closest_data_indices_for_wanted_duration">
 <span class="sig-name descname"><span class="pre">closest_data_indices_for_wanted_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wantedDuration</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.travel_data.TravelData.closest_data_indices_for_wanted_duration" title="Permalink to this definition">¶</a></dt>
@@ -4067,6 +4181,7 @@ parentBounds :=</p>
 <dt class="sig sig-object py" id="morebs2.violation_handler.ViolationHandler1">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.violation_handler.</span></span><span class="sig-name descname"><span class="pre">ViolationHandler1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxBalls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxRadius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.violation_handler.ViolationHandler1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Decision structure for <code class="xref py py-class docutils literal notranslate"><span class="pre">BallComp</span></code> algorithm.</p>
 <p>ViolationHandler1 is initialized with a <cite>max balls</cite> and <cite>max radius</cite>
 argument. If BallComp uses this handler, then BallComp will terminate once
 either of the max conditions of this handler is reached.</p>

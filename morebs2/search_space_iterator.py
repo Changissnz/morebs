@@ -1,6 +1,3 @@
-"""
-generates the next value to be searched and logged sadfsadfsadf
-"""
 from .hop_pattern import *
 from .measures import *
 from copy import deepcopy
@@ -8,19 +5,22 @@ from copy import deepcopy
 
 class SearchSpaceIterator:
     """
-    iterator operates in a sequential/linear manner.
+    iterator operates in a sequential/linear manner over an n-dimensional
+    space with an m partition on each space. For a bounds with `n by m` specifications,
+    outputs `n x m - 1` unique points in a forward (start is minumum bound point) or 
+    backwards order (start is maximum bound point) 
 
-    :param bounds:
-    :type bounds:
-    :param startPoint:
-    :type startPoint:
+    :param bounds: target bounds
+    :type bounds: proper bounds, `m x 2`
+    :param startPoint: initial point
+    :type startPoint: vector, m-sized
     :param columnOrder: vector<column indices>, first is left head
     :type columnOrder: vector<int>
     :param SSIHop: hop over total distance ratio for each increment
     :type SSIHop: int
     :param cycleOn: keep going after cycle?
     :type cycleOn: bool
-    :param cycleIs: which end is cycle?
+    :param cycleIs: cycle is maximum of bounds?
     :type cycleIs: bool
     """
 
@@ -83,11 +83,10 @@ class SearchSpaceIterator:
                 q.append(q_)
         return np.array(q)
 
-
-    """
-    outputs the element after the last, and sets !terminate
-    """
     def close_cycle(self):
+        """
+        outputs the element after the last, and sets !terminate
+        """
         pe = self.proper_endpoint()
 
         # turn off
@@ -96,11 +95,12 @@ class SearchSpaceIterator:
 
         return pe
 
-    '''
-    adjusts the heads of hop pattern instances to match
-    `cycleIs`
-    '''
     def adjust_hop_pattern_heads(self):
+        '''
+        adjusts the heads of hop pattern instances to match
+        `cycleIs`
+        '''
+
         for (i,hp) in enumerate(self.hopPatterns):
             if hp.value == self.bounds[i,0] or hp.value == self.bounds[i,1]:
                 hp.head = self.bounds[i,self.cycleIs]
@@ -109,10 +109,14 @@ class SearchSpaceIterator:
                 pass
         return
 
-    """
-    returns vector of floats v in [0,1]
-    """
     def analyze_startpoint_in_bounds(self):
+        """
+        determines ratio of each element in startpoint with respect to
+        their column size and hop partition.
+
+        :return: vector of floats v in [0,1]
+        """
+
         # TODO: assert start point in bounds
         v = np.asarray(self.bounds[:,1] - self.bounds[:,0], dtype=float)
         q = np.asarray(self.startPoint - self.bounds[:,0], dtype = float)
@@ -122,6 +126,9 @@ class SearchSpaceIterator:
             return np.zeros((v.shape[0],))
 
     def calculate_endpoint(self):
+        '''
+        method called before iteration to obtain iterating endpoint
+        '''
 
         # decrement each one
         self.endpoint = np.empty((len(self.columnOrder),))
@@ -139,15 +146,26 @@ class SearchSpaceIterator:
 
         return np.round(self.endpoint,5)
 
-    '''
-    '''
     def set_hop_pattern_for_columns(self, dividor):
+        '''
+        declares n :class:`HopPattern` instances each with partition `dividor`. 
+
+        :param dividor: partition value for each :class:`HopPattern` instance. 
+        :type dividor: int
+        '''
+
         for (i,c) in enumerate(self.startPoint):
             hp = HopPattern(c, self.bounds[i,0], self.bounds[i,1], DIR = round(dividor ** -1, 10))
             self.hopPatterns.append(hp)
     ###------------------------------------------------------------
 
     def finished(self):
+        '''
+        determines if iterator is finished
+        
+        :rtype: bool
+        '''
+
         return not self.cycleOn and self.reached_end()
 
     def __next__(self):
@@ -227,12 +245,22 @@ class SearchSpaceIterator:
         return np.round(self.cache, 5)
 
     # TODO: run tests on `carryOverType`
-    """
-    if carryOverType := "infinite", will continue carrying over after cycling
-                        through all columns once.
-    """
+
     # TODO: rev is actually inverse
     def carry_over(self, lastIndex, carryOverType = "finite", rev = False):
+        """
+        method used to carry over column values to affect the next column in the
+        ordering `self.columnOrder`.
+
+        :param lastIndex: index that corresponds to column in `self.columnOrdering` where
+                        the most recent delta to `self.referencePoint` occurred.
+        :type lastIndex: int
+        :param carryOverType: specifies if carry-over operation can cycle back to the first element in column ordering.
+        :type carryOverType: str, `infinite` or `finite`.
+        :param rev: carry-over in column-ordering is in decreasing order? 
+        :type rev: bool
+        """
+
         assert carryOverType in ["infinite", "finite"], "carry-over type"
 
         ## TODO: below two ## are for inverse mode
@@ -265,10 +293,10 @@ class SearchSpaceIterator:
 
         return lastIndex
 
-    """
-    used for rounding errors for method `HopPattern.rev__next__`
-    """
     def reached_end(self):
+        '''
+        determines if reference point has reached endpoint
+        '''
         return equal_iterables(self.referencePoint,self.endpoint,2)
 
     def set_value(self,v):
@@ -298,11 +326,26 @@ class SearchSpaceIterator:
 used for improper bounds
 """
 class SkewedSearchSpaceIterator(SearchSpaceIterator):
+    """
+    :class:`SearchSpaceIterator`-like class used to iterate over improper bounds.
 
+    :param bounds: target bounds
+    :type bounds: improper bounds, `m x 2`
+    :param parentBounds: reference bounds for `self.bounds`
+    :type parentBounds: proper bounds, `m x 2`
+    :param startPoint: initial point
+    :type startPoint: vector, m-sized
+    :param columnOrder: vector<column indices>, first is left head
+    :type columnOrder: vector<int>
+    :param SSIHop: hop over total distance ratio for each increment
+    :type SSIHop: int
+    :param cycleOn: keep going after cycle?
+    :type cycleOn: bool
+    :param cycleIs: cycle is maximum of bounds?
+    :type cycleIs: bool
     """
-    bounds :=
-    parentBounds :=
-    """
+
+
     def __init__(self, bounds, parentBounds,startPoint,columnOrder = None,SSIHop = 7,cycleOn = False,cycleIs = 0):
         assert not is_proper_bounds_vector(bounds), "[1] invalid bounds"
         assert is_proper_bounds_vector(parentBounds), "[2] invalid bounds"
@@ -360,12 +403,12 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
     def de_end(self):
         return np.copy(self.e2)
 
-    """
-    sets skew value and its index template;
-
-    Skew value used to calibrate value from .`self.ssi`.
-    """
     def set_skew(self):
+        """
+        sets skew value and its index template;
+        Skew value used to calibrate value from .`self.ssi`.
+        """
+
         skew = []
         si = []
         for i in range(self.referenceBounds.shape[0]):
@@ -386,10 +429,11 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
     def round_value(self,v):
         return vector_hop_in_bounds(v,self.skew,self.parentBounds)
 
-    """
-    inverse round value in `referenceBounds` to value in `iBounds`
-    """
     def inverse_round_value(self,v):
+        """
+        inverse round value in `referenceBounds` to value in `iBounds`
+        """
+
         return vector_hop_in_bounds(v,-self.skew,self.parentBounds)
 
     def __next__(self):
@@ -407,22 +451,17 @@ class SkewedSearchSpaceIterator(SearchSpaceIterator):
         self.ref2 = self.round_value(self.referencePoint)
         return np.copy(self.ref2)
 
-    # TODO: check here
-    """
-    end for improper bounds is [1]
-    """
-    ##
     def reached_end(self):
         q = equal_iterables(self.ref2,self.e2, 4)
         return q
 
-    """
-    sets value v as reference point
-
-    v := vector, value in `self.referenceBounds`
-    """
-    # CAUTION: no arg-check
     def set_value(self,v):
+        """
+        sets value v as reference point
+
+        :param v: vector, value in `self.referenceBounds`
+        """
+
         assert is_vector(v), "invalid vector"
         self.ref2 = v
         q = self.inverse_round_value(v)

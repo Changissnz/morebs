@@ -1,7 +1,3 @@
-'''
-basic polynomial solver by Lagrange basis functions
-'''
-
 from scipy import optimize as opt
 from .random_generators import *
 from .travel_data import *
@@ -13,6 +9,21 @@ powerRow = lambda x, l: np.append(np.array([x ** (l - i) for i in range(l)]), np
 GRAVITY_AT_INSTANT = 11
 
 class LagrangePolySolver:
+    '''
+    basic polynomial solver by Lagrange basis functions
+
+    polynomial solver class that finds an interpolating function for a set of
+    2-dimensional points.
+
+    :class:`LagrangePolySolver` also has the capability to calculate information concerning
+    the curve such as velocity data (using an initial velocity) by the gravity variable `GRAVITY_AT_INSTANT`,
+    in which it collates that information into :class:`TravelData` instances.
+
+    :param points: sequence of n-dimensional points
+    :param prefetch: perform pre-processing (x-bounds and integral length) on points?
+    :type prefetch: bool
+    '''
+
 
     def __init__(self, points, prefetch = True):
         self.ps = points

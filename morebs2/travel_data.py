@@ -4,13 +4,19 @@ from .matrix_methods import *
 from collections import OrderedDict
 
 class TravelData:
-
     """
     Data structure that can be used to record travellistada es datas.
 
-    arguments:
-    - hopRanges: list::((int::min, int::max), float::hop)
+    :param idn: identifier for travel data
+    :type idn: typically int
+    :param pointData: m x 2 matrix, m is the number of samples
+    :param durationData: m-iterable, timestamp data corresponding to `self.pointData`
+    :param velocityData: velocity of some agent at each point in `self.pointData`
+    :param hopRanges: list::((int::min, int::max), float::hop)
+    :param startVelocity: initial velocity
+    :type startVelocity: float
     """
+
     def __init__(self, idn, pointData, durationData, velocityData, hopRanges, startVelocity = None):
         self.idn = idn
         self.pointData = pointData
@@ -84,7 +90,6 @@ class TravelData:
         return ci, hopIncrement
 
     """
-
     """
     def velocity_to_acceleration(self, capture = False):
         a =  np.array([self.velocityData[i] - self.velocityData[i - 1]\

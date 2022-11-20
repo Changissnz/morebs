@@ -1,6 +1,5 @@
 from .ball_comp_components import *
 from .set_merger import *
-# move volume methods from .ball_comp_components to this file
 
 def estimate_n_intersection(intersectionAreas):
     return min(intersectionAreas) * 0.5
@@ -8,8 +7,9 @@ def estimate_n_intersection(intersectionAreas):
 class DisjunctionVolumeEstimator:
     """
     Estimates the disjunction of a set of balls based on
-    induction at 2-intersection volumes.
+    induction using 2-intersection volumes.
     """
+
     def __init__(self):
 
         # single-ball volumes: int->float

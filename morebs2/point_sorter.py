@@ -80,8 +80,11 @@ def sorted_vector_value_search(vector, value, irange = None):
 
 class PointSorter:
     '''
-    class can be used by one of these ways: (1) instantiate class w/ vector of data, and sort data using
-    method<sort_it>, (2) instantiate class w/ empty vector, call method<insert_point>
+    class can be used by one of these ways: 
+    
+        (1) instantiate class w/ vector of data, and sort data using
+    method<sort_it>, 
+        (2) instantiate class w/ empty vector, call method<insert_point>
     to add to data. The sorted vector point data will be variable<newData>.
     '''
 

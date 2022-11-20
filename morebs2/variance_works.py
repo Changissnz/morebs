@@ -9,7 +9,6 @@ rng = np.random.default_rng()
 def random_matrix_by_normaldist_values(n, mInfo):
     '''
     generates a random matrix with each column containing randomly-generated values corresponding to its (mean, std. dev.).
-
     '''
 
     q = np.zeros((n, len(mInfo)))

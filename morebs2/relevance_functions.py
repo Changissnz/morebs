@@ -612,7 +612,7 @@ def RCHF__ISPoly(x:'float',largs):
     
     :param x: value that single-variable polynomial applies over
     :type x: float
-    :param largs: sequence of `kwargs` used by method<RChainHead.make_node>.
+    :param largs: sequence of `kwargs` used by method<RChainHead.make_node>
     '''
 
     rc = RChainHead()

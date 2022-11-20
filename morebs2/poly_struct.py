@@ -1,13 +1,15 @@
 from .poly_interpolation import *
 
 """
-polynomial operator over 1 float variable
 """
 class SPoly:
+    """
+    polynomial operator over 1 float variable
 
+
+    :param v: vector of values, length l -1 is power, index 0 is greatest power
     """
-    v := vector of values, length l -1 is power, index 0 is greatest power
-    """
+
     def __init__(self,v):
         assert is_vector(v), "invalid vector"
         self.v = v

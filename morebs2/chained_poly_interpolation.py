@@ -3,10 +3,15 @@ from .poly_interpolation import *
 
 class ChainedLagrangePolySolver:
     '''
-    point-set conditions for use:
-    - non-duplicate values for each dimension
+    extended version of :class:`LagrangePolySolver` that interpolates points
+    over n dimensions.
 
-    requires a valid axis order of interpolation:
+    * Point-set conditions for use:
+    
+    - non-duplicate values for each dimension
+    
+    * Requires a valid axis order of interpolation:
+    
     - path that allows for lagrange interpolation in n-dim.
     '''
 

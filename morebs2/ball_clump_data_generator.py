@@ -4,7 +4,8 @@ import pickle
 
 class BallClumpDataGenerator:
     """
-    BallClumpDataGenerator
+    generates points of n-dimensional balls based on parameters that detail the bounds
+    of the balls, their radii, and then writes those points into a file 
 
     :param bounds: proper bounds array
     :type bounds: np.ndarray

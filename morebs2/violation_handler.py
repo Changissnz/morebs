@@ -1,5 +1,7 @@
 class ViolationHandler1:
     """
+    Decision structure for :class:`BallComp` algorithm.
+
     ViolationHandler1 is initialized with a `max balls` and `max radius`
     argument. If BallComp uses this handler, then BallComp will terminate once
     either of the max conditions of this handler is reached.

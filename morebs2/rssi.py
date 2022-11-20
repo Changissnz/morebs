@@ -1,6 +1,3 @@
-'''
-this is a re-write of RSSI
-'''
 from .rssi_components import *
 # use for adding noise
 from .numerical_generator import *
@@ -10,12 +7,24 @@ DEFAULT_RSSI__CR__NOISE_ADDER = np.array([[0.01,0.15]])
 
 class ResplattingSearchSpaceIterator:
     """
-    class<ResplattingSearchSpaceIterator> is a data-structure
-    that relies on class<SearchSpaceIterator>. There are two modes for this class when it resplats on
+    :class:`ResplattingSearchSpaceIterator` is a data-structure
+    that relies on :class:`SearchSpaceIterator>. There are two modes for this class when it resplats on
     the original bounds:
     - "relevance zoom": requires an RChainHead to determine relevance of
     each point
     - "prg": pseudo-random generator of points in relevant bounds
+
+    At timestamp 0, there is one relevant bound, the `bounds` parameter. 
+    :class:`ResplattingSearchSpaceIterator` iterates through each bounds it considers
+    relevant. When this class iterates through a bound and collects relevant points,
+    a relevant sub-bound is one with a minumum relevant point and maximum relevant point
+    such that the value preceding (if forward iteration) or succeeding (if backward iteration)
+    the minumum relevant point is not relevant and the value succeeding (if forward iteration)
+    or preceding (if backward iteration) the maximum relevant point is not relevant. 
+
+    A generalization of the behavior of :class:`ResplattingSearchSpaceIterator` is that it narrows
+    down the relevant space in an initial bound using the :class:`RChainHead` relevance function,
+    and the points it generates can be exact (if "rezoom") or pseudo-random (if "prg").
     
     :param bounds: all generated points lie in this matrix
     :type bounds: np.ndarray, n x 2 matrix
@@ -27,9 +36,9 @@ class ResplattingSearchSpaceIterator:
     :type SSIHop: int
     :param resplattingMode: determines how the data structure will generate new values after iterating through
                             the previous bounds and collecting relevant bounds.
-    :type resplattingMode: ("relevance zoom"|"prg",class<RChainHead>)
-    :param additionalUpdateArgs: additional arguments used to update class<RChainHead> when updating
-        class<ResplattingInstructor> 
+    :type resplattingMode: ("relevance zoom"|"prg",:class:`RChainHead`)
+    :param additionalUpdateArgs: additional arguments used to update :class:`RChainHead` when updating
+        :class:`ResplattingInstructor` 
     :type additionalUpdateArgs: tuple
     """
 
@@ -50,7 +59,7 @@ class ResplattingSearchSpaceIterator:
         self.iteratedOnce = False # if SSI iterated over bounds once
         self.iterateIt = False
         self.terminated = False
-        #: sequence of all sub-bounds in `self.bounds` that data structure has iterated over by class<SearchSpaceIterator>. 
+        #: sequence of all sub-bounds in `self.bounds` that data structure has iterated over by :class:`SearchSpaceIterator``. 
         self.rangeHistory = [np.copy(self.bounds)]
 
         self.declare_new_ssi(np.copy(self.bounds), np.copy(self.startPoint))
@@ -120,7 +129,7 @@ class ResplattingSearchSpaceIterator:
 
     def declare_new_ssi(self,bounds, startPoint):
         '''
-        Declares either a class<SearchSpaceIterator> or class<SkewedSearchSpaceIterator>
+        Declares either a :class:`SearchSpaceIterator` or :class:`SkewedSearchSpaceIterator`
         instance for the given bounds.
 
         :param bounds:
@@ -140,8 +149,8 @@ class ResplattingSearchSpaceIterator:
 
     def update_resplatting_instructor(self,nbs = None):
         """
-        Updates class<ResplattingInstructor> `self.ri`. If `self.ri` is None,
-        then instantiates a new class<ResplattingInstructor> based on the mode `self.rm\[0\]`.
+        Updates :class:`ResplattingInstructor` `self.ri`. If `self.ri` is None,
+        then instantiates a new :class:`ResplattingInstructor` based on the mode `self.rm\[0\]`.
 
         :param nbs: new bounds vector
         :return nbs: np.ndarray
