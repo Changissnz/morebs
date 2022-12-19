@@ -128,6 +128,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.numerical_space_data_generator_test.sample_nsdi_1"><code class="docutils literal notranslate"><span class="pre">sample_nsdi_1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.numerical_space_data_generator_test.sample_nsdi_2"><code class="docutils literal notranslate"><span class="pre">sample_nsdi_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.numerical_space_data_generator_test.sample_nsdi_3"><code class="docutils literal notranslate"><span class="pre">sample_nsdi_3()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="morebs2.tests.html#module-morebs2.tests.point_sorter_test">morebs2.tests.point_sorter_test module</a><ul>
@@ -1617,6 +1618,12 @@ and a new Line is returned</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="morebs2.matrix_methods.bounded_point_to_hop_counts">
+<span class="sig-prename descclassname"><span class="pre">morebs2.matrix_methods.</span></span><span class="sig-name descname"><span class="pre">bounded_point_to_hop_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parentBound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.matrix_methods.bounded_point_to_hop_counts" title="Permalink to this definition">¶</a></dt>
+<dd><p>maps each value of the point <cite>p</cite> relative to the bound to the number</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="morebs2.matrix_methods.bounds_is_subbounds">
 <span class="sig-prename descclassname"><span class="pre">morebs2.matrix_methods.</span></span><span class="sig-name descname"><span class="pre">bounds_is_subbounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.matrix_methods.bounds_is_subbounds" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1689,7 +1696,9 @@ and a new Line is returned</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.matrix_methods.extremum_for_points">
 <span class="sig-prename descclassname"><span class="pre">morebs2.matrix_methods.</span></span><span class="sig-name descname"><span class="pre">extremum_for_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.matrix_methods.extremum_for_points" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>calculates the <cite>n</cite> extreme (min &amp; max) values for the
+<cite>m x n</cite> matrix <cite>a</cite>.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.matrix_methods.float_func">
@@ -1825,7 +1834,18 @@ and a new Line is returned</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.matrix_methods.point_difference_of_improper_bounds">
 <span class="sig-prename descclassname"><span class="pre">morebs2.matrix_methods.</span></span><span class="sig-name descname"><span class="pre">point_difference_of_improper_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">improperBounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parentBounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.matrix_methods.point_difference_of_improper_bounds" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>point difference of improper bounds is a non-negative vector
+with each i’th element the positive distance between the two points
+of the <cite>improperBounds</cite> in the context of the <cite>parentBounds</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>improperBounds</strong> – bounds located in parentBounds</p></li>
+<li><p><strong>parentBounds</strong> – bounds used as context for <cite>improperBounds</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.matrix_methods.point_in_area">
@@ -2354,7 +2374,7 @@ Generates data into file according to instructions given by arguments.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>bInf</strong> – (bounds, startPoint, columnOrder, SSIHop, additionalUpdateArgs)</p></li>
-<li><p><strong>rm</strong> – (mode := <cite>relevance zoom</cite> | <cite>prg</cite> | sequence::(relevant points), RCH)</p></li>
+<li><p><strong>rm</strong> – (mode := <cite>relevance zoom</cite> | <cite>prg</cite> | sequence::(relevant bounds), RCH)</p></li>
 <li><p><strong>filePath</strong> – str</p></li>
 <li><p><strong>noiseRange</strong> (<em>np.ndarray</em>) – n x 2</p></li>
 <li><p><strong>writeOutMode</strong> – “literal” to write out every point iterated,
@@ -2405,6 +2425,11 @@ Generates data into file according to instructions given by arguments.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.numerical_space_data_generator.NSDataInstructions.relevance_filter">
 <span class="sig-name descname"><span class="pre">relevance_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.numerical_space_data_generator.NSDataInstructions.relevance_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.numerical_space_data_generator.NSDataInstructions.wom_rch_map">
+<span class="sig-name descname"><span class="pre">wom_rch_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.numerical_space_data_generator.NSDataInstructions.wom_rch_map" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -2909,45 +2934,8 @@ in which it collates that information into <code class="xref py py-class docutil
 </dd></dl>
 
 </section>
-<section id="module-morebs2.r1">
-<span id="morebs2-r1-module"></span><h2>morebs2.r1 module<a class="headerlink" href="#module-morebs2.r1" title="Permalink to this heading">¶</a></h2>
-<dl class="py exception">
-<dt class="sig sig-object py" id="morebs2.r1.InvalidKindError">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.r1.</span></span><span class="sig-name descname"><span class="pre">InvalidKindError</span></span><a class="headerlink" href="#morebs2.r1.InvalidKindError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-<p>Raised if the kind is invalid.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morebs2.r1.fx">
-<span class="sig-prename descclassname"><span class="pre">morebs2.r1.</span></span><span class="sig-name descname"><span class="pre">fx</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.r1.fx" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morebs2.r1.get_random_ingredients">
-<span class="sig-prename descclassname"><span class="pre">morebs2.r1.</span></span><span class="sig-name descname"><span class="pre">get_random_ingredients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.r1.get_random_ingredients" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a list of random ingredients as strings.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kind</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>None</em>) – Optional “kind” of ingredients.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>lumache.InvalidKindError</strong> – If the kind is invalid.</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The ingredients list.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morebs2.r1.x">
-<span class="sig-prename descclassname"><span class="pre">morebs2.r1.</span></span><span class="sig-name descname"><span class="pre">x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.r1.x" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<section id="morebs2-r1-module">
+<h2>morebs2.r1 module<a class="headerlink" href="#morebs2-r1-module" title="Permalink to this heading">¶</a></h2>
 </section>
 <section id="module-morebs2.random_generators">
 <span id="morebs2-random-generators-module"></span><h2>morebs2.random_generators module<a class="headerlink" href="#module-morebs2.random_generators" title="Permalink to this heading">¶</a></h2>
@@ -3016,14 +3004,14 @@ in which it collates that information into <code class="xref py py-class docutil
 <dt class="sig sig-object py" id="morebs2.relevance_functions.RCHF__ISPoly">
 <span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">RCHF__ISPoly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">largs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.RCHF__ISPoly" title="Permalink to this definition">¶</a></dt>
 <dd><p>constructs a class&lt;RChainHead&gt; function that has as its first function
-a polynomial function represented by class&lt;ISPoly&gt; over float <cite>x</cite>. The
-remaining nodes of the class&lt;RChainHead&gt; instance are constructed by the
-sequence of arguments <cite>largs</cite> to produce a class&lt;RChainHead&gt; with 1+ nodes.</p>
+a polynomial function represented by <code class="xref py py-class docutils literal notranslate"><span class="pre">ISPoly</span></code> over float <cite>x</cite>. The
+remaining nodes of the <a class="reference internal" href="#morebs2.relevance_functions.RChainHead" title="morebs2.relevance_functions.RChainHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code></a> instance are constructed by the
+sequence of arguments <cite>largs</cite> to produce a <a class="reference internal" href="#morebs2.relevance_functions.RChainHead" title="morebs2.relevance_functions.RChainHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code></a> with 1+ nodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>float</em>) – value that single-variable polynomial applies over</p></li>
-<li><p><strong>largs</strong> – sequence of <cite>kwargs</cite> used by method&lt;RChainHead.make_node&gt;</p></li>
+<li><p><strong>largs</strong> – sequence of <cite>kwargs</cite> used by <a href="#id1"><span class="problematic" id="id2">:method:`RChainHead.make_node`</span></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -3034,11 +3022,6 @@ sequence of arguments <cite>largs</cite> to produce a class&lt;RChainHead&gt; wi
 <span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">RCHF___in_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.RCHF___in_bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>non-referential class&lt;RChainHead&gt; instance that</p>
 </dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morebs2.relevance_functions.RCHF__point_distance_to_references_dec">
-<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">RCHF__point_distance_to_references_dec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ed0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">passString</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.RCHF__point_distance_to_references_dec" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.RCHF__point_in_bounds">
@@ -3067,13 +3050,13 @@ sequence of arguments <cite>largs</cite> to produce a class&lt;RChainHead&gt; wi
 <li><p>non-deciding path w/o reference: <cite>cf(v)</cite>.</p></li>
 </ol>
 <p>Deciding paths require a none-null threshold value <cite>dt</cite>.</p>
-<p>In addition to these capabilities,</p>
+<p>In addition to these capabilities, <a class="reference internal" href="#morebs2.relevance_functions.RCInst" title="morebs2.relevance_functions.RCInst"><code class="xref py py-class docutils literal notranslate"><span class="pre">RCInst</span></code></a> can update its variables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attribute rf<span class="colon">:</span></dt>
 <dd class="field-odd"><p>reference value, as argument to dm(v,rf)</p>
 </dd>
 <dt class="field-even">Attribute dm<span class="colon">:</span></dt>
-<dd class="field-even"><p>function f(v,rf)</p>
+<dd class="field-even"><p>function f(rf,v)</p>
 </dd>
 <dt class="field-odd">Attribute cf<span class="colon">:</span></dt>
 <dd class="field-odd"><p>function f(v,*dt), examples include  operator.lt, operator.le, lambda_floatin, np.cross</p>
@@ -3090,7 +3073,13 @@ sequence of arguments <cite>largs</cite> to produce a class&lt;RChainHead&gt; wi
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.RCInst.inst_update_var">
 <span class="sig-name descname"><span class="pre">inst_update_var</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.RCInst.inst_update_var" title="Permalink to this definition">¶</a></dt>
-<dd><p>updates each variable in <cite>self.updatePath</cite>.</p>
+<dd><p>updates each key <cite>k</cite> in <cite>updatePath</cite> by the following:
+- for <cite>k</cite>, retrieve all relevant variables <cite>q</cite> from <cite>updateInfo</cite></p>
+<blockquote>
+<div><p>by the indices specified by <cite>updatePath`[k] and then 
+then uses the update function `updateFunc`[k] on `q</cite> to 
+produce the updated value for variable <cite>k</cite>.</p>
+</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
@@ -3190,19 +3179,57 @@ with value <cite>v</cite>.</p>
 <dt class="sig sig-object py" id="morebs2.relevance_functions.RChainHead">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">RChainHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.RChainHead" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>RChainHead is a sequence of functions with each element a node-like structure represented by <cite>RCInst</cite>.</p>
+<p><a class="reference internal" href="#morebs2.relevance_functions.RChainHead" title="morebs2.relevance_functions.RChainHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code></a> is a sequence of functions with each element a node-like structure,represented by <cite>RCInst</cite>,
+that acts as a ‘super’ function.</p>
+<section id="each-node-of-this-class-is-modifiable-by-update">
+<h3>Each node of this class is modifiable by update.<a class="headerlink" href="#each-node-of-this-class-is-modifiable-by-update" title="Permalink to this heading">¶</a></h3>
+<p>To make an <a class="reference internal" href="#morebs2.relevance_functions.RCInst" title="morebs2.relevance_functions.RCInst"><code class="xref py py-class docutils literal notranslate"><span class="pre">RCInst</span></code></a> at index <cite>i</cite> of the <a class="reference internal" href="#morebs2.relevance_functions.RChainHead" title="morebs2.relevance_functions.RChainHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code></a> instance updatable at a variable <cite>v</cite>,
+set its update function in the <a class="reference internal" href="#morebs2.relevance_functions.RCInst" title="morebs2.relevance_functions.RCInst"><code class="xref py py-class docutils literal notranslate"><span class="pre">RCInst</span></code></a> dictionary class variable <cite>updateFunc</cite> for <cite>v</cite>, set the 
+variable path index vector <cite>updatePath</cite> for the same variable.</p>
+<p>Then update the <cite>updatePath</cite> variable of the <a class="reference internal" href="#morebs2.relevance_functions.RChainHead" title="morebs2.relevance_functions.RChainHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code></a> instance with
+key <cite>i</cite> (denoting the node index of the <a class="reference internal" href="#morebs2.relevance_functions.RCInst" title="morebs2.relevance_functions.RCInst"><code class="xref py py-class docutils literal notranslate"><span class="pre">RCInst</span></code></a> instance) with a vector of
+indices corresponding to the <cite>variablesList</cite> parameter in the 
+<a class="reference internal" href="#morebs2.relevance_functions.RChainHead" title="morebs2.relevance_functions.RChainHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code></a>.load_update_vars function.</p>
+<dl>
+<dt>Example:</dt><dd><blockquote>
+<div><p><a href="#id3"><span class="problematic" id="id4">``</span></a>`
+rch.s[0].updateFunc = {‘rf’: update_dt_function}
+rch.s[0].updatePath = {‘rf’:[0]}
+rch.updatePath = {0: [0]}</p>
+<p>rch.load_update_vars([one,two,three,four])
+<a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+</div></blockquote>
+<ul class="simple">
+<li><p><a class="reference internal" href="#morebs2.relevance_functions.RChainHead" title="morebs2.relevance_functions.RChainHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code></a> instance loads list of variables, and the variable
+<cite>one</cite> is loaded into the <a class="reference internal" href="#morebs2.relevance_functions.RCInst" title="morebs2.relevance_functions.RCInst"><code class="xref py py-class docutils literal notranslate"><span class="pre">RCInst</span></code></a> at index 0, and <cite>one</cite> is used to
+update the reference value <cite>rf</cite> of the <a class="reference internal" href="#morebs2.relevance_functions.RCInst" title="morebs2.relevance_functions.RCInst"><code class="xref py py-class docutils literal notranslate"><span class="pre">RCInst</span></code></a> instance.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Attribute s<span class="colon">:</span></dt>
+<dt class="field-odd">attribute s<span class="colon">:</span></dt>
 <dd class="field-odd"><p>the chain of class&lt;RCInst&gt; instances.</p>
 </dd>
-<dt class="field-even">Attribute vpath<span class="colon">:</span></dt>
-<dd class="field-even"><p>the sequence of transformation values that a value <cite>v</cite> goes through at each node in <cite>s</cite>.</p>
+<dt class="field-even">type s<span class="colon">:</span></dt>
+<dd class="field-even"><p>list(<cite>RCInst</cite>)</p>
 </dd>
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>updatePath</strong> (<em>dict</em>) – a dictionary of the key-value form <cite>node index -&gt; sequence of indices in arg&lt;varList&gt;</cite>.</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em>) – for print-display at each class&lt;RCInst&gt; transformation.</p></li>
-</ul>
+<dt class="field-odd">attribute vpath<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the sequence of transformation values that a value <cite>v</cite> goes through at each node in <cite>s</cite>.</p>
+</dd>
+<dt class="field-even">type vpath<span class="colon">:</span></dt>
+<dd class="field-even"><p>list(values)</p>
+</dd>
+<dt class="field-odd">param updatePath<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a dictionary of the key-value form <cite>node index -&gt; sequence of indices in arg&lt;varList&gt;</cite>.</p>
+</dd>
+<dt class="field-even">type updatePath<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">param verbose<span class="colon">:</span></dt>
+<dd class="field-odd"><p>for print-display at each class&lt;RCInst&gt; transformation.</p>
+</dd>
+<dt class="field-even">type verbose<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -3296,6 +3323,7 @@ after iterating through one pertinent bound.</p>
 <span class="sig-name descname"><span class="pre">vpath_subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">si</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.RChainHead.vpath_subset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py function">
@@ -3372,7 +3400,9 @@ euclidean distance of a bounds <cite>boundsEDistance</cite>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.ffilter">
 <span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">ffilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.ffilter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>filters out elements of vector <cite>v</cite> by boolean function <cite>f</cite> into
+two lists <cite>TRUE</cite> and <cite>FALSE</cite>.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.hops_to_coverage_points__standard">
@@ -3467,7 +3497,22 @@ euclidean distance of a bounds <cite>boundsEDistance</cite>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.rpmem_func">
 <span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">rpmem_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rOp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.rpmem_func" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>using reference rf,
+odd_multiply
+even</p>
+<p>[0] multiplier of even indices
+[1] multiplier of odd indices</p>
+<p>recent memory
+* + - =&gt; -
+* - - =&gt; -
+* - + =&gt; +
+* + + =&gt; +</p>
+<p>past memory
+* + - =&gt; +
+* - - =&gt; -
+* - + =&gt; -
+* + + =&gt; +</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.rpmem_func__pm">
@@ -3548,7 +3593,7 @@ to test accuracy and capability of class&lt;RChainHead&gt;.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.rssi.</span></span><span class="sig-name descname"><span class="pre">ResplattingSearchSpaceIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startPoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columnOrder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SSIHop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resplattingMode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('relevance</span> <span class="pre">zoom',</span> <span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additionalUpdateArgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.rssi.ResplattingSearchSpaceIterator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p><a class="reference internal" href="#morebs2.rssi.ResplattingSearchSpaceIterator" title="morebs2.rssi.ResplattingSearchSpaceIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator</span></code></a> is a data-structure
-that relies on :class:<a href="#id1"><span class="problematic" id="id2">`</span></a>SearchSpaceIterator&gt;. There are two modes for this class when it resplats on
+that relies on :class:<a href="#id9"><span class="problematic" id="id10">`</span></a>SearchSpaceIterator&gt;. There are two modes for this class when it resplats on
 the original bounds:
 - “relevance zoom”: requires an RChainHead to determine relevance of
 each point
@@ -3560,9 +3605,18 @@ a relevant sub-bound is one with a minumum relevant point and maximum relevant p
 such that the value preceding (if forward iteration) or succeeding (if backward iteration)
 the minumum relevant point is not relevant and the value succeeding (if forward iteration)
 or preceding (if backward iteration) the maximum relevant point is not relevant.</p>
+<p>There is a special case that <a class="reference internal" href="#morebs2.rssi.ResplattingSearchSpaceIterator" title="morebs2.rssi.ResplattingSearchSpaceIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator</span></code></a> considers a sub-bound, when 
+it registers a relevant point in a bound, but the next point is not relevant, then the relevant sub-bound
+is one consisting of the relevant point and the midpoint between that and the next point.</p>
 <p>A generalization of the behavior of <a class="reference internal" href="#morebs2.rssi.ResplattingSearchSpaceIterator" title="morebs2.rssi.ResplattingSearchSpaceIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator</span></code></a> is that it narrows
 down the relevant space in an initial bound using the <code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code> relevance function,
 and the points it generates can be exact (if “rezoom”) or pseudo-random (if “prg”).</p>
+<p><a class="reference internal" href="#morebs2.rssi.ResplattingSearchSpaceIterator" title="morebs2.rssi.ResplattingSearchSpaceIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator</span></code></a> uses an <code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code> that updates itself
+after every time it finishes iterating through a relevant bounds.The arguments it passes to
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">RChainHead</span></code> instance are:</p>
+<blockquote>
+<div><p>[<cite>self.bounds</cite>, current bound, ssiHop] + list(<cite>additionalUpdateArgs</cite>)</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

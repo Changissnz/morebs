@@ -183,10 +183,10 @@ class RCInst:
 
     Deciding paths require a none-null threshold value `dt`.
 
-    In addition to these capabilities,  
+    In addition to these capabilities, :class:`RCInst` can update its variables.  
 
     :attribute rf: reference value, as argument to dm(v,rf)
-    :attribute dm: function f(v,rf)
+    :attribute dm: function f(rf,v)
     :attribute cf: function f(v,*dt), examples include  operator.lt, operator.le, lambda_floatin, np.cross
     :attribute dt: value, use in the case of decision
     """
@@ -213,7 +213,11 @@ class RCInst:
 
     def inst_update_var(self):
         '''
-        updates each variable in `self.updatePath`.
+        updates each key `k` in `updatePath` by the following:
+        - for `k`, retrieve all relevant variables `q` from `updateInfo`
+          by the indices specified by `updatePath`[k] and then 
+          then uses the update function `updateFunc`[k] on `q` to 
+          produce the updated value for variable `k`. 
         '''
 
         for k,v in self.updatePath.items():
@@ -320,7 +324,33 @@ class RCInst:
 
 class RChainHead:
     """
-    RChainHead is a sequence of functions with each element a node-like structure represented by `RCInst`.
+    :class:`RChainHead` is a sequence of functions with each element a node-like structure,represented by `RCInst`,
+    that acts as a 'super' function. 
+    
+    Each node of this class is modifiable by update.
+    ------------------------------------------------
+
+    To make an :class:`RCInst` at index `i` of the :class:`RChainHead` instance updatable at a variable `v`,
+    set its update function in the :class:`RCInst` dictionary class variable `updateFunc` for `v`, set the 
+    variable path index vector `updatePath` for the same variable.
+
+    Then update the `updatePath` variable of the :class:`RChainHead` instance with
+    key `i` (denoting the node index of the :class:`RCInst` instance) with a vector of
+    indices corresponding to the `variablesList` parameter in the 
+    :class:`RChainHead`.load_update_vars function.
+
+    Example:
+                ```
+                rch.s[0].updateFunc = {'rf': update_dt_function}
+                rch.s[0].updatePath = {'rf':[0]}
+                rch.updatePath = {0: [0]}
+
+                rch.load_update_vars([one,two,three,four])
+                ```
+        * :class:`RChainHead` instance loads list of variables, and the variable
+          `one` is loaded into the :class:`RCInst` at index 0, and `one` is used to
+          update the reference value `rf` of the :class:`RCInst` instance. 
+
 
     :attribute s: the chain of class<RCInst> instances.
     :type s: list(`RCInst`)
@@ -583,9 +613,6 @@ def coverage_ratio_to_distance(boundsEDistance, h,cr):
     total = boundsEDistance / h
     return total * cr
 
-
-
-
 #################################### end : ostracio && deletira
 
 
@@ -606,13 +633,14 @@ from .poly_struct import *
 def RCHF__ISPoly(x:'float',largs):
     '''
     constructs a class<RChainHead> function that has as its first function
-    a polynomial function represented by class<ISPoly> over float `x`. The
-    remaining nodes of the class<RChainHead> instance are constructed by the
-    sequence of arguments `largs` to produce a class<RChainHead> with 1+ nodes.
+    a polynomial function represented by :class:`ISPoly` over float `x`. The
+    remaining nodes of the :class:`RChainHead` instance are constructed by the
+    sequence of arguments `largs` to produce a :class:`RChainHead` with 1+ nodes.
     
     :param x: value that single-variable polynomial applies over
     :type x: float
-    :param largs: sequence of `kwargs` used by method<RChainHead.make_node>
+    :param largs: sequence of `kwargs` used by :method:`RChainHead.make_node`
+    
     '''
 
     rc = RChainHead()
@@ -659,13 +687,11 @@ def RCHF___in_bounds(bounds0):
 
     return rc.apply
 
-"""
-pass string is boolean expression and the chains is pass vector<distances> -> <bool> --> pass-string -> bool
-"""
-def RCHF__point_distance_to_references_dec(r,ed0,passString):
-    return -1
-
 def ffilter(v,f):
+    '''
+    filters out elements of vector `v` by boolean function `f` into
+    two lists `TRUE` and `FALSE`.
+    '''
     t,l = [],[]
     for v_ in v:
         if f(v_): t.append(v_)
@@ -673,28 +699,28 @@ def ffilter(v,f):
 
     return t,l
 
-# make an rch by the following:
-'''
-using reference rf,
-odd_multiply
-even
-
-[0] multiplier of even indices
-[1] multiplier of odd indices
-
-recent memory
-+ - => -
-- - => -
-- + => +
-+ + => +
-
-past memory
-+ - => +
-- - => -
-- + => -
-+ + => +
-'''
 def rpmem_func(rf,rOp):
+    '''
+    using reference rf,
+    odd_multiply
+    even
+
+    [0] multiplier of even indices
+    [1] multiplier of odd indices
+
+    recent memory
+    * + - => -
+    * - - => -
+    * - + => +
+    * + + => +
+
+    past memory
+    * + - => +
+    * - - => -
+    * - + => -
+    * + + => +
+    '''
+
     rfo0,rfo1 = ffilter(rf,lambda i: i % 2)
     r1 = np.product(rfo1) if rOp else np.product(rfo0)
 
@@ -763,6 +789,7 @@ def sample_rch_1_with_update(parentBounds, bounds, h, coverageRatio):
 vector -> ed vector -> (ed in bounds):bool
     '''
     def dm(rp,v):
+        #print("LENGO: ",len(rp))
         return np.array([euclidean_point_distance(v,rp_) for rp_ in rp])
 
     def cf(ds,dt_):
@@ -874,6 +901,8 @@ def sample_rch_3_with_update(modulo,updateAdder,updateModulo,targetValueRange):
     rch.load_update_vars([modulo]) 
 
     return rch
+
+
 
 # try another w/ alternating index subsets 
 

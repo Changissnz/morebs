@@ -2,9 +2,13 @@ from morebs2 import numerical_space_data_generator,relevance_functions
 import unittest
 import numpy as np
 
-"""
-"""
 def sample_nsdi_1(q, filePath = "tests/s.txt", nr = None):
+    """
+    :param q: one of [relevance zoom,prg,np.ndarray]
+    :param filePath: str, file path 
+    :param nr: noise range,np.ndarray w/ length of 1 or 4. 
+    """
+
     if type(q) == str:
         assert q in ['relevance zoom', 'prg']
     else:
@@ -28,6 +32,12 @@ def sample_nsdi_1(q, filePath = "tests/s.txt", nr = None):
     return q
 
 def sample_nsdi_2(q, filePath = "tests/s.txt", nr = None):
+    """
+    :param q: one of [relevance zoom,prg,np.ndarray]
+    :param filePath: str, file path 
+    :param nr: noise range,np.ndarray w/ length of 1 or 4. 
+    """
+
     if type(q) == str:
         assert q in ['relevance zoom', 'prg']
     else:
@@ -46,6 +56,19 @@ def sample_nsdi_2(q, filePath = "tests/s.txt", nr = None):
 
     q = numerical_space_data_generator.NSDataInstructions(bInf,rm,filePath,modeia,nr)
     return q
+
+
+def sample_nsdi_3(rch,q, filePath = "tests/s.txt", nr = None):
+    """
+    :param rch: RChainHead, (prepared)
+    :param q: one of [relevance zoom,prg,np.ndarray]
+    :param filePath: str, file path 
+    :param nr: noise range,np.ndarray w/ length of 1 or 4. 
+    """
+
+
+
+    return -1 
 
 class TestNSDataInstructionClass(unittest.TestCase):
 
@@ -88,7 +111,7 @@ class TestNSDataInstructionClass(unittest.TestCase):
 
         while q.fp:
             q.next_batch_()
-        #assert q.c == 3, "incorrect number of batches"
+        assert q.c == 1, "incorrect number of batches"
         print("case 3")
         q.batch_summary()
 

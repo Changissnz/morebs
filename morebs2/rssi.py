@@ -22,9 +22,19 @@ class ResplattingSearchSpaceIterator:
     the minumum relevant point is not relevant and the value succeeding (if forward iteration)
     or preceding (if backward iteration) the maximum relevant point is not relevant. 
 
+    There is a special case that :class:`ResplattingSearchSpaceIterator` considers a sub-bound, when 
+    it registers a relevant point in a bound, but the next point is not relevant, then the relevant sub-bound
+    is one consisting of the relevant point and the midpoint between that and the next point.
+
     A generalization of the behavior of :class:`ResplattingSearchSpaceIterator` is that it narrows
     down the relevant space in an initial bound using the :class:`RChainHead` relevance function,
     and the points it generates can be exact (if "rezoom") or pseudo-random (if "prg").
+
+    :class:`ResplattingSearchSpaceIterator` uses an :class:`RChainHead` that updates itself
+    after every time it finishes iterating through a relevant bounds.The arguments it passes to
+    the :class:`RChainHead` instance are: 
+        [`self.bounds`, current bound, ssiHop] + list(`additionalUpdateArgs`)
+
     
     :param bounds: all generated points lie in this matrix
     :type bounds: np.ndarray, n x 2 matrix

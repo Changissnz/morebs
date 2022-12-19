@@ -772,11 +772,14 @@ def partial_invert_bounds(b, indices):
 
 # TODO: untested
 def extremum_for_points(a):
-    assert is_2dmatrix(a), "invalid points"
+    '''
+    calculates the `n` extreme (min & max) values for the
+    `m x n` matrix `a`.
+    '''
 
+    assert is_2dmatrix(a), "invalid points"
     mi = np.min(a,axis = 0)
     ma = np.max(a,axis = 0)
-
     b = np.empty((a.shape[1],2))
     b[:,0] = mi
     b[:,1] = ma
@@ -816,13 +819,18 @@ def point_in_improper_bounds(parentBounds,bounds,p):
         if not rf(p_,i): return False
     return True
 
-"""
-point difference of improper bounds is a non-negative vector
-"""
+
 def point_difference_of_improper_bounds(improperBounds,parentBounds):
+    """
+    point difference of improper bounds is a non-negative vector
+    with each i'th element the positive distance between the two points
+    of the `improperBounds` in the context of the `parentBounds`. 
+    
+    :param improperBounds: bounds located in parentBounds
+    :param parentBounds: bounds used as context for `improperBounds`. 
+    """
 
     assert improperBounds.shape == parentBounds.shape, "bounds must have equal shape"
-
     if is_proper_bounds_vector(improperBounds):
         return improperBounds[:,1] - improperBounds[:,0]
 
@@ -914,6 +922,14 @@ def vector_ratio_improper(parentBounds,bounds,point):
     for (i,p_) in enumerate(point):
         v_.append(h(p_,i))
     return np.round(v_,5)
+
+def bounded_point_to_hop_counts(parentBound,bound,p,h):
+    '''
+    maps each value of the point `p` relative to the bound to the number
+    '''
+    r = vector_ratio_improper(parentBound,bound,p)
+    h_ = 1. / h
+    return np.array([int(r_ / h_) for r_ in r]) 
 
 def refit_points_for_new_bounds(points,oldBounds,newBounds):
     q = []

@@ -19,7 +19,7 @@ class NSDataInstructions:
     Generates data into file according to instructions given by arguments.
 
     :param bInf: (bounds, startPoint, columnOrder, SSIHop, additionalUpdateArgs)
-    :param rm: (mode := `relevance zoom` | `prg` | sequence::(relevant points), RCH)
+    :param rm: (mode := `relevance zoom` | `prg` | sequence::(relevant bounds), RCH)
     :param filePath: str
     :param noiseRange: n x 2
     :type noiseRange: np.ndarray
@@ -34,7 +34,7 @@ class NSDataInstructions:
         self.fp = None
         self.load_filepath(modeia)
         self.nr = noiseRange
-        assert writeOutMode in {'literal','relevant'}
+        assert writeOutMode in {'literal','relevant'} or type(writeOutMode) is RChainHead
         self.wom = writeOutMode
         self.rchPrev = None # used for writeOutMode == 'relevant'
 
@@ -86,11 +86,14 @@ class NSDataInstructions:
         if type(self.rm[0]) != str and self.c > 1:
             if len(self.rm[0]) == 0:
                 self.terminated = True
+                print("DONYA")
                 return None
 
             q = self.rm[0][0]
             x = self.rm[0][1:]
             self.rm = (x,self.rm[1])
+            #print("RMMM")
+            #print(self.rm)
 
             # start point is left
             DEFAULT_START_POINT = np.copy(q[:,0])
@@ -122,6 +125,9 @@ class NSDataInstructions:
         if self.wom == "relevant":
             q = self.relevance_filter(q)
             ##print("LEN ", len(q))
+        elif type(self.wom) is RChainHead:
+            q = self.wom_rch_map(q) 
+
         return q
 
     def relevance_filter(self,q):
@@ -132,11 +138,15 @@ class NSDataInstructions:
         self.rchPrev = None
         return x
 
+    def wom_rch_map(self,q):
+        return [self.wom.apply(q_) for q_ in q]
+
     def add_noise_to_point(self,p):
 
         h = one_random_noise_(self.rssi.bounds,\
                 self.rssi.ssi.de_bounds(),\
                 self.nr)
+        print("H: {}",h)
 
         if type(self.rssi.ssi) is SkewedSearchSpaceIterator:
             p_ = self.rssi.ssi.inverse_round_value(p)
@@ -166,11 +176,8 @@ class NSDataInstructions:
                 b = np.copy(self.rssi.bounds)
 
             # check for adding noise
-            if type(self.nr) != type(None):
-                q2 = []
-                for q_ in q:
-                    q3 = self.add_noise_to_point(q_)
-                    q2.append(q3)
+            if type(self.nr) != type(None) and type(self.wom) != RChainHead:
+                q2 = self.add_noise_to_batch(q) 
                 q = q2
 
             q = [vector_to_string(q_,cr) + "\n" for q_ in q]
