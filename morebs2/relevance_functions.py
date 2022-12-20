@@ -932,6 +932,31 @@ def sample_rch_blind_accept():
     return rc
 
 
+def sample_rch_hop_counts_scheme_type_1(parentBound,bound,hop):
+    '''
+    one node; requires a parent bound,bound,and hop as update values
+    for argument `p` (vector point).
+    '''
+
+    def f(r,v):
+        return bounded_point_to_hop_counts(r[0],r[1],v,r[2])
+
+    def idv(v):
+        return v
+    
+    def idrf(x1,x2,x3):
+        return (x1,x2,x3)
+
+    rch = RChainHead()
+    kwargs = ['r',(parentBound,bound,hop),f,idv]
+    rch.add_node_at(kwargs)
+
+    rch.s[0].updateFunc = {'rf': idrf} 
+    rch.s[0].updatePath = {'rf': [0,1,2]}
+    rch.updatePath = {0: [0,1,2]}
+    return rch
+
+
 # try another w/ alternating index subsets 
 
 # simple bounds, test w/ SSI and separate RCH

@@ -151,8 +151,22 @@ class TestNSDataInstructionClass(unittest.TestCase):
             nsdi.next_batch_()
             #nsdi.batch_summary()
             c += 1
-        assert c == 12, "incorrect number of batches"
+        assert c == 11, "incorrect number of batches,got {} want {}".format(c,11) 
 
+    def test__sample_rch_hop_counts_scheme_type_1(self):
+
+        bounds = np.array([[0,3],[-3,3],[-3,0],[3,6]])
+        sp = np.copy(bounds[:,0])
+        columnOrder = None
+        ssih = 3
+        bInf = (bounds,sp,columnOrder,ssih,())
+        rch = relevance_functions.sample_rch_hop_counts_scheme_type_1(np.copy(bounds),np.copy(bounds),ssih)
+        rm = ("relevance zoom",relevance_functions.sample_rch_blind_accept())
+        nsdi = numerical_space_data_generator.NSDataInstructions(bInf, rm,"ARGHONIA2.txt",'w',noiseRange = None,writeOutMode = rch)
+        nsdi.make_rssi()
+
+        while nsdi.fp:# and c < 1:
+            nsdi.next_batch_()
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,7 +1,7 @@
 from .rssi_components import *
 # use for adding noise
 from .numerical_generator import *
-
+from copy import deepcopy
 #: default range of relative randomness to add to a point in a relevant bound; used for mode `prg`
 DEFAULT_RSSI__CR__NOISE_ADDER = np.array([[0.01,0.15]])
 
@@ -184,6 +184,9 @@ class ResplattingSearchSpaceIterator:
             # draw from .cache
             if type(nbs) == type(None):
                 nb = self.save_rzoom_bounds_info()
+                print("NEXT RANGE:")
+                print(nb)
+
                 if type(nb) == type(None): return True
                 sp = np.copy(nb[:,0])
             else:# use arg<nb>
@@ -198,13 +201,20 @@ class ResplattingSearchSpaceIterator:
             self.rangeHistory.append(nb)
 
             # update rch here
-            s = [self.bounds, nb, self.SSIHop] + list(self.aua)
+            s = [self.bounds, nb, self.SSIHop] + list(deepcopy(self.aua))
             self.rm[1].load_update_vars(s)
             self.rm[1].update_rch()
             self.ri.rzoom = RZoom(self.rm[1])
-        # TODO: optional, add update func. for png here
 
+        # TODO: optional, add update func. for png here
         return False
+
+    def update_vars_for_rch(self): 
+        return [np.copy(self.bounds),self.ssi.de_bounds(),deepcopy(self.SSIHop)] + list(deepcopy(self.aua))
+
+
+
+
 
     def check_duplicate_range(self,d):
         '''
@@ -292,6 +302,11 @@ class ResplattingSearchSpaceIterator:
 
         e3[:,1] = p
         self.ssi.set_value(q)
+
+        x = np.sum(point_difference_of_improper_bounds(e3,self.bounds))
+        if x <= 10 ** -3:
+            return None
+
         return e3
 
     @staticmethod

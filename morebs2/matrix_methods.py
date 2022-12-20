@@ -928,8 +928,10 @@ def bounded_point_to_hop_counts(parentBound,bound,p,h):
     maps each value of the point `p` relative to the bound to the number
     '''
     r = vector_ratio_improper(parentBound,bound,p)
+    r = np.array([r_ if not np.isnan(r_) else 1. for r_ in r])
     h_ = 1. / h
-    return np.array([int(r_ / h_) for r_ in r]) 
+    q = np.array([int(round(r_ / h_)) for r_ in r]) 
+    return q
 
 def refit_points_for_new_bounds(points,oldBounds,newBounds):
     q = []

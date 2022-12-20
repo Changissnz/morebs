@@ -138,7 +138,14 @@ class NSDataInstructions:
         return x
 
     def wom_rch_map(self,q):
+        self.update_wom_rch() 
         return [self.wom.apply(q_) for q_ in q]
+
+    def update_wom_rch(self):
+        q = self.rssi.update_vars_for_rch()
+        self.wom.load_update_vars(q)
+        self.wom.update_rch()
+
 
     def add_noise_to_point(self,p):
 

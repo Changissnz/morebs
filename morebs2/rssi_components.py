@@ -119,6 +119,4 @@ class ResplattingInstructor:
 
     def next_activation_range(self):
         if len(self.rzoomBoundsCache) == 0: return None
-        print("NEXT RANGE:")
-        print(self.rzoomBoundsCache[0])
         return self.rzoomBoundsCache.pop(0)
