@@ -19,7 +19,7 @@ class RZoom:
 
     def output(self,p):
         s = self.score(p)
-
+        
         # do update on activation ranges
         if s:
             if type(self.activationRange) == type(None):
@@ -29,6 +29,7 @@ class RZoom:
                     self.activationRange = np.vstack((self.activationRange,p)).T
                 else:
                     self.activationRange[:,1] = p
+            
         else:
             if type(self.activationRange) == type(None): return
 
@@ -38,6 +39,7 @@ class RZoom:
                                     self.activationRange)).T
             self.activationRanges.append(self.activationRange)
             self.activationRange = None
+        
         return
 
 class CenterResplat:
@@ -117,4 +119,6 @@ class ResplattingInstructor:
 
     def next_activation_range(self):
         if len(self.rzoomBoundsCache) == 0: return None
+        print("NEXT RANGE:")
+        print(self.rzoomBoundsCache[0])
         return self.rzoomBoundsCache.pop(0)

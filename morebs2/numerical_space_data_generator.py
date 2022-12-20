@@ -107,7 +107,6 @@ class NSDataInstructions:
 
         # fetch the bound
         if delaani[0] == "relevance zoom":
-            #q = ResplattingSearchSpaceIterator.iterate_one_bound(self.rssi)
             dsws = DEFAULT_SINGLE_WRITE_SIZE
             q = ResplattingSearchSpaceIterator.iterate_one_batch(self.rssi,dsws)
         else: # prg

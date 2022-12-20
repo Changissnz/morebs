@@ -111,7 +111,7 @@ class TestNSDataInstructionClass(unittest.TestCase):
 
         while q.fp:
             q.next_batch_()
-        assert q.c == 1, "incorrect number of batches"
+        assert q.c == 3, "incorrect number of batches,got {} want {}".format(q.c,1)
         print("case 3")
         q.batch_summary()
 
@@ -135,6 +135,24 @@ class TestNSDataInstructionClass(unittest.TestCase):
         while q.fp:
             q.next_batch_()
         return
+
+    def test__sample_rch_blind_accept(self):
+        bounds = np.array([[0,3],[-3,3],[-3,0],[3,6]])
+        sp = np.copy(bounds[:,0])
+        columnOrder = None
+        ssih = 2
+        bInf = (bounds,sp,columnOrder,ssih,())
+        rm = ("relevance zoom",relevance_functions.sample_rch_blind_accept())
+        nsdi = numerical_space_data_generator.NSDataInstructions(bInf, rm,"ARGHONIA.txt",'w',noiseRange = None,writeOutMode = "literal")
+        nsdi.make_rssi()
+
+        c = 0
+        while nsdi.fp:
+            nsdi.next_batch_()
+            #nsdi.batch_summary()
+            c += 1
+        assert c == 12, "incorrect number of batches"
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -782,11 +782,9 @@ def is_valid_subset_sequence(s,n):
 
 ###### a sample RCH w/ update functionality
 
-
-
 def sample_rch_1_with_update(parentBounds, bounds, h, coverageRatio):
     '''
-vector -> ed vector -> (ed in bounds):bool
+vector -> e.d. vector -> (ed in bounds):bool
     '''
     def dm(rp,v):
         #print("LENGO: ",len(rp))
@@ -805,8 +803,8 @@ vector -> ed vector -> (ed in bounds):bool
     dm = dm
     cf = cf
     ed = euclidean_point_distance_of_bounds(parentBounds,bounds)
+
     # WRONG
-    #dt = coverage_ratio_to_distance(ed,9,coverageRatio)
     dt = coverage_ratio_to_distance(ed,float(h),coverageRatio)
 
     kwargs = ['r',rf,dm,cf,dt]
@@ -821,7 +819,10 @@ vector -> ed vector -> (ed in bounds):bool
 
 def sample_rch_2_with_update(parentBounds, bounds):
     """
-    activation range is 0-20 percentile and 80-100 percentile
+    one node; updates `dt` every batch with new `bounds` parameter.
+
+    For each point, outputs true if it is in 0-20 percentile or 80-100 percentile
+    of area in `bounds`. 
     """
 
     def activation_range(parentBounds,bounds):
@@ -902,6 +903,33 @@ def sample_rch_3_with_update(modulo,updateAdder,updateModulo,targetValueRange):
 
     return rch
 
+def sample_rch_constant_mapper(c):
+    '''
+    one node; maps any vector to <c> vector. 
+    '''
+
+    def l(v):
+        x = np.ones((len(v),))
+        return x * c
+
+    kwargs = ['nr',l]
+    rc = RChainHead()
+    rc.add_node_at(kwargs)
+    return rc
+
+def sample_rch_blind_accept():
+    '''
+    one node; deciding + non-referential, outputs true for all vectors.
+    '''
+
+    def accept(v,i):
+        return type(v) == type(i)
+
+    rc = RChainHead()
+    idv = np.ones(10)
+    kwargz = ["nr",accept,idv]
+    rc.add_node_at(kwargz)
+    return rc
 
 
 # try another w/ alternating index subsets 

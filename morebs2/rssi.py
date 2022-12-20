@@ -114,7 +114,8 @@ class ResplattingSearchSpaceIterator:
 
         if not rssi.iteratedOnce:
             while not rssi.iteratedOnce and batchSize > 0:
-                yield next(rssi)
+                qn = next(rssi)
+                if not rssi.iterateIt: yield qn
                 batchSize -= 1
             if rssi.iteratedOnce:
                 yield rssi.ssi.close_cycle()
@@ -124,7 +125,8 @@ class ResplattingSearchSpaceIterator:
             rssi.iterateIt = False
 
         while not rssi.iterateIt and batchSize > 0:
-            yield next(rssi)
+            qn = next(rssi)
+            if not rssi.iterateIt: yield qn
             batchSize -= 1
 
         # case: bound ends before batch size output
@@ -326,6 +328,7 @@ class ResplattingSearchSpaceIterator:
 
         # set a new ssi based on resplatting mode
         self.post_next()
+        #if self.iterateIt: return None
         return q
 
     def pre_next(self):
