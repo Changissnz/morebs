@@ -152,7 +152,6 @@ class NSDataInstructions:
         h = one_random_noise_(self.rssi.bounds,\
                 self.rssi.ssi.de_bounds(),\
                 self.nr)
-        print("H: {}",h)
 
         if type(self.rssi.ssi) is SkewedSearchSpaceIterator:
             p_ = self.rssi.ssi.inverse_round_value(p)
