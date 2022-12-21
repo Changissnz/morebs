@@ -72,6 +72,7 @@ def sample_nsdi_3(wom=relevance_functions.idx,filePath = "ARGHONIAX"):
 
     nsdi = NSDataInstructions(bInf, rm,"ARGHONIAY.txt",'w',noiseRange = None,writeOutMode = rch)
     return nsdi 
+    
 
 class TestNSDataInstructionClass(unittest.TestCase):
 
