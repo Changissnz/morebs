@@ -58,17 +58,20 @@ def sample_nsdi_2(q, filePath = "tests/s.txt", nr = None):
     return q
 
 
-def sample_nsdi_3(rch,q, filePath = "tests/s.txt", nr = None):
-    """
-    :param rch: RChainHead, (prepared)
-    :param q: one of [relevance zoom,prg,np.ndarray]
-    :param filePath: str, file path 
-    :param nr: noise range,np.ndarray w/ length of 1 or 4. 
-    """
+def sample_nsdi_3(wom=relevance_functions.idx,filePath = "ARGHONIAX"):
+    assert wom == relevance_functions.idv or wom == relevance_functions.binary_labelling_scheme_1
+    bounds = np.array([[0,33],[-3,42],[-3,15],[30,69],[20,200],[-10,370],[-100,100],[-250,100],[100,1000],[-400,250]])
 
+    sp = np.copy(bounds[:,0])
+    columnOrder = None
+    ssih = 3
+    bInf = (bounds,sp,columnOrder,ssih,())
 
+    rch = relevance_functions.sample_rch_hop_counts_scheme_type_2(np.copy(bounds),np.copy(bounds),ssih,15,wom)
+    rm = ("relevance zoom",sample_rch_blind_accept())
 
-    return -1 
+    nsdi = NSDataInstructions(bInf, rm,"ARGHONIAY.txt",'w',noiseRange = None,writeOutMode = rch)
+    return nsdi 
 
 class TestNSDataInstructionClass(unittest.TestCase):
 

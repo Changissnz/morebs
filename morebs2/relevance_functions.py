@@ -931,8 +931,10 @@ def sample_rch_blind_accept():
     rc.add_node_at(kwargz)
     return rc
 
+def idv(v):
+    return v
 
-def sample_rch_hop_counts_scheme_type_1(parentBound,bound,hop):
+def sample_rch_hop_counts_scheme_type_1(parentBound,bound,hop,cf=idv):
     '''
     one node; requires a parent bound,bound,and hop as update values
     for argument `p` (vector point).
@@ -940,15 +942,65 @@ def sample_rch_hop_counts_scheme_type_1(parentBound,bound,hop):
 
     def f(r,v):
         return bounded_point_to_hop_counts(r[0],r[1],v,r[2])
-
-    def idv(v):
-        return v
     
     def idrf(x1,x2,x3):
         return (x1,x2,x3)
 
     rch = RChainHead()
-    kwargs = ['r',(parentBound,bound,hop),f,idv]
+    kwargs = ['r',(parentBound,bound,hop),f,cf]
+    rch.add_node_at(kwargs)
+
+    rch.s[0].updateFunc = {'rf': idrf} 
+    rch.s[0].updatePath = {'rf': [0,1,2]}
+    rch.updatePath = {0: [0,1,2]}
+    return rch
+
+def index_map_summation_scheme_type_1(m2,m):
+    '''
+    calculates a vector of indices for v based on a summation scheme.
+    '''
+    assert m > m2, "modulo has to be greater than v"
+
+    def indexia(v):
+        vx_ = []
+        c = 1
+        l = len(v) + 1
+        s = np.sum(v)
+        s = int(s * 10 ** decimal_places_of_float(s))
+        while c < l:
+            s2 = (s * c) % m
+            if s2 >= l - 1: break
+            vx_.append(s2)
+            c += 1
+        return np.array(vx_)
+    return indexia
+
+def subvector_selector_summation_scheme_type_1(m2,m):
+    qf = index_map_summation_scheme_type_1(m2,m)
+
+    def f(v):
+        iv = qf(deepcopy(v))
+        return np.array([v[i] for i in iv])
+    return f
+
+
+def sample_rch_hop_counts_scheme_type_2(parentBound,bound,hop,m2,cf=idv):
+    '''
+    one node; requires a parent bound,bound,and hop as update values
+    for argument `p` (vector point).
+    '''
+
+    qf = subvector_selector_summation_scheme_type_1(bound.shape[0],m2)
+    
+    def f(r,v):
+        #return qf(bounded_point_to_hop_counts(r[0],r[1],v,r[2]))
+        return qf(v) 
+    
+    def idrf(x1,x2,x3):
+        return (x1,x2,x3)
+
+    rch = RChainHead()
+    kwargs = ['r',(parentBound,bound,hop),f,cf]
     rch.add_node_at(kwargs)
 
     rch.s[0].updateFunc = {'rf': idrf} 
@@ -957,6 +1009,25 @@ def sample_rch_hop_counts_scheme_type_1(parentBound,bound,hop):
     return rch
 
 
+def binary_labelling_scheme_1(v,m = 7,m2 = 4):
+    '''
+    outputs a vector v' of equal length to v.
+
+    '''
+    if len(v) == 0: return np.array([])
+    f = decimal_order_of_vector(v) 
+    v = [int(v_ * 10 ** f) for v_ in v]
+    return np.array([1. if v_ % m >= m2 else 0. for v_ in v])
+
+def sample_rch_binary_labelling_scheme_1():
+    '''
+    uses default parameters `m` and `m2` of method<binary_labelling_scheme_1>
+    '''
+    rch = RChainHead()
+    kwargs = ['nr',binary_labelling_scheme_1]
+    rch.add_node_at(kwargs)
+    return rch
+    
 # try another w/ alternating index subsets 
 
 # simple bounds, test w/ SSI and separate RCH
