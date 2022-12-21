@@ -1027,7 +1027,3 @@ def sample_rch_binary_labelling_scheme_1():
     kwargs = ['nr',binary_labelling_scheme_1]
     rch.add_node_at(kwargs)
     return rch
-    
-# try another w/ alternating index subsets 
-
-# simple bounds, test w/ SSI and separate RCH

@@ -2,6 +2,9 @@ from .rssi import *
 
 DEFAULT_SINGLE_WRITE_SIZE = 2000
 
+'''
+fu
+'''
 def one_random_noise_(parentBounds,bounds, noiseRange):
     if not is_proper_bounds_vector(bounds):
         pd = point_difference_of_improper_bounds(parentBounds,bounds)
