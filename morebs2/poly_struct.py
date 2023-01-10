@@ -89,12 +89,3 @@ class ISPoly:
     def apply(self,v):
         q = SPoly(v)
         return q.apply(self.x)
-
-def multiply_polynomials_ce_notation(p1,p2):
-    '''
-    '''
-    p = []
-
-
-
-    return -1
