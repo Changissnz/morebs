@@ -58,7 +58,7 @@ def sample_nsdi_2(q, filePath = "tests/s.txt", nr = None):
     return q
 
 
-def sample_nsdi_3(wom=relevance_functions.idx,filePath = "ARGHONIAX"):
+def sample_nsdi_3(wom=relevance_functions.idv,filePath = "ARGHONIAX"):
     assert wom == relevance_functions.idv or wom == relevance_functions.binary_labelling_scheme_1
     bounds = np.array([[0,33],[-3,42],[-3,15],[30,69],[20,200],[-10,370],[-100,100],[-250,100],[100,1000],[-400,250]])
 

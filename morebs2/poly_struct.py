@@ -2,9 +2,6 @@ from .poly_interpolation import *
 from copy import deepcopy
 import numpy as np
 
-def exponent_to_index():
-
-
 
 """
 """
@@ -20,6 +17,16 @@ class SPoly:
         assert is_vector(v), "invalid vector"
         self.v = v
 
+    def __str__(self):
+        y = self.ce_notation()
+        s = ""
+        for y_ in y:
+            s += " +" if y_[0] >= 0 else " "
+            s += " {}x^{}".format(y_[0],y_[1])
+        if len(s) == 0:
+            return s
+        return s[3:]
+
     def apply(self,x):
         s = 0.0
         l = len(self.v) - 1
@@ -29,21 +36,21 @@ class SPoly:
         return s
 
     def __mul__(self,s):
-        l2 = len(self.v) -1) + len(s)
+        l2 = len(self.v) -1 + len(s.v)
         v = np.zeros(l2)
         v2 = np.zeros(l2)
 
         le1 = len(self.v) - 1
-        le2 = len(s) - 1
+        le2 = len(s.v) - 1
 
         for (i,x) in enumerate(self.v):
             v3 = deepcopy(v2)
             e1 = le1 - i
-            for (j,x2) in enumerate(s):
+            for (j,x2) in enumerate(s.v):
                 x3 = x * x2
                 e2 = le2 - j
                 e3 = e1 + e2
-                v3[l2 - e3] = x3
+                v3[l2 - e3 - 1] = x3
             v = v + v3
         return SPoly(v) 
 
