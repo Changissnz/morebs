@@ -31,6 +31,15 @@ class TestPolyFactorEst(unittest.TestCase):
         pfe1.guess()
         assert pfe1.f1 * pfe1.f2 == p, "incorrect factorization"
 
+    def test__pfe__guess__case2(self):
+        pa = np.array([[1,2],[-1,0]])
+        p = poly_struct.CEPoly(pa)
+        pfe1 = poly_factor.PolyFactorEst(deepcopy(p))
+        pfe1.set_exponential_bounds((0,1),(0,1))
+        pfe1.initial_bounds_hypothesis()
+        pfe1.guess()
+        assert pfe1.f1 * pfe1.f2 == p, "incorrect factorization #2"
+
     def test__possible_new_elements_of_factor_for_exponent(self):
         pfe1 = pfe_case1()
         pfe1.initial_bounds_hypothesis()

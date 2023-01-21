@@ -237,9 +237,13 @@ class PolyFactorEst:
         m = median_sort(all_multiple_pairs(self.p.v[0,0]),median)
         m2 = median_sort(all_multiple_pairs(self.p.v[-1,0]),median)
 
-        self.ibm_cache = [m.pop(0),m2]
+        self.ibm_cache = [None,[]]
         self.initial_bounds_multiples = [m,deepcopy(m2)]
         self.set_factor_guess()
+
+        if self.p1 * self.p2 == self.p:
+            self.f1,self.f2 = self.p1,self.p2
+            self.stat = False
 
     def set_factor_guess(self):
         '''

@@ -13,6 +13,9 @@ def all_multiples(i):
     return m
 
 def all_multiple_pairs(i):
+    if i == 1: return [(1,1)]
+    if i == -1: return [(-1,1),(1,-1)]
+    
     l = abs(int(i / 2))
     m = []
     s = set()
