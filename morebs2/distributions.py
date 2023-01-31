@@ -3,7 +3,7 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from math import sqrt,pi,e
+from math import sqrt,pi,e,log
 
 import random
 
@@ -113,6 +113,11 @@ def multiple_y_function_x_effector(x,f,multipleRange):
     return l
 
 def x_effector_function_type_modulo(xyiOp,yRange):
+    '''
+    outputs a function 
+                `f(x,i) -> y`
+    using a function `xyiOp(x,yRange,i)`. 
+    '''
 
     def q(x,i):
         return xyiOp(x,yRange,i)
@@ -123,6 +128,8 @@ def xyi_op_type_1(x,yRange,i):
     x2 = (x * i * 10) % r
     return yRange[0] + x2
 
+def log_function(x,m=e):
+    return log(x) / log(m)
 
 ######### test function
 
