@@ -1,8 +1,13 @@
 from .poly_interpolation import *
+from .numerical_extras import fractional_add,fractional_mul,reduce_fraction
 from copy import deepcopy
 import random
 
 def merge_duplicates_cevector(v):
+    '''
+    merges elements of a (coefficient,exponent) vector
+    so that there are no duplicate exponents
+    '''
     d = {}
     for v_ in v:
         x = v_[0]
@@ -16,13 +21,121 @@ def merge_duplicates_cevector(v):
             d[v_[1]] = x
     return d
 
+def merge_duplicates_ceqvector(v):
+    d = {}
+    for v_ in v:
+        x1 = deepcopy(v_) 
+        if v_[2] in d:
+            x1 = (deepcopy(d[v_[2]]), deepcopy(v_[:2]))
+            x1 = fractional_add(x1[0],x1[1])
+            if x1[0] == 0:
+                del d[v_[2]]
+                continue
+        d[v_[2]] = x1  
+    return d
+
+class CEQPoly:
+
+    def __init__(self,v):
+        if len(v) > 0:
+            assert v.shape[1] == 3, "invalid"
+        assert len(np.unique(v[:,2])) == len(v), "duplicate exponent in c-e format"
+        indexOrder = np.argsort(v[:,2])[::-1]
+        v = v[indexOrder]
+        self.v = []
+        for v_ in v:
+            if v_[0] == 0: continue
+            self.v.append(v_)
+        self.v = np.array(self.v)
+    
+    def __str__(self):
+        s = ""
+        for y_ in self.v:
+            s += " +" if y_[0] >= 0 else " -"
+            c = "(" + str(abs(y_[0])) + "/" + str(y_[1]) + ")"
+            s += " {}x^{}".format(c,y_[2])
+        if len(s) == 0:
+            return s
+        return s[2:]
+
+    def apply(self,x):
+        s = 0.0
+        for v_ in self.v:
+            s += (v_[0] /v_[1] * x ** v_[1])
+        return s
+
+    def __add__(self,s):
+        v1 = deepcopy(self.v)
+        v2 = deepcopy(s.v)
+
+        # case: one of the additives is 0.
+        if len(v1) == 0:
+            return deepcopy(s)
+        if len(v2) == 0:
+            return deepcopy(self)
+        v2 = list(v2)
+        v3 = []
+
+        for v in v1:
+            index = -1
+            for (i,vx) in enumerate(v2):
+                if round(v[2],5) == round(vx[2],5):
+                    index = i
+                    break
+
+            if index == -1:
+                v3.append(v)
+            else:
+                s1,s2 = fractional_add((v[0],v[1]),(v2[0],v2[1]))
+                v3.append((s1,s2,v[2]))
+                v2.pop(index) 
+
+        # add the remainder of v2
+        for v in v2:
+            v3.append(v)
+        return CEQPoly(np.array(v3))
+
+    def __mul__(self,s):
+        if type(s) in {int,float,complex,tuple}:
+            return self.mul_s(s)
+
+        ecv = []
+        for v_ in self.v:
+            for s_ in s.v:
+                m = fractional_mul((v_[0],v_[1]),(s_[0],s_[1]))
+                ecv.append((m[0],m[1],v_[2] + s_[2]))
+        d = merge_duplicates_ceqvector(ecv)
+        return CEQPoly.from_dict(d)
+
+    # TODO: caution with imaginary numbers.
+    def mul_s(self,s):
+        v2 = []
+
+        for v_ in self.v:
+            if type(s) == tuple:
+                m = fractional_mul((v_[0],v_[1]),(s[0],s[1]))
+            else:
+                m = reduce_fraction((v_[0] * s,v_[1]))
+            v2.append((m[0],m[1],v_[2]))
+        return CEQPoly(np.array(v2))
+
+    @staticmethod
+    def from_dict(d):
+        '''
+        dictionary is in e-c format.
+        '''
+        x = np.array([(v[0],v[1],k) for k,v in d.items()])
+        return CEQPoly(x)
+
 """
 """
 class CEPoly:
     """
     polynomial represented in coefficient-exponent form. 
+    
+    :param v: vector of values, length l -1 is power, index 0 is greatest power
     """
-
+    
     def __init__(self,v):
         if len(v) > 0:
             assert v.shape[1] == 2, "invalid"
@@ -169,13 +282,10 @@ class CEPoly:
     def exponential_subtract(self,p2):
         return set(self.v[:,1]) - set(p2.v[:,1])
 
-# TODO: delete below;
-"""
-"""
 class SPoly:
     """
-    polynomial operator over 1 float variable
-
+    polynomial operator over 1 float variable;
+    data structure uses vector-index notation.
 
     :param v: vector of values, length l -1 is power, index 0 is greatest power
     """
