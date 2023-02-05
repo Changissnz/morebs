@@ -249,9 +249,15 @@
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.basic_2d_scatterplot"><code class="docutils literal notranslate"><span class="pre">basic_2d_scatterplot()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.function_to_2dplot"><code class="docutils literal notranslate"><span class="pre">function_to_2dplot()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.generate_2d_data_from_function"><code class="docutils literal notranslate"><span class="pre">generate_2d_data_from_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.generate_2d_data_from_function__multipleY"><code class="docutils literal notranslate"><span class="pre">generate_2d_data_from_function__multipleY()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.holtzmann_distribution_function"><code class="docutils literal notranslate"><span class="pre">holtzmann_distribution_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.log_function"><code class="docutils literal notranslate"><span class="pre">log_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.multiple_y_function_stdrand"><code class="docutils literal notranslate"><span class="pre">multiple_y_function_stdrand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.multiple_y_function_x_effector"><code class="docutils literal notranslate"><span class="pre">multiple_y_function_x_effector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.normal_distribution_function"><code class="docutils literal notranslate"><span class="pre">normal_distribution_function()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.poisson_distribution_function"><code class="docutils literal notranslate"><span class="pre">poisson_distribution_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.x_effector_function_type_modulo"><code class="docutils literal notranslate"><span class="pre">x_effector_function_type_modulo()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.distributions.xyi_op_type_1"><code class="docutils literal notranslate"><span class="pre">xyi_op_type_1()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="morebs2.html#module-morebs2.globalls">morebs2.globalls module</a><ul>
@@ -479,6 +485,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="morebs2.html#module-morebs2.numerical_space_data_generator">morebs2.numerical_space_data_generator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.numerical_space_data_generator.DEFAULT_SINGLE_WRITE_SIZE"><code class="docutils literal notranslate"><span class="pre">DEFAULT_SINGLE_WRITE_SIZE</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.numerical_space_data_generator.NSDataInstructions"><code class="docutils literal notranslate"><span class="pre">NSDataInstructions</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.numerical_space_data_generator.NSDataInstructions.add_noise_to_batch"><code class="docutils literal notranslate"><span class="pre">NSDataInstructions.add_noise_to_batch()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.numerical_space_data_generator.NSDataInstructions.add_noise_to_point"><code class="docutils literal notranslate"><span class="pre">NSDataInstructions.add_noise_to_point()</span></code></a></li>
@@ -489,6 +496,7 @@
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.numerical_space_data_generator.NSDataInstructions.next_batch"><code class="docutils literal notranslate"><span class="pre">NSDataInstructions.next_batch()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.numerical_space_data_generator.NSDataInstructions.next_batch_"><code class="docutils literal notranslate"><span class="pre">NSDataInstructions.next_batch_()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.numerical_space_data_generator.NSDataInstructions.relevance_filter"><code class="docutils literal notranslate"><span class="pre">NSDataInstructions.relevance_filter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.numerical_space_data_generator.NSDataInstructions.update_wom_rch"><code class="docutils literal notranslate"><span class="pre">NSDataInstructions.update_wom_rch()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.numerical_space_data_generator.NSDataInstructions.wom_rch_map"><code class="docutils literal notranslate"><span class="pre">NSDataInstructions.wom_rch_map()</span></code></a></li>
 </ul>
 </li>
@@ -589,14 +597,46 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="morebs2.html#module-morebs2.poly_struct">morebs2.poly_struct module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly"><code class="docutils literal notranslate"><span class="pre">CEPoly</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly.apply"><code class="docutils literal notranslate"><span class="pre">CEPoly.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly.c_of_p"><code class="docutils literal notranslate"><span class="pre">CEPoly.c_of_p()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly.exp_bounds"><code class="docutils literal notranslate"><span class="pre">CEPoly.exp_bounds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly.exponential_subtract"><code class="docutils literal notranslate"><span class="pre">CEPoly.exponential_subtract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly.from_dict"><code class="docutils literal notranslate"><span class="pre">CEPoly.from_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly.max_left_exp"><code class="docutils literal notranslate"><span class="pre">CEPoly.max_left_exp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly.min_right_exp"><code class="docutils literal notranslate"><span class="pre">CEPoly.min_right_exp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly.mul_s"><code class="docutils literal notranslate"><span class="pre">CEPoly.mul_s()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEPoly.to_dict"><code class="docutils literal notranslate"><span class="pre">CEPoly.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEQPoly"><code class="docutils literal notranslate"><span class="pre">CEQPoly</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEQPoly.apply"><code class="docutils literal notranslate"><span class="pre">CEQPoly.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEQPoly.from_dict"><code class="docutils literal notranslate"><span class="pre">CEQPoly.from_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.CEQPoly.mul_s"><code class="docutils literal notranslate"><span class="pre">CEQPoly.mul_s()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.ISPoly"><code class="docutils literal notranslate"><span class="pre">ISPoly</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.ISPoly.apply"><code class="docutils literal notranslate"><span class="pre">ISPoly.apply()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.SPoly"><code class="docutils literal notranslate"><span class="pre">SPoly</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.SPoly.apply"><code class="docutils literal notranslate"><span class="pre">SPoly.apply()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.RandomPolyGenerator"><code class="docutils literal notranslate"><span class="pre">RandomPolyGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.RandomPolyGenerator.output"><code class="docutils literal notranslate"><span class="pre">RandomPolyGenerator.output()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.SPoly"><code class="docutils literal notranslate"><span class="pre">SPoly</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.SPoly.apply"><code class="docutils literal notranslate"><span class="pre">SPoly.apply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.SPoly.ce_notation"><code class="docutils literal notranslate"><span class="pre">SPoly.ce_notation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.SPoly.from_ce_notation"><code class="docutils literal notranslate"><span class="pre">SPoly.from_ce_notation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.SPoly.vector_index_notation"><code class="docutils literal notranslate"><span class="pre">SPoly.vector_index_notation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.StdRandomSeedObject"><code class="docutils literal notranslate"><span class="pre">StdRandomSeedObject</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.StdRandomSeedObject.random"><code class="docutils literal notranslate"><span class="pre">StdRandomSeedObject.random()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.StdRandomSeedObject.randrange"><code class="docutils literal notranslate"><span class="pre">StdRandomSeedObject.randrange()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.merge_duplicates_ceqvector"><code class="docutils literal notranslate"><span class="pre">merge_duplicates_ceqvector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.poly_struct.merge_duplicates_cevector"><code class="docutils literal notranslate"><span class="pre">merge_duplicates_cevector()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="morebs2.html#morebs2-r1-module">morebs2.r1 module</a></li>
@@ -652,6 +692,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.addon_singleton__bool__criteria_distance_from_reference"><code class="docutils literal notranslate"><span class="pre">addon_singleton__bool__criteria_distance_from_reference()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.addon_singleton__bool__criteria_range_each"><code class="docutils literal notranslate"><span class="pre">addon_singleton__bool__criteria_range_each()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.binary_labelling_scheme_1"><code class="docutils literal notranslate"><span class="pre">binary_labelling_scheme_1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.boolies"><code class="docutils literal notranslate"><span class="pre">boolies()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.column_selector"><code class="docutils literal notranslate"><span class="pre">column_selector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.coverage_ratio_to_distance"><code class="docutils literal notranslate"><span class="pre">coverage_ratio_to_distance()</span></code></a></li>
@@ -659,6 +700,8 @@
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.hops_to_coverage_points__standard"><code class="docutils literal notranslate"><span class="pre">hops_to_coverage_points__standard()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.hops_to_coverage_points_in_bounds"><code class="docutils literal notranslate"><span class="pre">hops_to_coverage_points_in_bounds()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.hops_to_default_noise_range"><code class="docutils literal notranslate"><span class="pre">hops_to_default_noise_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.idv"><code class="docutils literal notranslate"><span class="pre">idv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.index_map_summation_scheme_type_1"><code class="docutils literal notranslate"><span class="pre">index_map_summation_scheme_type_1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.is_proper_pm"><code class="docutils literal notranslate"><span class="pre">is_proper_pm()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.is_valid_pm"><code class="docutils literal notranslate"><span class="pre">is_valid_pm()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.is_valid_subset_sequence"><code class="docutils literal notranslate"><span class="pre">is_valid_subset_sequence()</span></code></a></li>
@@ -676,8 +719,14 @@
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.sample_rch_1_with_update"><code class="docutils literal notranslate"><span class="pre">sample_rch_1_with_update()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.sample_rch_2_with_update"><code class="docutils literal notranslate"><span class="pre">sample_rch_2_with_update()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.sample_rch_3_with_update"><code class="docutils literal notranslate"><span class="pre">sample_rch_3_with_update()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.sample_rch_binary_labelling_scheme_1"><code class="docutils literal notranslate"><span class="pre">sample_rch_binary_labelling_scheme_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.sample_rch_blind_accept"><code class="docutils literal notranslate"><span class="pre">sample_rch_blind_accept()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.sample_rch_constant_mapper"><code class="docutils literal notranslate"><span class="pre">sample_rch_constant_mapper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.sample_rch_hop_counts_scheme_type_1"><code class="docutils literal notranslate"><span class="pre">sample_rch_hop_counts_scheme_type_1()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.sample_rch_hop_counts_scheme_type_2"><code class="docutils literal notranslate"><span class="pre">sample_rch_hop_counts_scheme_type_2()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.subvector_iselector"><code class="docutils literal notranslate"><span class="pre">subvector_iselector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.subvector_selector"><code class="docutils literal notranslate"><span class="pre">subvector_selector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.subvector_selector_summation_scheme_type_1"><code class="docutils literal notranslate"><span class="pre">subvector_selector_summation_scheme_type_1()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.vector_index_inverse_selector"><code class="docutils literal notranslate"><span class="pre">vector_index_inverse_selector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.vector_index_selector"><code class="docutils literal notranslate"><span class="pre">vector_index_selector()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.relevance_functions.vector_modulo_function_with_addon"><code class="docutils literal notranslate"><span class="pre">vector_modulo_function_with_addon()</span></code></a></li>
@@ -701,6 +750,7 @@
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.rssi.ResplattingSearchSpaceIterator.rangeHistory"><code class="docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator.rangeHistory</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.rssi.ResplattingSearchSpaceIterator.save_rzoom_bounds_info"><code class="docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator.save_rzoom_bounds_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.rssi.ResplattingSearchSpaceIterator.update_resplatting_instructor"><code class="docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator.update_resplatting_instructor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.html#morebs2.rssi.ResplattingSearchSpaceIterator.update_vars_for_rch"><code class="docutils literal notranslate"><span class="pre">ResplattingSearchSpaceIterator.update_vars_for_rch()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.html#morebs2.rssi.rssi__display_n_bounds"><code class="docutils literal notranslate"><span class="pre">rssi__display_n_bounds()</span></code></a></li>

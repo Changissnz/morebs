@@ -45,8 +45,6 @@ def generate_2d_data_from_function__multipleY(f,xRange,xInc,additionalArgs = ())
     x = []
     y = []
     q = xRange[0]
-    print("AA: ",additionalArgs)
-    print("----")
     while q <= xRange[1]:
         ys = f(q,*additionalArgs) 
         if len(ys) != 0:
@@ -106,7 +104,6 @@ def multiple_y_function_x_effector(x,f,multipleRange):
     '''
     p1 = multipleRange[0] + int((multipleRange[1] - multipleRange[0]) * random.random())
     l = []
-    print("RANGO: ", 1, p1 + 1)
     for i in range(1,p1 + 1):
         l.append(f(x,i))
     print("L: ", len(l))

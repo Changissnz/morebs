@@ -124,6 +124,8 @@
 <li class="toctree-l4"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.numerical_space_data_generator_test.TestNSDataInstructionClass.test__sample_nsdi_13"><code class="docutils literal notranslate"><span class="pre">TestNSDataInstructionClass.test__sample_nsdi_13()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.numerical_space_data_generator_test.TestNSDataInstructionClass.test__sample_nsdi_14"><code class="docutils literal notranslate"><span class="pre">TestNSDataInstructionClass.test__sample_nsdi_14()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.numerical_space_data_generator_test.TestNSDataInstructionClass.test__sample_nsdi_21"><code class="docutils literal notranslate"><span class="pre">TestNSDataInstructionClass.test__sample_nsdi_21()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.numerical_space_data_generator_test.TestNSDataInstructionClass.test__sample_rch_blind_accept"><code class="docutils literal notranslate"><span class="pre">TestNSDataInstructionClass.test__sample_rch_blind_accept()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.numerical_space_data_generator_test.TestNSDataInstructionClass.test__sample_rch_hop_counts_scheme_type_1"><code class="docutils literal notranslate"><span class="pre">TestNSDataInstructionClass.test__sample_rch_hop_counts_scheme_type_1()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.numerical_space_data_generator_test.sample_nsdi_1"><code class="docutils literal notranslate"><span class="pre">sample_nsdi_1()</span></code></a></li>
@@ -178,6 +180,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="morebs2.tests.html#module-morebs2.tests.poly_struct_test">morebs2.tests.poly_struct_test module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.poly_struct_test.TestPolyClasses"><code class="docutils literal notranslate"><span class="pre">TestPolyClasses</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.poly_struct_test.TestPolyClasses.test__CEPoly____add__"><code class="docutils literal notranslate"><span class="pre">TestPolyClasses.test__CEPoly____add__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.poly_struct_test.TestPolyClasses.test__CEPoly____mul__"><code class="docutils literal notranslate"><span class="pre">TestPolyClasses.test__CEPoly____mul__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.poly_struct_test.TestPolyClasses.test__ISPoly__apply"><code class="docutils literal notranslate"><span class="pre">TestPolyClasses.test__ISPoly__apply()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="morebs2.tests.html#morebs2.tests.poly_struct_test.TestPolyClasses.test__SPoly__apply"><code class="docutils literal notranslate"><span class="pre">TestPolyClasses.test__SPoly__apply()</span></code></a></li>
 </ul>
@@ -1211,18 +1215,47 @@ over n dimensions.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.distributions.function_to_2dplot">
-<span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">function_to_2dplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xInc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additionalArgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scatter'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.function_to_2dplot" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">function_to_2dplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xInc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additionalArgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scatter'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.function_to_2dplot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.distributions.generate_2d_data_from_function">
 <span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">generate_2d_data_from_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xInc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additionalArgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.generate_2d_data_from_function" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>generates a sequence of (x,y) pairs such that every x-value has exactly
+one y-value and the x-values are evenly distributed across the x-range.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.distributions.generate_2d_data_from_function__multipleY">
+<span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">generate_2d_data_from_function__multipleY</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xInc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additionalArgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.generate_2d_data_from_function__multipleY" title="Permalink to this definition">¶</a></dt>
+<dd><p>generates a sequence of (x,y) pairs such that every x-value can have any
+integer n &gt;= 0 of y-values according to arguments.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.distributions.holtzmann_distribution_function">
 <span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">holtzmann_distribution_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.holtzmann_distribution_function" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.distributions.log_function">
+<span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">log_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.718281828459045</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.log_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.distributions.multiple_y_function_stdrand">
+<span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">multiple_y_function_stdrand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multipleRange</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.multiple_y_function_stdrand" title="Permalink to this definition">¶</a></dt>
+<dd><p>generates multiple y-values for the x-value based on
+python standard random. The x-value has no bearing on
+the y-values generated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.distributions.multiple_y_function_x_effector">
+<span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">multiple_y_function_x_effector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multipleRange</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.multiple_y_function_x_effector" title="Permalink to this definition">¶</a></dt>
+<dd><p>generates variable # of y-values for the x-value in which
+the x-value has an effect on the y-values generated.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.distributions.normal_distribution_function">
@@ -1232,6 +1265,21 @@ over n dimensions.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.distributions.poisson_distribution_function">
 <span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">poisson_distribution_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.poisson_distribution_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.distributions.x_effector_function_type_modulo">
+<span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">x_effector_function_type_modulo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyiOp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yRange</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.x_effector_function_type_modulo" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>outputs a function </dt><dd><p><cite>f(x,i) -&gt; y</cite></p>
+</dd>
+</dl>
+<p>using a function <cite>xyiOp(x,yRange,i)</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.distributions.xyi_op_type_1">
+<span class="sig-prename descclassname"><span class="pre">morebs2.distributions.</span></span><span class="sig-name descname"><span class="pre">xyi_op_type_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.distributions.xyi_op_type_1" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -2363,6 +2411,12 @@ from <cite>p1</cite>.</p>
 </section>
 <section id="module-morebs2.numerical_space_data_generator">
 <span id="morebs2-numerical-space-data-generator-module"></span><h2>morebs2.numerical_space_data_generator module<a class="headerlink" href="#module-morebs2.numerical_space_data_generator" title="Permalink to this heading">¶</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="morebs2.numerical_space_data_generator.DEFAULT_SINGLE_WRITE_SIZE">
+<span class="sig-prename descclassname"><span class="pre">morebs2.numerical_space_data_generator.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_SINGLE_WRITE_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2000</span></em><a class="headerlink" href="#morebs2.numerical_space_data_generator.DEFAULT_SINGLE_WRITE_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd><p>fu</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="morebs2.numerical_space_data_generator.NSDataInstructions">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.numerical_space_data_generator.</span></span><span class="sig-name descname"><span class="pre">NSDataInstructions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bInf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filePath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modeia</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noiseRange</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writeOutMode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'literal'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.numerical_space_data_generator.NSDataInstructions" title="Permalink to this definition">¶</a></dt>
@@ -2425,6 +2479,11 @@ Generates data into file according to instructions given by arguments.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.numerical_space_data_generator.NSDataInstructions.relevance_filter">
 <span class="sig-name descname"><span class="pre">relevance_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.numerical_space_data_generator.NSDataInstructions.relevance_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.numerical_space_data_generator.NSDataInstructions.update_wom_rch">
+<span class="sig-name descname"><span class="pre">update_wom_rch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.numerical_space_data_generator.NSDataInstructions.update_wom_rch" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2905,10 +2964,92 @@ in which it collates that information into <code class="xref py py-class docutil
 <section id="module-morebs2.poly_struct">
 <span id="morebs2-poly-struct-module"></span><h2>morebs2.poly_struct module<a class="headerlink" href="#module-morebs2.poly_struct" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.poly_struct.</span></span><span class="sig-name descname"><span class="pre">CEPoly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>polynomial represented in coefficient-exponent form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v</strong> – vector of values, length l -1 is power, index 0 is greatest power</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly.apply">
+<span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly.c_of_p">
+<span class="sig-name descname"><span class="pre">c_of_p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly.c_of_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>coefficient of power</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly.exp_bounds">
+<span class="sig-name descname"><span class="pre">exp_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly.exp_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>exponent bounds</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly.exponential_subtract">
+<span class="sig-name descname"><span class="pre">exponential_subtract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly.exponential_subtract" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly.from_dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>dictionary is in e-c format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly.max_left_exp">
+<span class="sig-name descname"><span class="pre">max_left_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly.max_left_exp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly.min_right_exp">
+<span class="sig-name descname"><span class="pre">min_right_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly.min_right_exp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly.mul_s">
+<span class="sig-name descname"><span class="pre">mul_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly.mul_s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEPoly.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEPoly.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEQPoly">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.poly_struct.</span></span><span class="sig-name descname"><span class="pre">CEQPoly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEQPoly" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEQPoly.apply">
+<span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEQPoly.apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEQPoly.from_dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEQPoly.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>dictionary is in e-c format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.CEQPoly.mul_s">
+<span class="sig-name descname"><span class="pre">mul_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.CEQPoly.mul_s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="morebs2.poly_struct.ISPoly">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.poly_struct.</span></span><span class="sig-name descname"><span class="pre">ISPoly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.ISPoly" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>v := vector of values, length l -1 is power, index 0 is greatest power</p>
+<p>inversion of SPoly</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="morebs2.poly_struct.ISPoly.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.ISPoly.apply" title="Permalink to this definition">¶</a></dt>
@@ -2917,10 +3058,41 @@ in which it collates that information into <code class="xref py py-class docutil
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="morebs2.poly_struct.RandomPolyGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.poly_struct.</span></span><span class="sig-name descname"><span class="pre">RandomPolyGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rsf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefficientRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxExp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nullPr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.RandomPolyGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>generates a random polynomial, an expression represented
+by <a class="reference internal" href="#morebs2.poly_struct.SPoly" title="morebs2.poly_struct.SPoly"><code class="xref py py-class docutils literal notranslate"><span class="pre">SPoly</span></code></a> that has coefficients in the range
+<cite>coefficientRange</cite> with a NON-ZERO</p>
+<blockquote>
+<div><p><cite>cx^maxExp; c is a coefficient.</cite></p>
+</div></blockquote>
+<p>The rest of the values have a probability of <cite>nullPr</cite>
+for being zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rsf</strong> (<em>seed-like object</em>) – seed object, should have the two functions 
+(<cite>randrange(min int,max int)</cite> =&gt; int) and (<cite>random()</cite> =&gt; x in [0,1])</p></li>
+<li><p><strong>coefficientRange</strong> – </p></li>
+<li><p><strong>maxExp</strong> – </p></li>
+<li><p><strong>nullPr</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.RandomPolyGenerator.output">
+<span class="sig-name descname"><span class="pre">output</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.RandomPolyGenerator.output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="morebs2.poly_struct.SPoly">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.poly_struct.</span></span><span class="sig-name descname"><span class="pre">SPoly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.SPoly" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>polynomial operator over 1 float variable</p>
+<p>polynomial operator over 1 float variable;
+data structure uses vector-index notation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>v</strong> – vector of values, length l -1 is power, index 0 is greatest power</p>
@@ -2931,6 +3103,50 @@ in which it collates that information into <code class="xref py py-class docutil
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.SPoly.apply" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.SPoly.ce_notation">
+<span class="sig-name descname"><span class="pre">ce_notation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.SPoly.ce_notation" title="Permalink to this definition">¶</a></dt>
+<dd><p>coefficient-exponent notation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.SPoly.from_ce_notation">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ce_notation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.SPoly.from_ce_notation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.SPoly.vector_index_notation">
+<span class="sig-name descname"><span class="pre">vector_index_notation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.SPoly.vector_index_notation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="morebs2.poly_struct.StdRandomSeedObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morebs2.poly_struct.</span></span><span class="sig-name descname"><span class="pre">StdRandomSeedObject</span></span><a class="headerlink" href="#morebs2.poly_struct.StdRandomSeedObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.StdRandomSeedObject.random">
+<span class="sig-name descname"><span class="pre">random</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.StdRandomSeedObject.random" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.poly_struct.StdRandomSeedObject.randrange">
+<span class="sig-name descname"><span class="pre">randrange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minumum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.StdRandomSeedObject.randrange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.poly_struct.merge_duplicates_ceqvector">
+<span class="sig-prename descclassname"><span class="pre">morebs2.poly_struct.</span></span><span class="sig-name descname"><span class="pre">merge_duplicates_ceqvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.merge_duplicates_ceqvector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.poly_struct.merge_duplicates_cevector">
+<span class="sig-prename descclassname"><span class="pre">morebs2.poly_struct.</span></span><span class="sig-name descname"><span class="pre">merge_duplicates_cevector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.poly_struct.merge_duplicates_cevector" title="Permalink to this definition">¶</a></dt>
+<dd><p>merges elements of a (coefficient,exponent) vector
+so that there are no duplicate exponents</p>
 </dd></dl>
 
 </section>
@@ -3364,6 +3580,12 @@ after iterating through one pertinent bound.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="morebs2.relevance_functions.binary_labelling_scheme_1">
+<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">binary_labelling_scheme_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.binary_labelling_scheme_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>outputs a vector v’ of equal length to v.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.boolies">
 <span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">boolies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.boolies" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -3423,6 +3645,17 @@ two lists <cite>TRUE</cite> and <cite>FALSE</cite>.</p>
 <dt class="sig sig-object py" id="morebs2.relevance_functions.hops_to_default_noise_range">
 <span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">hops_to_default_noise_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.hops_to_default_noise_range" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.relevance_functions.idv">
+<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">idv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.idv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.relevance_functions.index_map_summation_scheme_type_1">
+<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">index_map_summation_scheme_type_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.index_map_summation_scheme_type_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculates a vector of indices for v based on a summation scheme.</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.is_proper_pm">
@@ -3523,13 +3756,15 @@ even</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.sample_rch_1_with_update">
 <span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">sample_rch_1_with_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parentBounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coverageRatio</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.sample_rch_1_with_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>vector -&gt; ed vector -&gt; (ed in bounds):bool</p>
+<dd><p>vector -&gt; e.d. vector -&gt; (ed in bounds):bool</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.sample_rch_2_with_update">
 <span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">sample_rch_2_with_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parentBounds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.sample_rch_2_with_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>activation range is 0-20 percentile and 80-100 percentile</p>
+<dd><p>one node; updates <cite>dt</cite> every batch with new <cite>bounds</cite> parameter.</p>
+<p>For each point, outputs true if it is in 0-20 percentile or 80-100 percentile
+of area in <cite>bounds</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -3540,6 +3775,38 @@ using function&lt;vector_summation_modulo&gt;.</p>
 <p>use simple bounds and selector indices.</p>
 <p>NOTE: class&lt;RChainHead&gt; is not compatible with class&lt;ResplattingSearchSpaceIterator&gt; and is used
 to test accuracy and capability of class&lt;RChainHead&gt;.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.relevance_functions.sample_rch_binary_labelling_scheme_1">
+<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">sample_rch_binary_labelling_scheme_1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.sample_rch_binary_labelling_scheme_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>uses default parameters <cite>m</cite> and <cite>m2</cite> of method&lt;binary_labelling_scheme_1&gt;</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.relevance_functions.sample_rch_blind_accept">
+<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">sample_rch_blind_accept</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.sample_rch_blind_accept" title="Permalink to this definition">¶</a></dt>
+<dd><p>one node; deciding + non-referential, outputs true for all vectors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.relevance_functions.sample_rch_constant_mapper">
+<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">sample_rch_constant_mapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.sample_rch_constant_mapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>one node; maps any vector to &lt;c&gt; vector.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.relevance_functions.sample_rch_hop_counts_scheme_type_1">
+<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">sample_rch_hop_counts_scheme_type_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parentBound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cf=&lt;function</span> <span class="pre">idv&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.sample_rch_hop_counts_scheme_type_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>one node; requires a parent bound,bound,and hop as update values
+for argument <cite>p</cite> (vector point).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.relevance_functions.sample_rch_hop_counts_scheme_type_2">
+<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">sample_rch_hop_counts_scheme_type_2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parentBound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cf=&lt;function</span> <span class="pre">idv&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.sample_rch_hop_counts_scheme_type_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>one node; requires a parent bound,bound,and hop as update values
+for argument <cite>p</cite> (vector point).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -3557,6 +3824,11 @@ to test accuracy and capability of class&lt;RChainHead&gt;.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morebs2.relevance_functions.subvector_selector_summation_scheme_type_1">
+<span class="sig-prename descclassname"><span class="pre">morebs2.relevance_functions.</span></span><span class="sig-name descname"><span class="pre">subvector_selector_summation_scheme_type_1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.relevance_functions.subvector_selector_summation_scheme_type_1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morebs2.relevance_functions.vector_index_inverse_selector">
@@ -3746,6 +4018,11 @@ then instantiates a new <code class="xref py py-class docutils literal notransla
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="morebs2.rssi.ResplattingSearchSpaceIterator.update_vars_for_rch">
+<span class="sig-name descname"><span class="pre">update_vars_for_rch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morebs2.rssi.ResplattingSearchSpaceIterator.update_vars_for_rch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
