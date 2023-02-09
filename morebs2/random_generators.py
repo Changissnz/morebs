@@ -1,5 +1,5 @@
 from .line import *
-
+import random
 ################ START: line generators
 
 def generate_random_line(startPoint, length):
@@ -91,10 +91,20 @@ def random_point_in_area(area):
     y = random.uniform(area[0,1], area[1,1])
     return (x,y)
 
-def random_point_in_circle(center, radius):
-    xDelta = random.uniform(-radius, radius)
-    yDelta = random.uniform(-radius, radius)
-    return (center[0] + xDelta, center[1] + yDelta)
+# TODO: incorrect
+def random_point_in_circle(center, radiusRange):
+    # random x-delta    
+    xDelta = random.uniform(radiusRange[0],radiusRange[1])
+
+    # select a radius range in [xDelta,radiusRange[1]]
+    rr = random.uniform(xDelta,radiusRange[1])
+
+    # random y-delta
+    yDelta = math.sqrt(rr**2 - xDelta**2)
+
+    s1 = 1 if random.random() >= 0.5 else -1 
+    s2 = 1 if random.random() >= 0.5 else -1 
+    return (center[0] + xDelta * s1, center[1] + yDelta * s2)
 
 """
 """
