@@ -4,6 +4,8 @@
             in a 2-d space. 
 '''
 from morebs2.distributions import *
+from morebs2.line import *
+from copy import deepcopy
 
 class Fit22:
 
@@ -38,12 +40,12 @@ class LogFit22(Fit22):
     def yfit(self):
 
         def g(y):
-
             p = log(10) * (y - self.ps[self.direction[0],1]) / (abs(self.ps[self.direction[1],1] - self.ps[self.direction[0],1]))
             ep = (e ** p - 1) / 9
             r = ep * abs(self.ps[1,0] - self.ps[0,0])
-            x1 = r - self.ps[self.direction[0],0]
-            x2 = r + self.ps[self.direction[0],0]
+            x1 = self.ps[self.direction[0],0] - r
+            x2 = self.ps[self.direction[0],0] + r
+
             if round(x1,5) >= round(min(self.ps[:,0]),5) and round(x1,5) <= round(max(self.ps[:,0]),5):
                 return x1
 
@@ -105,11 +107,10 @@ class Exp2Fit22(Fit22):
         def g(y):
             m1 = (y - self.ps[self.direction[0],1]) / abs(self.ps[self.direction[0],1] - self.ps[self.direction[1],1])
             m2 = (self.ps[self.direction[0],0] - self.ps[self.direction[1],0]) ** 2
-            print("M1 M2 ",m1, m2)
             m = sqrt(m1 * m2)
 
-            x1 = m + self.ps[self.direction[0],0] 
-            x2 = m - self.ps[self.direction[0],0]
+            x1 = self.ps[self.direction[0],0]  + m
+            x2 = self.ps[self.direction[0],0] - m 
 
             if x1 >= min(self.ps[:,0]) and x1 <= max(self.ps[:,0]):
                 return x1
@@ -186,18 +187,19 @@ class DCurve:
         '''
         is activation point?
         '''
-        print("PR: ",self.point_range(),"\t",p)
 
         if self.ad in {'t','b'}:
-            p2 = self.y_given_x(p[0])
+            p2 = round(self.y_given_x(p[0]),5)
+
             if self.ad == 't':
-                return p2 <= p[1]
-            return p2 >= p[1]
+                return p[1] <= p2
+            return p[1] >= p2
         else:
-            p2 = self.x_given_y(p[1])
+            p2 = round(self.x_given_y(p[1]),5)
+
             if self.ad == 'l':
-                return p2 >= p[0]
-            return p2 <= p[0]
+                return p[0] >= p2
+            return p[0] <= p2
 
     def modulate_fit(self):
         if type(self.fs) == Line:
