@@ -413,7 +413,7 @@ line/line segment class
     def x_given_y(self, y, rangeCheck = True):
         ys = [self.endpoints[0][1], self.endpoints[1][1]]
         if rangeCheck:
-            assert not (y < min(ys) or y > max(ys)), "y not in range of line"
+            assert not (y < min(ys) or y > max(ys)), "y {} not in range of line {}".format(y,ys)
 
         if self.slope == 0:
             return self.endpoints[0,0]

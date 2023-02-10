@@ -32,7 +32,7 @@ class TestFit22Class(unittest.TestCase):
 
         (x1,y1) = (60,lf22.f(60))
         (x2,y2) = (lf22.g(y1),y1) 
-        assert(x1 == x2 and y1 == y2)
+        assert(x1 == x2 and y1 == y2, "got {} want {}".format((x1,x2),(y1,y2)))
 
 if __name__ == '__main__':
     unittest.main()

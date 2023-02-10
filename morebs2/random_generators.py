@@ -91,7 +91,6 @@ def random_point_in_area(area):
     y = random.uniform(area[0,1], area[1,1])
     return (x,y)
 
-# TODO: incorrect
 def random_point_in_circle(center, radiusRange):
     # random x-delta    
     xDelta = random.uniform(radiusRange[0],radiusRange[1])
@@ -105,6 +104,28 @@ def random_point_in_circle(center, radiusRange):
     s1 = 1 if random.random() >= 0.5 else -1 
     s2 = 1 if random.random() >= 0.5 else -1 
     return (center[0] + xDelta * s1, center[1] + yDelta * s2)
+
+def generate_random_xyl_points_at_center(c,drnp,l):
+    '''
+    for each element in `drnp`, generates 
+            by std. python.
+
+    c := center point, (x,y,label)
+    drnp := list(<(distance min to c,distance max to c, number of points)>)
+    l := int,label
+    '''
+
+    def process_drn(drn):
+        rps = []
+        for i in range(drn[2]):
+            p = list(random_point_in_circle(c[:2],drn[:2])) + [l]
+            rps.append(p)
+        return rps
+
+    ps = []
+    for drn in drnp:
+        ps.extend(process_drn(drn))
+    return np.array(ps)
 
 """
 """
