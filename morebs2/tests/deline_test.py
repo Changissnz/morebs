@@ -48,6 +48,13 @@ class DelineClass(unittest.TestCase):
             c = dl.d.classify_point(q)
             assert c == 0
 
+    def test__DLineate22__optimize_delineation__case_1(self):
+        data = deline.test_dataset__Dlineate22_1_v3(500,[0.000001,1.])
+        dl = deline.DLineate22(data)
+        dl.preprocess()
+        dl.collect_break_points()
+        s = dl.optimize_delineation()
+        assert s > 0, "optimization should reduce classification error!"
 
 if __name__ == '__main__':
     unittest.main()

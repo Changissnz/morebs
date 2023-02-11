@@ -15,8 +15,7 @@ class Fit22:
         self.ps = ps
         self.direction = direction
         assert self.ps[self.direction[1],1] > self.ps[self.direction[0],1], "invalid y's"
-        self.f = None 
-
+        self.f = None
 
 class LogFit22(Fit22):
     '''
@@ -187,16 +186,13 @@ class DCurve:
         '''
         is activation point?
         '''
-
         if self.ad in {'t','b'}:
             p2 = round(self.y_given_x(p[0]),5)
-
             if self.ad == 't':
                 return p[1] <= p2
             return p[1] >= p2
         else:
             p2 = round(self.x_given_y(p[1]),5)
-
             if self.ad == 'l':
                 return p[0] >= p2
             return p[0] <= p2
@@ -206,8 +202,21 @@ class DCurve:
             return
 
         if type(self.fs) == LogFit22:
-            c = LogFit22(deepcopy(self.fs.ps),self.fs.direction)
-        else:
             c = Exp2Fit22(deepcopy(self.fs.ps),self.fs.direction)
+        else:
+            c = LogFit22(deepcopy(self.fs.ps),self.fs.direction)
         self.fs = c
 
+    def form_point_sequence(self,pointHop = DEFAULT_TRAVELLING_HOP):
+        if type(self.fs) == Line:
+            self.fs.form_point_sequence(pointHop = pointHop)
+            return self.fs.data
+
+        xys = []
+        xs = self.point_range()[0]
+        i = xs[0]
+        while i < xs[1]:
+            y = self.y_given_x(i)  
+            xys.append((i,y))
+            i += pointHop
+        return xys

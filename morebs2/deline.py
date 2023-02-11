@@ -91,11 +91,11 @@ class Delineation:
         one = self.point_sequence_to_curve_set(self.d['t'],'t')
         
         if self.clockwise:
-            two = self.point_sequence_to_curve_set(self.d['l'],'l')
-            four = self.point_sequence_to_curve_set(self.d['r'],'r')
-        else:
-            four = self.point_sequence_to_curve_set(self.d['l'],'l')
             two = self.point_sequence_to_curve_set(self.d['r'],'r')
+            four = self.point_sequence_to_curve_set(self.d['l'],'l')
+        else:
+            four = self.point_sequence_to_curve_set(self.d['r'],'r')
+            two = self.point_sequence_to_curve_set(self.d['l'],'l')
 
         three = self.point_sequence_to_curve_set(self.d['b'],'b')
 
@@ -197,13 +197,12 @@ class Delineation:
         return q
 
     def visualize_delineation(self):
-        return -1
-
-class DLineateAlt:
-    '''
-    the alternator for the delineator
-    '''
-    def __init__(self):
+        ps = []
+        for c in self.d_:
+            l = c.form_point_sequence()
+            ps.extend(l)
+        ps = np.array(ps)
+        basic_2d_scatterplot(ps[:,0],ps[:,1],c='b')
         return
 
 class DLineate22:
@@ -216,8 +215,11 @@ class DLineate22:
         # tmp holder
         self.xyl_sorted_x = None
         self.xyl_sorted_y = None 
-        # [indices for L0,indices for L1]
+        # labels -> label indices
         self.lc = None
+        # labels -> excluded indices; used in the case of 
+        #           delineations of degree 2 and up (nested delineations)
+        self.lc_exclude = None
         # center
         self.c = None 
         # reference point
@@ -232,6 +234,9 @@ class DLineate22:
         self.linfo = None
         # delineation
         self.d = None
+
+        # container for finalized delineations
+        self.ds = [] 
         return
 
     ############# preprocessing methods
@@ -416,7 +421,6 @@ class DLineate22:
         # alternate and reclassify
         c.modulate_fit()
         s2 = self.classify_pertinent_points(cs,pp)
-
         if s1 > s2:
             c.modulate_fit()
             return 0 
