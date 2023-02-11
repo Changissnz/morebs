@@ -466,3 +466,27 @@ def test_dataset__Dlineate22_1_v2():
     t2 = generate_random_xyl_points_at_center(\
         [12.,8.55,5],[[0.,5.,5],[15.,25.,8]],1)
     return np.vstack((d,t2))
+
+
+def test_dataset__Dlineate22_1_v3(numPoints,rdistance):
+    data = test_dataset__Dlineate22_1()
+    dl = DLineate22(data)
+    dl.preprocess()
+    dl.collect_break_points()
+
+    l = len(dl.d.d_)
+    ps = 0
+    points = []
+    i = 0
+    while ps < numPoints:
+        a = random.random()
+        if a > 0.5:
+            pr = dl.d.d_[i].get_point()
+            rp = random_point_near_2d_point_pair(\
+                pr,rdistance)
+            rp_ = [rp[0],rp[1],1.]
+            points.append(rp_)
+            ps += 1
+        i = (i + 1) % l
+    points = np.array(points)
+    return np.vstack((data,points))

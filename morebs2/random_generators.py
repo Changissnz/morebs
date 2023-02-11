@@ -105,6 +105,21 @@ def random_point_in_circle(center, radiusRange):
     s2 = 1 if random.random() >= 0.5 else -1 
     return (center[0] + xDelta * s1, center[1] + yDelta * s2)
 
+def random_point_near_2d_point_pair(pair,rdistance):
+    '''
+    generates a random point near a 2d point pair by first
+    constructing a line b/t the the points in the pair,
+    choosing a random point `r` on the line, and then a random point
+    of distance `d` in range `rdistance` from `r`.  
+    '''
+    assert len(pair) == 2, "invalid pair"
+    l = Line([pair[0],pair[1]])
+
+    s = 0
+    v = random.random()
+    p = l.point_from_source_by_value(v,s)
+    return random_point_in_circle(p,rdistance)
+
 def generate_random_xyl_points_at_center(c,drnp,l):
     '''
     for each element in `drnp`, generates 
