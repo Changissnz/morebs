@@ -42,13 +42,13 @@ class LogFit22(Fit22):
             p = log(10) * (y - self.ps[self.direction[0],1]) / (abs(self.ps[self.direction[1],1] - self.ps[self.direction[0],1]))
             ep = (e ** p - 1) / 9
             r = ep * abs(self.ps[1,0] - self.ps[0,0])
-            x1 = self.ps[self.direction[0],0] - r
-            x2 = self.ps[self.direction[0],0] + r
+            x1 = np.round(self.ps[self.direction[0],0] - r,5)
+            x2 = np.round(self.ps[self.direction[0],0] + r,5)
 
-            if round(x1,5) >= round(min(self.ps[:,0]),5) and round(x1,5) <= round(max(self.ps[:,0]),5):
+            if x1 >= min(self.ps[:,0]) and x1 <= max(self.ps[:,0]):
                 return x1
 
-            if round(x2,5) >= round(min(self.ps[:,0]),5) and round(x2,5) <= round(max(self.ps[:,0]),5):
+            if x2 >= min(self.ps[:,0]) and x2 <= max(self.ps[:,0]):
                 return x2
             raise ValueError("invalid y-input") 
 
@@ -108,8 +108,8 @@ class Exp2Fit22(Fit22):
             m2 = (self.ps[self.direction[0],0] - self.ps[self.direction[1],0]) ** 2
             m = sqrt(m1 * m2)
 
-            x1 = self.ps[self.direction[0],0]  + m
-            x2 = self.ps[self.direction[0],0] - m 
+            x1 = round(self.ps[self.direction[0],0]  + m,5)
+            x2 = round(self.ps[self.direction[0],0] - m ,5)
 
             if x1 >= min(self.ps[:,0]) and x1 <= max(self.ps[:,0]):
                 return x1

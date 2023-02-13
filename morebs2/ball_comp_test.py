@@ -1,32 +1,28 @@
-from .ball_comp import *
-from .message_streamer import *
-
-def sample_BallComp_1():
-    return -1
+from morebs2.ball_comp import *
+from morebs2.message_streamer import *
+from morebs2.ball_comp_test_cases import *
 
 def test__BallComp__sample_1_sample_data_1():
 
     maxBalls = 20
     maxRadius = 5.0
-    td = test_data_1()
+    td = ballcomp_sample_data_1()
 
-    # TODO: delete k
-    bc = BallComp(maxBalls,maxRadius,5,True)
-
-    #bc.conduct_decision(td[0])
-
+    vh = ViolationHandler1(maxBalls,maxRadius)
+    bc = BallComp(maxBalls,maxRadius,5, vh,True)
+    
     for t in td:
         bc.conduct_decision(t)
     return
+    
 
 def test__BallComp__sample_1_sample_data_2():
 
-    maxBalls = 20
-    maxRadius = 5.0
-    td = test_data_2()
-
-    # TODO: delete k
-    bc = BallComp(maxBalls,maxRadius,5,2)
+    maxBalls = 4
+    maxRadius = 0.2
+    td = ballcomp_sample_data_2()
+    vh = ViolationHandler1(maxBalls,maxRadius)
+    bc = BallComp(maxBalls,maxRadius,5,vh,2)
 
     for t in td:
         bc.conduct_decision(t)
@@ -42,12 +38,15 @@ def test__BallComp__sample_1_sample_data_2():
 
 def test__BallComp__sample_1_sample_data_3():
 
-    maxBalls = 20
-    maxRadius = 5.0
-    td = test_data_3()
+    maxBalls = 5
+    maxRadius = .5
+    td = ballcomp_sample_data_3()
+    vh = ViolationHandler1(maxBalls,maxRadius)
 
     # TODO: delete k
-    bc = BallComp(maxBalls,maxRadius,5,True)
+    bc = BallComp(maxBalls,maxRadius,5,vh,True)
+    print("TD ",td.shape)
+
     for t in td:
         bc.conduct_decision(t)
 

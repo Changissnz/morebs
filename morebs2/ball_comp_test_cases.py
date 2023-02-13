@@ -1,6 +1,6 @@
-from .ball_comp import *
-from .numerical_space_data_generator import *
-from .ball_clump_data_generator import *
+from morebs2.ball_comp import *
+from morebs2.numerical_space_data_generator import *
+from morebs2.ball_clump_data_generator import *
 
 ####### basic cases
 def ballcomp_sample_data_1():
