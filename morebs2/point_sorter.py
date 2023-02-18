@@ -6,8 +6,7 @@ ndim_point_distance = lambda p1, p2: np.sum([np.sqrt((p1 - p2)**2)])
 
 
 def tie_sets_for_vector(vector):
-    """
-    Iterate through sorted vector for sets of
+    """Iterate through sorted vector for sets of
     indices. Tie-sets are represented as a sequence of
     (startIndex,endIndex) pairs due to vector
     being ordered.

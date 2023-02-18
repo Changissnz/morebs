@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morebs2.message_streamer &#8212; morebs 0.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for morebs2.message_streamer</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">PurePath</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">UnicodeDammit</span>
+<span class="kn">from</span> <span class="nn">.matrix_methods</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">STREAM_BLOCK_SIZE_RANGE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">633</span><span class="p">)</span>
+<span class="n">DEFAULT_STREAM_BLOCK_SIZE</span> <span class="o">=</span> <span class="mi">63</span>
+
+<div class="viewcode-block" id="MessageStreamer"><a class="viewcode-back" href="../../morebs2.html#morebs2.message_streamer.MessageStreamer">[docs]</a><span class="k">class</span> <span class="nc">MessageStreamer</span><span class="p">:</span>
+
+    <span class="n">acceptableFileExtensionForText</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.txt&quot;</span><span class="p">]</span>
+    <span class="n">acceptableFileExtensionForImage</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.jpg&quot;</span><span class="p">]</span>
+    <span class="n">acceptableEncodings</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;utf_8&quot;</span><span class="p">,</span><span class="s2">&quot;utf-8&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filePath</span><span class="p">,</span> <span class="n">streamBlockSize</span> <span class="o">=</span> <span class="n">DEFAULT_STREAM_BLOCK_SIZE</span><span class="p">,</span><span class="n">readMode</span> <span class="o">=</span> <span class="s2">&quot;rb&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        class is to &quot;stream&quot; data from .a file source, (image = jpg file)|(text = &#39;literal&#39;|&#39;csv&#39;), set `readMode` to &quot;r&quot; for reading csv files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">readMode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;rb&quot;</span><span class="p">,</span><span class="s2">&quot;r&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filePath</span> <span class="o">=</span> <span class="n">PurePath</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">=</span> <span class="n">readMode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_to_msg_alphabet</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_file</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">streamBlockSize</span> <span class="o">&gt;=</span> <span class="n">STREAM_BLOCK_SIZE_RANGE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">streamBlockSize</span> <span class="o">&lt;=</span> <span class="n">STREAM_BLOCK_SIZE_RANGE</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;stream block size inaccurate&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">streamBlockSize</span> <span class="o">=</span> <span class="n">streamBlockSize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blockData</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="MessageStreamer.file_to_msg_alphabet"><a class="viewcode-back" href="../../morebs2.html#morebs2.message_streamer.MessageStreamer.file_to_msg_alphabet">[docs]</a>    <span class="k">def</span> <span class="nf">file_to_msg_alphabet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filePath</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">MessageStreamer</span><span class="o">.</span><span class="n">acceptableFileExtensionForImage</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">messageAlphabet</span> <span class="o">=</span> <span class="n">MessageAlphabet</span><span class="o">.</span><span class="n">pixelColor</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mav</span> <span class="o">=</span> <span class="s2">&quot;pic&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">filePath</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">MessageStreamer</span><span class="o">.</span><span class="n">acceptableFileExtensionForText</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">messageAlphabet</span> <span class="o">=</span> <span class="n">MessageAlphabet</span><span class="o">.</span><span class="n">alphanumeric</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mav</span> <span class="o">=</span> <span class="s2">&quot;tex&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;file </span><span class="si">{}</span><span class="s2"> is invalid message&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filePath</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="MessageStreamer.open_file"><a class="viewcode-back" href="../../morebs2.html#morebs2.message_streamer.MessageStreamer.open_file">[docs]</a>    <span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mav</span> <span class="o">==</span> <span class="s2">&quot;pic&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filePath</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loadedPic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span><span class="o">.</span><span class="n">load</span><span class="p">()</span> <span class="c1"># CAUTION: loads entire image into memory</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">streamIndex</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_valid_text_file_encoding</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filePath</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">rm</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">streamIndex</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MessageStreamer.check_valid_text_file_encoding"><a class="viewcode-back" href="../../morebs2.html#morebs2.message_streamer.MessageStreamer.check_valid_text_file_encoding">[docs]</a>    <span class="k">def</span> <span class="nf">check_valid_text_file_encoding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mav</span> <span class="o">!=</span> <span class="s2">&quot;tex&quot;</span><span class="p">:</span> <span class="k">return</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filePath</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fi</span><span class="p">:</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">suggestion</span> <span class="o">=</span> <span class="n">UnicodeDammit</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">textEncoding</span> <span class="o">=</span> <span class="n">suggestion</span><span class="o">.</span><span class="n">original_encoding</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">textEncoding</span> <span class="ow">in</span> <span class="n">MessageStreamer</span><span class="o">.</span><span class="n">acceptableEncodings</span><span class="p">,</span> <span class="s2">&quot;text encoding </span><span class="si">{}</span><span class="s2"> is wrong&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">textEncoding</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MessageStreamer.stream_block"><a class="viewcode-back" href="../../morebs2.html#morebs2.message_streamer.MessageStreamer.stream_block">[docs]</a>    <span class="k">def</span> <span class="nf">stream_block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: block of data, terminate stream, finished stream</span>
+<span class="sd">        :rtype: list,bool,bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">blockData</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mav</span> <span class="o">==</span> <span class="s2">&quot;tex&quot;</span><span class="p">:</span>
+            <span class="k">while</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamBlockSize</span><span class="p">:</span>
+
+                <span class="c1"># case: &quot;rb&quot;</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rm</span> <span class="o">==</span> <span class="s2">&quot;rb&quot;</span><span class="p">:</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="c1"># case: &quot;r&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="n">string_to_vector</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">castFunc</span> <span class="o">=</span> <span class="n">cr</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">streamIndex</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">blockData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+                <span class="n">c</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># x then y</span>
+            <span class="k">def</span> <span class="nf">next_index</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+                <span class="n">i1</span><span class="p">,</span><span class="n">i2</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">i1</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">i1</span><span class="p">,</span> <span class="n">i2</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i2</span> <span class="o">+</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">i2</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">False</span>
+
+                <span class="k">return</span> <span class="p">(</span><span class="n">i1</span><span class="p">,</span><span class="n">i2</span><span class="p">),</span> <span class="kc">True</span>
+
+            <span class="n">sz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span><span class="o">.</span><span class="n">size</span>
+            <span class="k">while</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamBlockSize</span><span class="p">:</span>
+                <span class="c1"># read pixel</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loadedPic</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">streamIndex</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">streamIndex</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">streamIndex</span><span class="p">,</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">next_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">streamIndex</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">stat</span><span class="p">:</span> <span class="k">break</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">blockData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="n">c</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="MessageStreamer.stream"><a class="viewcode-back" href="../../morebs2.html#morebs2.message_streamer.MessageStreamer.stream">[docs]</a>    <span class="k">def</span> <span class="nf">stream</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream_block</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blockData</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_stream</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MessageStreamer.end_stream"><a class="viewcode-back" href="../../morebs2.html#morebs2.message_streamer.MessageStreamer.end_stream">[docs]</a>    <span class="k">def</span> <span class="nf">end_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">openedFile</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+
+<div class="viewcode-block" id="MessageAlphabet"><a class="viewcode-back" href="../../morebs2.html#morebs2.message_streamer.MessageAlphabet">[docs]</a><span class="k">class</span> <span class="nc">MessageAlphabet</span><span class="p">:</span>
+
+    <span class="n">alphanumeric</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">127</span><span class="p">)]</span>
+    <span class="n">pixelColor</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">)]</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">morebs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">morebs2</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Richard Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

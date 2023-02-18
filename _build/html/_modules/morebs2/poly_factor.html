@@ -1,0 +1,486 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morebs2.poly_factor &#8212; morebs 0.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for morebs2.poly_factor</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.poly_struct</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.numerical_extras</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># TODO: negative exponents</span>
+<div class="viewcode-block" id="int_split"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.int_split">[docs]</a><span class="k">def</span> <span class="nf">int_split</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span><span class="n">ratio</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    splits an integer into two values;</span>
+<span class="sd">    the magnitude of the first value is determined</span>
+<span class="sd">    by the float `ratio`</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># case: 0</span>
+    <span class="k">if</span> <span class="n">ex</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">ex</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">ex</span> <span class="o">-</span> <span class="n">p1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="modify_candidate_exponent"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.modify_candidate_exponent">[docs]</a><span class="k">def</span> <span class="nf">modify_candidate_exponent</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">modDirection</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    :param modDirection: [exponent,delta]</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">v_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">v_</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">5</span><span class="p">)</span> <span class="o">==</span> <span class="nb">round</span><span class="p">(</span><span class="n">modDirection</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">5</span><span class="p">):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">break</span>
+    <span class="k">assert</span> <span class="n">index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;invalid exponent for modification&quot;</span>
+    <span class="n">v</span><span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">modDirection</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">CEPoly</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="remainder_to_target"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.remainder_to_target">[docs]</a><span class="k">def</span> <span class="nf">remainder_to_target</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">targetPIndex</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">targetPIndex</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">valid_existing_candidate_elements_for_exponent</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">q</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">multiple_pairs_to_CEPoly</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">l</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">P</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">targetPIndex</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="valid_existing_candidate_elements_for_exponent"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.valid_existing_candidate_elements_for_exponent">[docs]</a><span class="k">def</span> <span class="nf">valid_existing_candidate_elements_for_exponent</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">targetExp</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    gets all pairs of elements (e1,e2) such that e1 in `p1`,e2 in `p2`</span>
+<span class="sd">    and pow(e1 * e2) = `targetExp`. </span>
+
+<span class="sd">    :return: list&lt;(index of p1 multiple,index of p2 multiple)&gt;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># get all possible</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">v1</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span><span class="n">v2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p2</span><span class="o">.</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">v1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">v2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">targetExp</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="o">==</span> <span class="mf">0.</span><span class="p">:</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">a</span></div>
+
+<div class="viewcode-block" id="multiple_pairs_to_CEPoly"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.multiple_pairs_to_CEPoly">[docs]</a><span class="k">def</span> <span class="nf">multiple_pairs_to_CEPoly</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">iv</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">iv</span><span class="p">:</span>
+        <span class="n">pe1</span><span class="p">,</span><span class="n">pe2</span> <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span><span class="n">p2</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">sx</span> <span class="o">=</span> <span class="p">(</span><span class="n">pe1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">pe2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pe1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">pe2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">v</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sx</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">CEPoly</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">merge_duplicates_cevector</span><span class="p">(</span><span class="n">v</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="possible_new_elements_of_factor_for_exponent"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.possible_new_elements_of_factor_for_exponent">[docs]</a><span class="k">def</span> <span class="nf">possible_new_elements_of_factor_for_exponent</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">feb</span><span class="p">,</span><span class="n">peb</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    determines the possible exponents of a new element of factor `f`</span>
+<span class="sd">    to produce a polynomial P&#39; with </span>
+<span class="sd">                `power_sequence(P&#39;) subset_in power_sequence(P&#39;)`.</span>
+
+<span class="sd">    Possible exponents for `f` that when multiplied with `p` takes a lower</span>
+<span class="sd">    priority than </span>
+
+<span class="sd">    :param f: polynomial factor to add a new element to</span>
+<span class="sd">    :param p: non-mutable factor p to solve for `fp=P`</span>
+<span class="sd">    :param feb: exponential bounds for factor f</span>
+<span class="sd">    :param peb: exponential bounds for factor p</span>
+<span class="sd">    :param P: polynomial to be factored by `f`</span>
+<span class="sd">    :param t: int|float, target exponent</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">c1</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">vp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">vp</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">v</span><span class="p">])</span>
+    <span class="n">sp</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">vp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">vp</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">v</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">feb</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">feb</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># case: x already in f</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># case:</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">t</span> <span class="o">-</span> <span class="n">x</span>
+
+        <span class="c1"># case: needed x2 falls out of the exp. bounds of p1</span>
+        <span class="k">if</span> <span class="n">x2</span> <span class="o">&gt;</span> <span class="n">peb</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">x2</span> <span class="o">&lt;</span> <span class="n">peb</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># determine if multiplying exponent x2 with any in p2 produces an</span>
+        <span class="c1"># exponent not in P</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="n">p</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">v</span><span class="p">))])</span>
+
+        <span class="c1"># case: produces exponent not in P, possibility has low priority</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">sp</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">c1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">c1</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c1</span></div>
+
+<div class="viewcode-block" id="select_median_in_sequence"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.select_median_in_sequence">[docs]</a><span class="k">def</span> <span class="nf">select_median_in_sequence</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">m</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">m</span> <span class="o">&gt;=</span> <span class="mf">0.</span> <span class="ow">and</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">1.</span><span class="p">,</span> <span class="s2">&quot;invalid median ratio&quot;</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">l</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="median_sort"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.median_sort">[docs]</a><span class="k">def</span> <span class="nf">median_sort</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">m</span><span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+    <span class="n">s_</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">s_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">select_median_in_sequence</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">m</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">s_</span></div>
+
+<span class="c1"># TODO: rational numbers</span>
+<span class="c1"># TODO: make sure bounds for multiple is accurate</span>
+<div class="viewcode-block" id="decisive_guess_sequence_experimental"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.decisive_guess_sequence_experimental">[docs]</a><span class="k">def</span> <span class="nf">decisive_guess_sequence_experimental</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">complementFactor</span><span class="p">,</span><span class="n">remainingInsertions</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">remainingInsertions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">%</span> <span class="n">complementFactor</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[],</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="n">complementFactor</span><span class="p">)],</span> <span class="kc">True</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="n">complementFactor</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="decisive_guess_sequence"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.decisive_guess_sequence">[docs]</a><span class="k">def</span> <span class="nf">decisive_guess_sequence</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">complementFactor</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">c</span> <span class="o">/</span> <span class="n">complementFactor</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">d</span><span class="p">)]</span> </div>
+
+<span class="c1"># TODO: negative exponents</span>
+<div class="viewcode-block" id="PolyFactorEst"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst">[docs]</a><span class="k">class</span> <span class="nc">PolyFactorEst</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">==</span> <span class="n">CEPoly</span><span class="p">,</span> <span class="s2">&quot;invalid polynomial&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plabels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_bounds_multiples</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ibm_cache</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmpCache</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guessCount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elimCount</span> <span class="o">=</span> <span class="mi">0</span> 
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pindex</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">f2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="PolyFactorEst.guess"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.guess">[docs]</a>    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">median</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">stat</span><span class="p">:</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">guess_iteration</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_factor_guess</span><span class="p">()</span> </div>
+
+<div class="viewcode-block" id="PolyFactorEst.guess_iteration"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.guess_iteration">[docs]</a>    <span class="k">def</span> <span class="nf">guess_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">guess_insertion</span><span class="p">():</span>
+            <span class="k">continue</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.guess_insertion"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.guess_insertion">[docs]</a>    <span class="k">def</span> <span class="nf">guess_insertion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">stat</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;solved&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;not solved&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># pop element from cache</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">a1</span><span class="p">,</span><span class="n">a2</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analyze_factor_pair</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;analysis: </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span><span class="n">a2</span><span class="p">))</span>
+
+        <span class="c1"># case: invalid factor-pair guess</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">a2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elimCount</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># case: no more remaining non-null powers for P;</span>
+        <span class="c1">#       check for .</span>
+        <span class="k">if</span> <span class="n">a1</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">))</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">f1</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">f2</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guess_insertion_candidates</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">a1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">guess_insertion_candidates</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">a1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UDPATE&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmpCache</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-@-@-@-@-@&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guessCount</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmpCache</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tmpCache</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmpCache</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.set_exponential_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.set_exponential_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">set_exponential_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p1eb</span><span class="p">,</span><span class="n">p2eb</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        used in initial hypothesis</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">p1eb</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">p1eb</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">p1eb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p1eb</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;polynomial 1 exponential bounds&quot;</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">p2eb</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">p2eb</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">p2eb</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p2eb</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;polynomial 2 exponential bounds&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span> <span class="o">=</span> <span class="n">p1eb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span> <span class="o">=</span> <span class="n">p2eb</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.initial_bounds_hypothesis"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.initial_bounds_hypothesis">[docs]</a>    <span class="k">def</span> <span class="nf">initial_bounds_hypothesis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">median</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="c1"># case: P has length 1</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">v</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1">#self.p.v[0]</span>
+            <span class="k">return</span>
+
+        <span class="c1"># case: P has length &gt;= 2</span>
+            <span class="c1"># choose the multiples</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">median_sort</span><span class="p">(</span><span class="n">all_multiple_pairs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span><span class="n">median</span><span class="p">)</span>
+        <span class="n">m2</span> <span class="o">=</span> <span class="n">median_sort</span><span class="p">(</span><span class="n">all_multiple_pairs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span><span class="n">median</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ibm_cache</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,[]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_bounds_multiples</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">m2</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_factor_guess</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">p1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">p2</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">f2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.set_factor_guess"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.set_factor_guess">[docs]</a>    <span class="k">def</span> <span class="nf">set_factor_guess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        declares each </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_bounds_multiples</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># case: second multiple-pair candidate list exhausted </span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ibm_cache</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ibm_cache</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_bounds_multiples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ibm_cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_bounds_multiples</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">mdn2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ibm_cache</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ibm_cache</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span><span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span><span class="p">[</span><span class="mi">1</span><span class="p">]),(</span><span class="n">mdn2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ibm_cache</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span><span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span><span class="p">[</span><span class="mi">1</span><span class="p">]),(</span><span class="n">mdn2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p1</span> <span class="o">=</span> <span class="n">CEPoly</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p2</span> <span class="o">=</span> <span class="n">CEPoly</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">),</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.guess_insertion_candidates"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.guess_insertion_candidates">[docs]</a>    <span class="k">def</span> <span class="nf">guess_insertion_candidates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pid</span><span class="p">,</span><span class="n">pindex</span><span class="p">):</span>
+        <span class="n">ex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">pindex</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">(</span><span class="n">exp1</span><span class="p">,</span><span class="n">coeff</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_max_exponent_w_complement_for_factor</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span><span class="n">ex</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">coeff</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="c1"># guess the possible coefficients</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">decisive_guess_sequence</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="n">pindex</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span><span class="n">coeff</span><span class="p">)</span>
+        
+        <span class="c1"># add candidates to tmp cache</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">),</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="c1"># make the CEPoly</span>
+            
+            <span class="n">px</span> <span class="o">=</span> <span class="n">CEPoly</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="n">exp1</span><span class="p">:</span> <span class="n">x</span><span class="p">})</span>
+            
+            <span class="c1"># add the CEPoly</span>
+            <span class="n">qx</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+            <span class="n">qx</span><span class="p">[(</span><span class="n">pid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">qx</span><span class="p">[(</span><span class="n">pid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">px</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tmpCache</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="PolyFactorEst.new_max_exponent_w_complement_for_factor"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.new_max_exponent_w_complement_for_factor">[docs]</a>    <span class="k">def</span> <span class="nf">new_max_exponent_w_complement_for_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pid</span><span class="p">,</span><span class="n">te</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param pid:</span>
+<span class="sd">        :param te:</span>
+<span class="sd">        :return: (exponent for factor `pid`, coefficient of complement)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">new_elements</span> <span class="o">=</span> <span class="n">possible_new_elements_of_factor_for_exponent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">te</span><span class="p">)</span>\
+                <span class="k">if</span> <span class="n">pid</span> <span class="k">else</span> <span class="n">possible_new_elements_of_factor_for_exponent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">te</span><span class="p">)</span>
+
+        <span class="c1"># iterate through and get the element with the </span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">new_elements</span><span class="p">:</span>
+            <span class="n">n2</span> <span class="o">=</span> <span class="n">te</span> <span class="o">-</span> <span class="n">n</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="o">.</span><span class="n">c_of_p</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span> <span class="k">if</span> <span class="n">pid</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="o">.</span><span class="n">c_of_p</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.analyze_factor_pair"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.analyze_factor_pair">[docs]</a>    <span class="k">def</span> <span class="nf">analyze_factor_pair</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        perform analysis of p1 and p2. </span>
+
+<span class="sd">                - First output:</span>
+<span class="sd">        Determine the first element from the max in `P` that requires</span>
+<span class="sd">        insertions.</span>
+
+<span class="sd">                - Second output: </span>
+<span class="sd">        If `p1 * p2` produces a polynomial with exponents that parent </span>
+<span class="sd">        polynomial `P` does not own, and there does not exist possible</span>
+<span class="sd">        new insertions into either `p1` and `p2` that can cancel out </span>
+<span class="sd">        the excess exponents, output `False`. Otherwise, `True`. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1">###</span>
+        <span class="c1">#print(&quot;analyzing&quot;)</span>
+        <span class="c1">#print(&quot;P1: {}&quot;,str(self.p1))</span>
+        <span class="c1">#print(&quot;P2: {}&quot;,str(self.p2))</span>
+        <span class="c1">#print(&quot;----------------------&quot;)</span>
+        <span class="c1">###</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">excess_element_analysis</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span><span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unequal_element_analysis</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span><span class="kc">False</span>
+
+        <span class="n">px</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">p2</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">q</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">v</span><span class="p">):</span>
+            <span class="n">c2</span> <span class="o">=</span> <span class="n">px</span><span class="o">.</span><span class="n">c_of_p</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">c2</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> <span class="n">c2</span> <span class="o">=</span> <span class="mf">0.</span>
+
+            <span class="k">if</span> <span class="nb">round</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.excess_element_analysis"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.excess_element_analysis">[docs]</a>    <span class="k">def</span> <span class="nf">excess_element_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">es</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">)</span><span class="o">.</span><span class="n">exponential_subtract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">es</span><span class="p">:</span>
+            <span class="c1"># possible elements </span>
+            <span class="n">q1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">possible_new_elements_of_factor_for_exponent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">s</span><span class="p">))</span>
+            <span class="n">q2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">possible_new_elements_of_factor_for_exponent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">s</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">q1</span> <span class="o">+</span> <span class="n">q2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> 
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.unequal_element_analysis"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.unequal_element_analysis">[docs]</a>    <span class="k">def</span> <span class="nf">unequal_element_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">p3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">p2</span>
+        <span class="n">exp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">p3</span><span class="o">.</span><span class="n">v</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">c_of_p</span><span class="p">(</span><span class="n">v_</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">-</span> <span class="n">v_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">:</span>
+                <span class="n">exp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v_</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">exp</span><span class="p">:</span>
+            <span class="n">q1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">possible_new_elements_of_factor_for_exponent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">s</span><span class="p">))</span>
+            <span class="n">q2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">possible_new_elements_of_factor_for_exponent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p2</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p2eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p1eb</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">,</span><span class="n">s</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">q1</span> <span class="o">+</span> <span class="n">q2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.check_valid_guess"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.check_valid_guess">[docs]</a>    <span class="k">def</span> <span class="nf">check_valid_guess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="PolyFactorEst.poly_type"><a class="viewcode-back" href="../../morebs2.html#morebs2.poly_factor.PolyFactorEst.poly_type">[docs]</a>    <span class="k">def</span> <span class="nf">poly_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plabels</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">v</span><span class="p">:</span>
+            <span class="c1"># no more searching needed.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plabels</span> <span class="o">==</span> <span class="p">{</span><span class="nb">complex</span><span class="p">,</span><span class="s2">&quot;q&quot;</span><span class="p">}:</span> <span class="k">break</span>
+
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">complex</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plabels</span> <span class="o">|=</span> <span class="p">{</span><span class="nb">complex</span><span class="p">}</span>
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="n">x</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plabels</span> <span class="o">|=</span> <span class="p">{</span><span class="s2">&quot;q&quot;</span><span class="p">}</span>
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">morebs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">morebs2</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Richard Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

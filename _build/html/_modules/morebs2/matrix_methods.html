@@ -1,0 +1,1054 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morebs2.matrix_methods &#8212; morebs 0.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for morebs2.matrix_methods</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.globalls</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<div class="viewcode-block" id="equal_iterables"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.equal_iterables">[docs]</a><span class="k">def</span> <span class="nf">equal_iterables</span><span class="p">(</span><span class="n">i1</span><span class="p">,</span> <span class="n">i2</span><span class="p">,</span> <span class="n">roundPlaces</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    equal_iterables</span>
+
+<span class="sd">    :param i1: iterable</span>
+<span class="sd">    :type i1: iter</span>
+<span class="sd">    :param i2: iterable</span>
+<span class="sd">    :type i2: iter</span>
+<span class="sd">    :param roundPlaces: positive int.</span>
+<span class="sd">    :type roundPlaces: int</span>
+<span class="sd">    :return: equal_iterables</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">i2</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    if np.all(np.equal(np.round(i1, roundPlaces), np.round(i2, roundPlaces)) == True): return True</span>
+<span class="sd">    return False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">i1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">i2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">q</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="n">roundPlaces</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="indices_of_vector_in_matrix"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.indices_of_vector_in_matrix">[docs]</a><span class="k">def</span> <span class="nf">indices_of_vector_in_matrix</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_2dmatrix</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_vector</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="s2">&quot;invalid criteria&quot;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span> <span class="n">indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="is_2dmatrix"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_2dmatrix">[docs]</a><span class="k">def</span> <span class="nf">is_2dmatrix</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="is_bounds_vector"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_bounds_vector">[docs]</a><span class="k">def</span> <span class="nf">is_bounds_vector</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">is_2dmatrix</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">q</span><span class="p">:</span> <span class="k">return</span> <span class="n">q</span>
+    <span class="k">return</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="is_vector"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_vector">[docs]</a><span class="k">def</span> <span class="nf">is_vector</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="is_binary_vector"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_binary_vector">[docs]</a><span class="k">def</span> <span class="nf">is_binary_vector</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_vector</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="s2">&quot;invalid vector&quot;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">q</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span></div>
+
+<div class="viewcode-block" id="is_valid_point"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_valid_point">[docs]</a><span class="k">def</span> <span class="nf">is_valid_point</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;point cannot be np.ndarray&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">False</span><span class="c1"># or type(point[0]) is float): return False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="np_array_to_string"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.np_array_to_string">[docs]</a><span class="k">def</span> <span class="nf">np_array_to_string</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;not np.ndarray&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span></div>
+
+<span class="c1"># TODO: expand on criteria</span>
+<span class="c1"># TODO: unused</span>
+<div class="viewcode-block" id="frequency_count_over_2dmatrix"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.frequency_count_over_2dmatrix">[docs]</a><span class="k">def</span> <span class="nf">frequency_count_over_2dmatrix</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">floatValue</span><span class="p">,</span> <span class="n">rowOrColumn</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="n">r</span><span class="p">,</span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">a</span> <span class="o">==</span> <span class="n">floatValue</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rowOrColumn</span> <span class="o">==</span> <span class="s2">&quot;r&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="n">r</span>
+    <span class="k">elif</span> <span class="n">rowOrColumn</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="n">c</span>
+    <span class="k">return</span> <span class="n">r</span><span class="p">,</span><span class="n">c</span></div>
+
+<span class="c1"># TODO: test</span>
+<div class="viewcode-block" id="range_intersection"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.range_intersection">[docs]</a><span class="k">def</span> <span class="nf">range_intersection</span><span class="p">(</span><span class="n">range1</span><span class="p">,</span><span class="n">range2</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">range1</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">range2</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">tuple</span><span class="p">,</span> <span class="s2">&quot;invalid arg. tuple&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">range1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">range2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;invalid tuple size&quot;</span>
+    <span class="k">assert</span> <span class="n">range1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">range1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">range2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">range2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;invalid ranges, [min,max]&quot;</span>
+
+    <span class="c1"># check range 1</span>
+    <span class="k">if</span> <span class="n">range1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">range2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">range1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">range2</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">range1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">range2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">range1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">range2</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># check range 2</span>
+    <span class="k">if</span> <span class="n">range2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">range1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">range2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">range1</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">range2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">range1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">range2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">range1</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+<span class="c1"># TODO: test</span>
+<div class="viewcode-block" id="complement_of_range_in_range"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.complement_of_range_in_range">[docs]</a><span class="k">def</span> <span class="nf">complement_of_range_in_range</span><span class="p">(</span><span class="n">range1</span><span class="p">,</span> <span class="n">range2</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">range1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">range1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;invalid range 1&quot;</span>
+    <span class="k">if</span> <span class="n">range2</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">range1</span>
+
+    <span class="k">assert</span> <span class="n">range2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">range2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;invalid range 2&quot;</span>
+    <span class="k">assert</span> <span class="n">range2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">range1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">range2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">range1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;range 2 not in range 1&quot;</span>
+
+    <span class="n">filter_null_range</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="kc">False</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>\
+                                <span class="o">&lt;=</span> <span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="mi">5</span> <span class="k">else</span> <span class="kc">True</span>
+
+    <span class="n">q1</span> <span class="o">=</span> <span class="p">(</span><span class="n">range1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">range2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">q2</span> <span class="o">=</span> <span class="p">(</span><span class="n">range2</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">range1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">filter_null_range</span><span class="p">(</span><span class="n">q1</span><span class="p">):</span> <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">filter_null_range</span><span class="p">(</span><span class="n">q2</span><span class="p">):</span> <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">- 2dmatrix, sequence of values, partition centers</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="central_sequence_of_sequence"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.central_sequence_of_sequence">[docs]</a><span class="k">def</span> <span class="nf">central_sequence_of_sequence</span><span class="p">(</span><span class="n">ps</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span> <span class="ow">is</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="s2">&quot;invalid partition sequence&quot;</span>
+
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">ps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ps</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ps</span><span class="p">)):</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="n">ps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">ps</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">cs</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">center</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span></div>
+
+<span class="c1">################################################ START: area measures</span>
+<div class="viewcode-block" id="is_valid_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_valid_area">[docs]</a><span class="k">def</span> <span class="nf">is_valid_area</span><span class="p">(</span><span class="n">area</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Area is 2 x 2 matrix in which [0] represents bottom left, [1] represents upper right.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">is_2dmatrix</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="k">else</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">area</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">area</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="dim_of_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.dim_of_area">[docs]</a><span class="k">def</span> <span class="nf">dim_of_area</span><span class="p">(</span><span class="n">area</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">area</span><span class="p">),</span> <span class="s2">&quot;invalid area&quot;</span>
+    <span class="k">return</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="value_of_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.value_of_area">[docs]</a><span class="k">def</span> <span class="nf">value_of_area</span><span class="p">(</span><span class="n">area</span><span class="p">):</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="n">dim_of_area</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="area_in_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.area_in_area">[docs]</a><span class="k">def</span> <span class="nf">area_in_area</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">is a1 in a2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">a2</span><span class="p">),</span> <span class="s2">&quot;input are not areas&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]):</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="area_intersects"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.area_intersects">[docs]</a><span class="k">def</span> <span class="nf">area_intersects</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">a2</span><span class="p">),</span> <span class="s2">&quot;input are not areas&quot;</span>
+
+    <span class="c1"># left bottom</span>
+        <span class="c1"># intersects</span>
+    <span class="c1"># bottom left</span>
+    <span class="k">if</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>\
+        <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># upper left</span>
+    <span class="k">if</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>\
+        <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># bottom right</span>
+    <span class="k">if</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>\
+        <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># upper right</span>
+    <span class="k">if</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>\
+        <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">a2</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+<span class="c1"># TODO: necessary?</span>
+<div class="viewcode-block" id="is_area_qualified"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_area_qualified">[docs]</a><span class="k">def</span> <span class="nf">is_area_qualified</span><span class="p">(</span><span class="n">unqualified</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">unqualified</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">area_intersects</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<span class="c1"># TODO: test</span>
+<div class="viewcode-block" id="point_in_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.point_in_area">[docs]</a><span class="k">def</span> <span class="nf">point_in_area</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_valid_point</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="is_point_qualified"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_point_qualified">[docs]</a><span class="k">def</span> <span class="nf">is_point_qualified</span><span class="p">(</span><span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">unqualifiedAreas</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">point_in_area</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<span class="c1"># UPDATE:</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">if degree in [0,90,180,270],</span>
+
+<span class="sd">0: 0</span>
+<span class="sd">90: 1</span>
+<span class="sd">180: 2</span>
+<span class="sd">270: 3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="quadrant_of_corner_point_in_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.quadrant_of_corner_point_in_area">[docs]</a><span class="k">def</span> <span class="nf">quadrant_of_corner_point_in_area</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+
+    <span class="c1">#deg = degree</span>
+    <span class="c1">#def angle_between_two_points_clockwise(startX, endX):</span>
+    <span class="c1">##print(&quot;AREA &quot;, area)</span>
+
+    <span class="n">corners</span> <span class="o">=</span> <span class="n">area_to_corners</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">indices_of_vector_in_matrix</span><span class="p">(</span><span class="n">corners</span><span class="p">,</span> <span class="n">cp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;quadrant for corner point </span><span class="si">{}</span><span class="s2"> could not be obtained for</span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cp</span><span class="p">,</span> <span class="n">corners</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<span class="c1">############################################ END: area</span>
+
+<span class="c1">############################################ START: qualifying area search</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">incrementInfo: dict, keys are [str::&quot;axis&quot; = x|y, float::&quot;increment&quot;]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="extreme_xy_from_point"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.extreme_xy_from_point">[docs]</a><span class="k">def</span> <span class="nf">extreme_xy_from_point</span><span class="p">(</span><span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">incrementInfo</span><span class="p">):</span>
+    <span class="c1"># set up increment and qualifying methods for point increment</span>
+    <span class="k">if</span> <span class="n">incrementInfo</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">incrementInfo</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span> <span class="n">qf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">qf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="n">ifunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">incrementInfo</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">incrementInfo</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">incrementInfo</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span> <span class="n">qf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span> <span class="n">qf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="n">ifunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">incrementInfo</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid axis&quot;</span><span class="p">)</span>
+
+    <span class="c1"># increment</span>
+    <span class="n">prev</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">pp</span> <span class="o">=</span> <span class="n">point</span>
+    <span class="k">while</span> <span class="n">qf</span><span class="p">(</span><span class="n">pp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_point_qualified</span><span class="p">(</span><span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">pp</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="n">pp</span>
+        <span class="n">pp</span> <span class="o">=</span> <span class="n">ifunc</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">prev</span></div>
+
+<span class="c1"># TODO: implement this.</span>
+<div class="viewcode-block" id="greatest_qualifying_area_in_vector_direction"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.greatest_qualifying_area_in_vector_direction">[docs]</a><span class="k">def</span> <span class="nf">greatest_qualifying_area_in_vector_direction</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">incrementDirections</span><span class="p">,</span> <span class="n">areaWanted</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<span class="c1"># TODO: areaWanted needs to be tested.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">description:</span>
+<span class="sd">- approximately determines the greatest quadrilateral with point as one of the four corner points.</span>
+<span class="sd">  Given the start `point`, determines the extreme x and extreme y point using `incrementDirections`.</span>
+
+<span class="sd">arguments:</span>
+<span class="sd">- point: iterable, length 2</span>
+<span class="sd">- unqualifiedAreas: np.ndarray, n x 2 x 2</span>
+<span class="sd">- area: np.ndarray, 2 x 2</span>
+<span class="sd">- incrementDirections: dict, (increment::float), (direction::((0&amp;1)::(1|-1)))</span>
+<span class="sd">- areaWanted: max|xmax|ymax</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="greatest_qualifying_area_in_direction"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.greatest_qualifying_area_in_direction">[docs]</a><span class="k">def</span> <span class="nf">greatest_qualifying_area_in_direction</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">incrementDirections</span><span class="p">,</span> <span class="n">areaWanted</span><span class="p">):</span>
+
+    <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">float</span> <span class="ow">and</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;inc. wrong type&quot;</span>
+    <span class="k">assert</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;direction&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;axis 0 inc. wrong&quot;</span>
+    <span class="k">assert</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;direction&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;axis 1 inc. wrong&quot;</span>
+
+    <span class="c1"># extreme x</span>
+    <span class="n">id1</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="n">id1</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;direction&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">pointX</span> <span class="o">=</span> <span class="n">greatest_qualifying_fourway_point_at_point</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">id1</span><span class="p">)</span>
+
+    <span class="c1"># extreme y</span>
+    <span class="n">id2</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="n">id2</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;direction&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pointY</span> <span class="o">=</span> <span class="n">greatest_qualifying_fourway_point_at_point</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">id2</span><span class="p">)</span>
+
+    <span class="c1"># TODO: refactor below.</span>
+    <span class="k">if</span> <span class="n">areaWanted</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
+        <span class="c1"># get other extremes</span>
+        <span class="n">maxYGivenX</span> <span class="o">=</span> <span class="n">greatest_qualifying_fourway_point_at_point</span><span class="p">(</span><span class="n">pointX</span><span class="p">,</span> <span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">id2</span><span class="p">)</span>
+        <span class="n">maxXGivenY</span> <span class="o">=</span> <span class="n">greatest_qualifying_fourway_point_at_point</span><span class="p">(</span><span class="n">pointY</span><span class="p">,</span> <span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">id1</span><span class="p">)</span>
+
+        <span class="c1"># get areas for each</span>
+        <span class="c1">#   [0]</span>
+        <span class="n">mp1</span> <span class="o">=</span> <span class="n">missing_area_point_for_three_points</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">maxYGivenX</span><span class="p">,</span> <span class="n">pointX</span><span class="p">,</span> <span class="n">point</span><span class="p">]))</span>
+        <span class="n">area1</span> <span class="o">=</span> <span class="n">trim_area</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">corners_to_area</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">maxYGivenX</span><span class="p">,</span> <span class="n">pointX</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">mp1</span><span class="p">])))</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="n">value_of_area</span><span class="p">(</span><span class="n">area1</span><span class="p">)</span>
+        <span class="c1">#   [1]</span>
+        <span class="n">mp2</span> <span class="o">=</span> <span class="n">missing_area_point_for_three_points</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">maxXGivenY</span><span class="p">,</span> <span class="n">pointY</span><span class="p">,</span> <span class="n">point</span><span class="p">]))</span>
+        <span class="n">area2</span> <span class="o">=</span> <span class="n">trim_area</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">corners_to_area</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">maxXGivenY</span><span class="p">,</span> <span class="n">pointY</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">mp2</span><span class="p">])))</span>
+
+        <span class="n">a2</span> <span class="o">=</span> <span class="n">value_of_area</span><span class="p">(</span><span class="n">area2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">a1</span> <span class="o">&gt;</span> <span class="n">a2</span><span class="p">:</span> <span class="k">return</span> <span class="n">area1</span>
+        <span class="k">return</span> <span class="n">area2</span>
+
+    <span class="k">elif</span> <span class="n">areaWanted</span> <span class="o">==</span> <span class="s2">&quot;xmax&quot;</span><span class="p">:</span>
+        <span class="n">maxYGivenX</span> <span class="o">=</span> <span class="n">greatest_qualifying_fourway_point_at_point</span><span class="p">(</span><span class="n">pointX</span><span class="p">,</span> <span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">id2</span><span class="p">)</span>
+        <span class="n">mp1</span> <span class="o">=</span> <span class="n">missing_area_point_for_three_points</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">maxYGivenX</span><span class="p">,</span> <span class="n">pointX</span><span class="p">,</span> <span class="n">point</span><span class="p">]))</span>
+        <span class="n">area1</span> <span class="o">=</span> <span class="n">trim_area</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">corners_to_area</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">maxYGivenX</span><span class="p">,</span> <span class="n">pointX</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">mp1</span><span class="p">])))</span>
+        <span class="k">return</span> <span class="n">area1</span>
+
+    <span class="k">elif</span> <span class="n">areaWanted</span> <span class="o">==</span> <span class="s2">&quot;ymax&quot;</span><span class="p">:</span>
+        <span class="n">maxXGivenY</span> <span class="o">=</span> <span class="n">greatest_qualifying_fourway_point_at_point</span><span class="p">(</span><span class="n">pointY</span><span class="p">,</span> <span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">id1</span><span class="p">)</span>
+        <span class="n">mp2</span> <span class="o">=</span> <span class="n">missing_area_point_for_three_points</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">maxXGivenY</span><span class="p">,</span> <span class="n">pointY</span><span class="p">,</span> <span class="n">point</span><span class="p">]))</span>
+        <span class="n">area2</span> <span class="o">=</span> <span class="n">trim_area</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">corners_to_area</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">maxXGivenY</span><span class="p">,</span> <span class="n">pointY</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">mp2</span><span class="p">])))</span>
+        <span class="k">return</span> <span class="n">area2</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid wanted area arg.&quot;</span><span class="p">)</span></div>
+
+<span class="c1"># TODO: problem: what if want x &gt; y or y &lt; x ?</span>
+
+<span class="c1"># TODO: code this. delete above.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">iterate from .min x (point) in `incrementDirections` at in</span>
+
+<span class="sd">incrementDirections: increment|axis</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="greatest_qualifying_fourway_point_at_point"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.greatest_qualifying_fourway_point_at_point">[docs]</a><span class="k">def</span> <span class="nf">greatest_qualifying_fourway_point_at_point</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">incrementDirections</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">term</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">point</span> <span class="o">&gt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]]</span> <span class="k">else</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1">##assert not (increment &lt; 0), &quot;invalid increment&quot;</span>
+        <span class="n">term</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">point</span> <span class="o">&lt;=</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]]</span> <span class="k">else</span> <span class="kc">False</span>
+
+    <span class="n">inc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]]</span> <span class="o">+</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span>\
+                <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]]</span> <span class="o">+</span> <span class="n">incrementDirections</span><span class="p">[</span><span class="s2">&quot;increment&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">prevPoint</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">point_</span> <span class="o">=</span> <span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">while</span> <span class="n">point_in_area</span><span class="p">(</span><span class="n">point_</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+        <span class="c1"># check for qual</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_point_qualified</span><span class="p">(</span><span class="n">unqualifiedAreas</span><span class="p">,</span> <span class="n">point_</span><span class="p">):</span> <span class="k">break</span>
+        <span class="n">prevPoint</span> <span class="o">=</span> <span class="n">point_</span>
+        <span class="n">point_</span> <span class="o">=</span> <span class="n">inc</span><span class="p">(</span><span class="n">point_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prevPoint</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">description:</span>
+<span class="sd">- given a 4 x 2 matrix with each element a corner, determines the lower left and upper</span>
+<span class="sd">  right points.</span>
+
+<span class="sd">arguments:</span>
+<span class="sd">- fourSizedArea: 4 x 2 np.ndarray</span>
+
+<span class="sd">return:</span>
+<span class="sd">- 2 x 2 np.ndarray</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="corners_to_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.corners_to_area">[docs]</a><span class="k">def</span> <span class="nf">corners_to_area</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">fourSizedArea</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">4</span>\
+        <span class="ow">or</span> <span class="n">fourSizedArea</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># get min x, min y</span>
+    <span class="n">minXIndices</span><span class="p">,</span> <span class="n">minYIndices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])),</span>\
+                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">minXIndices</span><span class="p">,</span> <span class="n">minYIndices</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MI&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">minXIndices</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">minYIndices</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">FSA&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;points do not compose an area&quot;</span><span class="p">)</span>
+    <span class="n">minPoint</span> <span class="o">=</span> <span class="n">fourSizedArea</span><span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+    <span class="c1">#   frequency count, minPoint[0] occurs twice, minPoint[1] occurs twice</span>
+    <span class="n">locs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">minPoint</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">locs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x coord. violation 1&quot;</span><span class="p">)</span>
+
+    <span class="n">locs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">minPoint</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">locs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;y coord. violation 1&quot;</span><span class="p">)</span>
+
+    <span class="c1"># get max x, max y</span>
+    <span class="n">maxXIndices</span><span class="p">,</span> <span class="n">maxYIndices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])),</span>\
+                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">maxXIndices</span><span class="p">,</span> <span class="n">maxYIndices</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;points do not compose an area&quot;</span><span class="p">)</span>
+    <span class="n">maxPoint</span> <span class="o">=</span> <span class="n">fourSizedArea</span><span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+    <span class="c1">#   frequency count, maxPoint[0] occurs twice, maxPoint[1] occurs twice</span>
+    <span class="n">locs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">maxPoint</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">locs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x coord. violation 1&quot;</span><span class="p">)</span>
+
+    <span class="n">locs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">fourSizedArea</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">maxPoint</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">locs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;y coord. violation 1&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">minPoint</span><span class="p">,</span> <span class="n">maxPoint</span><span class="p">])</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="trim_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.trim_area">[docs]</a><span class="k">def</span> <span class="nf">trim_area</span><span class="p">(</span><span class="n">totalArea</span><span class="p">,</span> <span class="n">area</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">totalArea</span><span class="p">),</span> <span class="s2">&quot;invalid total area&quot;</span>
+    <span class="k">assert</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">area</span><span class="p">),</span> <span class="s2">&quot;invalid area&quot;</span>
+    <span class="c1"># check min x</span>
+        <span class="c1"># case: less than min x total</span>
+    <span class="k">if</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># case: greater than max x total</span>
+    <span class="k">elif</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># check min y</span>
+        <span class="c1"># case: less than min y total</span>
+    <span class="k">if</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># case: greater than max y total</span>
+    <span class="k">elif</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># check max x</span>
+        <span class="c1"># case: greater than max x total</span>
+    <span class="k">if</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># case: less than min x total</span>
+    <span class="k">elif</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># check max y</span>
+        <span class="c1"># case: greater than max y total</span>
+    <span class="k">if</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># case: less than min y total</span>
+    <span class="k">elif</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">totalArea</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">area</span></div>
+
+<span class="c1"># TODO: matrix index accessor (using list of int.)</span>
+<span class="c1"># TODO: approximate decimals to 5 places.</span>
+
+<span class="c1"># TODO: needs to be tested.</span>
+
+<span class="c1"># TODO: does not perform argument check on three points!</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">description:</span>
+<span class="sd">- determines the missing rectangular area point given three points.</span>
+
+<span class="sd">arguments:</span>
+<span class="sd">- threePoints: numpy array.</span>
+
+<span class="sd">return:</span>
+<span class="sd">- (float,float)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="missing_area_point_for_three_points"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.missing_area_point_for_three_points">[docs]</a><span class="k">def</span> <span class="nf">missing_area_point_for_three_points</span><span class="p">(</span><span class="n">threePoints</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_2dmatrix</span><span class="p">(</span><span class="n">threePoints</span><span class="p">)</span>
+
+    <span class="c1"># find the center point</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">center_point</span><span class="p">(</span><span class="n">threePoints</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;[0] points given is invalid area&quot;</span><span class="p">)</span>
+    <span class="n">center</span> <span class="o">=</span> <span class="n">threePoints</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+    <span class="c1"># find the extreme-y point</span>
+    <span class="n">index2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">threePoints</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">index2</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;[1] points given is invalid area&quot;</span><span class="p">)</span>
+    <span class="n">yPoint</span> <span class="o">=</span> <span class="n">threePoints</span><span class="p">[</span><span class="n">index2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">index2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">index</span> <span class="k">else</span> <span class="n">index2</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+    <span class="c1"># find the extreme-x point</span>
+    <span class="n">index3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">threePoints</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">index3</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;[2] points given is invalid area&quot;</span><span class="p">)</span>
+    <span class="n">xPoint</span> <span class="o">=</span> <span class="n">threePoints</span><span class="p">[</span><span class="n">index3</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">index3</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">index</span> <span class="k">else</span> <span class="n">index3</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">xPoint</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yPoint</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<span class="c1"># TODO: untested, wrong</span>
+<div class="viewcode-block" id="other_points_for_two_points_in_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.other_points_for_two_points_in_area">[docs]</a><span class="k">def</span> <span class="nf">other_points_for_two_points_in_area</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_2dmatrix</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">),</span> <span class="s2">&quot;invalid points&quot;</span>
+    <span class="k">assert</span> <span class="n">twoPoints</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">twoPoints</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;invalid shape for points&quot;</span>
+
+    <span class="c1"># quads</span>
+    <span class="c1"># 0 -&gt; (max,max)</span>
+    <span class="c1"># 1 -&gt; (min,max)</span>
+    <span class="c1"># 2 -&gt; (min,min)</span>
+    <span class="c1"># 3 -&gt; (max,min)</span>
+    <span class="c1">## can only obtain 1 and 3</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    assert abs(twoPoints[0,0] - twoPoints[1,0]) &gt; 10 ** -5, &quot;two points cannot have same x-coord.&quot;</span>
+<span class="sd">    assert abs(twoPoints[0,1] - twoPoints[1,1]) &gt; 10 ** -5, &quot;two points cannot have same y-coord.&quot;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1">####</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">[[55.      75.     ]</span>
+<span class="sd"> [54.95113 77.79957]]</span>
+
+
+<span class="sd">min,min</span>
+<span class="sd">54,75</span>
+
+<span class="sd">max,max</span>
+<span class="sd">55,77</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1">####</span>
+
+    <span class="c1"># check which corners are which</span>
+
+    <span class="c1"># get 1</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="c1"># get 3</span>
+    <span class="n">p3</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">p1</span><span class="p">,</span><span class="n">p3</span><span class="p">)</span></div>
+
+<span class="c1"># TODO: untested</span>
+<div class="viewcode-block" id="two_points_to_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.two_points_to_area">[docs]</a><span class="k">def</span> <span class="nf">two_points_to_area</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">):</span>
+
+    <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">twoPoints</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;two points cannot have same x-coord.&quot;</span>
+    <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">twoPoints</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;two points cannot have same y-coord.&quot;</span>
+
+    <span class="n">p0</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">p1</span> <span class="o">=</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">p3</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">twoPoints</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p0</span><span class="p">,</span><span class="n">p1</span><span class="p">,</span><span class="n">p2</span><span class="p">,</span><span class="n">p3</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">corners_to_area</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="diagonal_line_from_corner_point_in_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.diagonal_line_from_corner_point_in_area">[docs]</a><span class="k">def</span> <span class="nf">diagonal_line_from_corner_point_in_area</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">cornerPoint</span><span class="p">):</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">quadrant_of_corner_point_in_area</span><span class="p">(</span><span class="n">area</span><span class="p">,</span><span class="n">cornerPoint</span><span class="p">)</span>
+    <span class="n">q2</span> <span class="o">=</span> <span class="p">(</span><span class="n">q</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">%</span> <span class="mi">4</span>
+    <span class="k">return</span> <span class="n">Line</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">q</span><span class="p">,</span><span class="n">q2</span><span class="p">]))</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">description:</span>
+<span class="sd">- given three points that form a right angle, determines the point in the middle.</span>
+<span class="sd">  If the three points do not form a right angle, then returns -1 .</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="center_point"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.center_point">[docs]</a><span class="k">def</span> <span class="nf">center_point</span><span class="p">(</span><span class="n">threePoints</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid index&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="n">threePoints</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">threePoints</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">threePoints</span><span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># TODO: check that equality works</span>
+    <span class="n">indices2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">threePoints</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">threePoints</span><span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="kc">True</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">index</span>
+    <span class="k">return</span> <span class="n">center_point</span><span class="p">(</span><span class="n">threePoints</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="area_to_corners"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.area_to_corners">[docs]</a><span class="k">def</span> <span class="nf">area_to_corners</span><span class="p">(</span><span class="n">area</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">area</span><span class="p">),</span> <span class="s2">&quot;invalid area </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+    <span class="n">upperLeft</span> <span class="o">=</span> <span class="p">[</span><span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">lowerRight</span> <span class="o">=</span> <span class="p">[</span><span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">upperLeft</span><span class="p">,</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lowerRight</span><span class="p">]),</span><span class="mi">5</span><span class="p">)</span></div>
+
+<span class="c1">############################################ START: qualifying area search</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">return:</span>
+<span class="sd">- (start)::float,(end)::float,(distance)::float</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">###</span>
+<div class="viewcode-block" id="largest_subrange_of_coincidence_between_ranges"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.largest_subrange_of_coincidence_between_ranges">[docs]</a><span class="k">def</span> <span class="nf">largest_subrange_of_coincidence_between_ranges</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="n">r2</span><span class="p">,</span> <span class="n">roundDepth</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;invalid ranges </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span><span class="n">r2</span><span class="p">)</span>
+    <span class="n">r1</span><span class="p">,</span><span class="n">r2</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">r1</span><span class="p">),</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span>
+
+    <span class="c1">##if r2[0] &lt; r1[0]: r1,r2 = r2,r1</span>
+
+    <span class="c1"># use r2 as reference</span>
+
+    <span class="c1"># case: r2[0] in r1</span>
+    <span class="k">if</span> <span class="n">r2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">r1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">r2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">r1</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="c1"># check r2[1] in r1</span>
+        <span class="k">if</span> <span class="n">r2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">r1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">r2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">r1</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">rx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">r2</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">r2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r2</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span><span class="n">roundDepth</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rx</span> <span class="o">=</span> <span class="p">[</span><span class="n">r2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="n">r1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r2</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">r2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">r1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">r2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">r1</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">rx</span> <span class="o">=</span> <span class="p">[</span><span class="n">r1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">r2</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="n">r2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r1</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">rx</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="mf">0.0</span></div>
+
+<div class="viewcode-block" id="is_proper_color"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_proper_color">[docs]</a><span class="k">def</span> <span class="nf">is_proper_color</span><span class="p">(</span><span class="n">color</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">color</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span> <span class="c1">#, &quot;invalid length {} for color&quot;.format(len(color))</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">color</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">]:</span> <span class="k">return</span> <span class="kc">False</span> <span class="c1">#, &quot;invalid type {} for color&quot;.format(type(c))</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="area_to_pygame_rect_format"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.area_to_pygame_rect_format">[docs]</a><span class="k">def</span> <span class="nf">area_to_pygame_rect_format</span><span class="p">(</span><span class="n">area</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">area</span><span class="p">),</span> <span class="s2">&quot;area </span><span class="si">{}</span><span class="s2"> is not valid!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+    <span class="n">lt</span> <span class="o">=</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lt</span><span class="p">,</span> <span class="p">[</span><span class="n">w</span><span class="p">,</span><span class="n">h</span><span class="p">]])</span></div>
+
+<span class="c1">## TODO:</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">def area_from_point(p, areaWidth, areaHeight):</span>
+<span class="sd">    q2 = (p[0] + areaWidth, p[1] + areaHeight)</span>
+<span class="sd">    return np.array([p,q2])</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="point_to_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.point_to_area">[docs]</a><span class="k">def</span> <span class="nf">point_to_area</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">areaWidth</span><span class="p">,</span> <span class="n">areaHeight</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_valid_point</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="s2">&quot;invalid point </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">areaWidth</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">areaHeight</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;invalid width and height&quot;</span>
+    <span class="n">w</span><span class="p">,</span><span class="n">h</span> <span class="o">=</span> <span class="n">areaWidth</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">areaHeight</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">start</span><span class="p">,</span><span class="n">end</span><span class="p">])</span></div>
+
+
+
+<span class="c1">################################## START: cast functions</span>
+
+<div class="viewcode-block" id="float_func"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.float_func">[docs]</a><span class="k">def</span> <span class="nf">float_func</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">always floor</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#</span>
+
+<div class="viewcode-block" id="int_func"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.int_func">[docs]</a><span class="k">def</span> <span class="nf">int_func</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">floorceil_to_n_places</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="n">places</span> <span class="o">=</span> <span class="mi">5</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="floorceil_to_n_places"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.floorceil_to_n_places">[docs]</a><span class="k">def</span> <span class="nf">floorceil_to_n_places</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">places</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">places</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">places</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;invalid places </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">places</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">],</span> <span class="s2">&quot;invalid mode </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="n">f</span> <span class="o">%</span> <span class="mf">1.0</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">f</span> <span class="o">//</span> <span class="mf">1.0</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">lastDelta</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">places</span><span class="p">):</span>
+        <span class="n">ten</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">newD</span> <span class="o">=</span> <span class="n">d</span> <span class="o">%</span> <span class="n">ten</span>
+        <span class="n">q</span> <span class="o">+=</span> <span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="n">newD</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">-</span> <span class="n">newD</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="n">lastDelta</span> <span class="o">=</span> <span class="n">ten</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">newD</span>
+    <span class="n">o</span> <span class="o">=</span> <span class="n">w</span> <span class="o">+</span> <span class="n">q</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="k">return</span> <span class="n">o</span>
+    <span class="k">if</span> <span class="n">f</span> <span class="o">-</span> <span class="n">o</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">o</span> <span class="o">+</span> <span class="n">lastDelta</span></div>
+
+<span class="c1">################################## END: cast functions</span>
+
+<span class="c1">#</span>
+<span class="n">cr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># TODO: rename to `iterable`</span>
+<div class="viewcode-block" id="vector_to_string"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.vector_to_string">[docs]</a><span class="k">def</span> <span class="nf">vector_to_string</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">castFunc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">castFunc</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">,</span> <span class="n">float_func</span><span class="p">,</span><span class="n">cr</span><span class="p">],</span> <span class="s2">&quot;invalid cast func&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">v_</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">castFunc</span><span class="p">(</span><span class="n">v_</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span>
+    <span class="k">return</span> <span class="n">s</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+<span class="c1"># TODO: untested</span>
+<div class="viewcode-block" id="string_to_vector"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.string_to_vector">[docs]</a><span class="k">def</span> <span class="nf">string_to_vector</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">castFunc</span> <span class="o">=</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">castFunc</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">float_func</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span><span class="n">cr</span><span class="p">],</span> <span class="s2">&quot;invalid cast func&quot;</span>
+
+    <span class="k">def</span> <span class="nf">next_item</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="n">indo</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">q</span> <span class="o">==</span> <span class="s2">&quot;,&quot;</span><span class="p">:</span>
+                <span class="n">indo</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">[:</span><span class="n">indo</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">indo</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+
+    <span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">s</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">s1</span><span class="p">,</span><span class="n">s2</span> <span class="o">=</span> <span class="n">next_item</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">castFunc</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s2</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">)</span></div>
+
+<span class="c1">######## start: some methods on bounds</span>
+
+<span class="n">euclidean_point_distance</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">p1</span> <span class="o">-</span> <span class="n">p2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="intersection_of_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.intersection_of_bounds">[docs]</a><span class="k">def</span> <span class="nf">intersection_of_bounds</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">):</span>
+    <span class="c1"># check for each column</span>
+    <span class="k">assert</span> <span class="n">is_2dmatrix</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_2dmatrix</span><span class="p">(</span><span class="n">b2</span><span class="p">),</span><span class="s2">&quot;invalid bounds </span><span class="si">{}</span><span class="se">\n\n\t</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">b1</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">b2</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;must have equal shape&quot;</span>
+
+    <span class="c1"># check for each index</span>
+    <span class="n">bx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">q1</span><span class="p">,</span><span class="n">q2</span> <span class="o">=</span> <span class="n">b1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">b2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">start</span><span class="p">,</span><span class="n">end</span><span class="p">,</span><span class="n">dist</span> <span class="o">=</span> <span class="n">largest_subrange_of_coincidence_between_ranges</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span><span class="n">q2</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dist</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bx</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">start</span><span class="p">,</span><span class="n">end</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bx</span><span class="p">)</span></div>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">b2 in b1?</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="bounds_is_subbounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.bounds_is_subbounds">[docs]</a><span class="k">def</span> <span class="nf">bounds_is_subbounds</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_proper_bounds_vector</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_proper_bounds_vector</span><span class="p">(</span><span class="n">b2</span><span class="p">),</span> <span class="s2">&quot;invalid args.&quot;</span>
+    <span class="k">assert</span> <span class="n">b1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">b2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;invalid args. 2&quot;</span>
+
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">b2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">b1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">b2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">b1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Calculates a subbound of bound `b` w/ start equal to the start of `b`,</span>
+
+<span class="sd">boundRange := list({0,1})</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="subbound_of_bound"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.subbound_of_bound">[docs]</a><span class="k">def</span> <span class="nf">subbound_of_bound</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">boundRange</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_2dmatrix</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="s2">&quot;invalid type for bounds&quot;</span>
+    <span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;invalid shape for bounds&quot;</span>
+
+    <span class="k">assert</span> <span class="n">is_valid_point</span><span class="p">(</span><span class="n">boundRange</span><span class="p">),</span> <span class="s2">&quot;[0] invalid bound range&quot;</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">boundRange</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">boundRange</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;[1] invalid bound range&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">boundRange</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;[2] invalid bound range&quot;</span>
+
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">b</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">diff</span> <span class="o">*</span> <span class="n">boundRange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">diff</span> <span class="o">*</span> <span class="n">boundRange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">s</span><span class="p">,</span><span class="n">e</span><span class="p">))</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="n_partition_for_bound"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.n_partition_for_bound">[docs]</a><span class="k">def</span> <span class="nf">n_partition_for_bound</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">partition</span><span class="p">):</span>
+
+    <span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">partition</span><span class="p">)</span>
+    <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">partition_</span> <span class="o">=</span> <span class="p">[</span><span class="n">x0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">partition</span><span class="p">):</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">q</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+        <span class="n">partition_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">partition_</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="invert_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.invert_bounds">[docs]</a><span class="k">def</span> <span class="nf">invert_bounds</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_bounds_vector</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="s2">&quot;invalid bounds vector&quot;</span>
+    <span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">b2</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">b</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">b2</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">b2</span></div>
+
+<div class="viewcode-block" id="to_proper_bounds_vector"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.to_proper_bounds_vector">[docs]</a><span class="k">def</span> <span class="nf">to_proper_bounds_vector</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_bounds_vector</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="s2">&quot;invalid bounds vector&quot;</span>
+
+    <span class="n">b2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">b2</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">b2</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">b2</span></div>
+
+<div class="viewcode-block" id="is_proper_bounds_vector"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.is_proper_bounds_vector">[docs]</a><span class="k">def</span> <span class="nf">is_proper_bounds_vector</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_bounds_vector</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="s2">&quot;invalid bounds vector </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">b</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="partial_invert_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.partial_invert_bounds">[docs]</a><span class="k">def</span> <span class="nf">partial_invert_bounds</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">indices</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<span class="c1"># TODO: untested</span>
+<div class="viewcode-block" id="extremum_for_points"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.extremum_for_points">[docs]</a><span class="k">def</span> <span class="nf">extremum_for_points</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    calculates the `n` extreme (min &amp; max) values for the</span>
+<span class="sd">    `m x n` matrix `a`.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">assert</span> <span class="n">is_2dmatrix</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="s2">&quot;invalid points&quot;</span>
+    <span class="n">mi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">ma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mi</span>
+    <span class="n">b</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ma</span>
+    <span class="k">return</span> <span class="n">b</span></div>
+
+<div class="viewcode-block" id="point_in_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.point_in_bounds">[docs]</a><span class="k">def</span> <span class="nf">point_in_bounds</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    determines if point `p` in bounds `b`</span>
+
+<span class="sd">    :param b: proper bounds vector</span>
+<span class="sd">    :param p: vector</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">assert</span> <span class="n">is_proper_bounds_vector</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="s2">&quot;invalid bounds vector&quot;</span>
+    <span class="k">assert</span> <span class="n">is_vector</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="s2">&quot;invalid point&quot;</span>
+    <span class="k">assert</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">b</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="point_in_bounds_"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.point_in_bounds_">[docs]</a><span class="k">def</span> <span class="nf">point_in_bounds_</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">point_in_bounds</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">p</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="point_in_improper_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.point_in_improper_bounds">[docs]</a><span class="k">def</span> <span class="nf">point_in_improper_bounds</span><span class="p">(</span><span class="n">parentBounds</span><span class="p">,</span><span class="n">bounds</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">is_proper_bounds_vector</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">bounds_is_subbounds</span><span class="p">(</span><span class="n">parentBounds</span><span class="p">,</span><span class="n">bounds</span><span class="p">),</span> <span class="s2">&quot;invalid parent bounds&quot;</span>
+        <span class="k">return</span> <span class="n">point_in_bounds</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="n">ibs</span> <span class="o">=</span> <span class="n">split_improper_bound</span><span class="p">(</span><span class="n">parentBounds</span><span class="p">,</span><span class="n">bounds</span><span class="p">,</span><span class="n">checkPoints</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">rf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">,</span><span class="n">i</span><span class="p">:</span> <span class="p">(</span><span class="n">f</span> <span class="o">&gt;=</span> <span class="n">ibs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">f</span> <span class="o">&lt;=</span> <span class="n">ibs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span> <span class="ow">or</span>\
+                <span class="p">(</span><span class="n">f</span> <span class="o">&gt;=</span> <span class="n">ibs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">f</span> <span class="o">&lt;=</span> <span class="n">ibs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">p_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">rf</span><span class="p">(</span><span class="n">p_</span><span class="p">,</span><span class="n">i</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="point_difference_of_improper_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.point_difference_of_improper_bounds">[docs]</a><span class="k">def</span> <span class="nf">point_difference_of_improper_bounds</span><span class="p">(</span><span class="n">improperBounds</span><span class="p">,</span><span class="n">parentBounds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    point difference of improper bounds is a non-negative vector</span>
+<span class="sd">    with each i&#39;th element the positive distance between the two points</span>
+<span class="sd">    of the `improperBounds` in the context of the `parentBounds`. </span>
+<span class="sd">    </span>
+<span class="sd">    :param improperBounds: bounds located in parentBounds</span>
+<span class="sd">    :param parentBounds: bounds used as context for `improperBounds`. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="n">improperBounds</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">parentBounds</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;bounds must have equal shape&quot;</span>
+    <span class="k">if</span> <span class="n">is_proper_bounds_vector</span><span class="p">(</span><span class="n">improperBounds</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">improperBounds</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">improperBounds</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">diff</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">improperBounds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">improperBounds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">parentBounds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># proper dim.</span>
+        <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># improper dim.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">d</span> <span class="o">+=</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span></div>
+
+
+<span class="c1"># TODO: unused</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="split_improper_bound"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.split_improper_bound">[docs]</a><span class="k">def</span> <span class="nf">split_improper_bound</span><span class="p">(</span><span class="n">properBounds</span><span class="p">,</span><span class="n">improperBounds</span><span class="p">,</span><span class="n">checkPoints</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">checkPoints</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">point_in_bounds</span><span class="p">(</span><span class="n">properBounds</span><span class="p">,</span><span class="n">improperBounds</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot;end0 of bounds not in proper bounds,</span><span class="se">\n</span><span class="s2">point </span><span class="si">{}</span><span class="se">\n</span><span class="s2">bounds </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">improperBounds</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">properBounds</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">point_in_bounds</span><span class="p">(</span><span class="n">properBounds</span><span class="p">,</span><span class="n">improperBounds</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]),</span> <span class="s2">&quot;end1 of bounds not in proper bounds&quot;</span>
+
+    <span class="n">q1</span><span class="p">,</span><span class="n">q2</span> <span class="o">=</span> <span class="p">[],[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">properBounds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">improperBounds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="c1"># proper dim.</span>
+        <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">s1</span><span class="p">,</span><span class="n">s2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">r</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+        <span class="c1"># improper dim.</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s1</span><span class="p">,</span><span class="n">s2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">properBounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">properBounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">q1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+        <span class="n">q2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q1</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="point_on_bounds_by_ratio_vector"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.point_on_bounds_by_ratio_vector">[docs]</a><span class="k">def</span> <span class="nf">point_on_bounds_by_ratio_vector</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">rv</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">rv</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">b</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span></div>
+
+<div class="viewcode-block" id="point_on_improper_bounds_by_ratio_vector"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.point_on_improper_bounds_by_ratio_vector">[docs]</a><span class="k">def</span> <span class="nf">point_on_improper_bounds_by_ratio_vector</span><span class="p">(</span><span class="n">parentBounds</span><span class="p">,</span><span class="n">bounds</span><span class="p">,</span><span class="n">rv</span><span class="p">,</span><span class="n">roundDepth</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">is_proper_bounds_vector</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">point_on_bounds_by_ratio_vector</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span><span class="n">rv</span><span class="p">)</span>
+
+    <span class="n">ib</span> <span class="o">=</span> <span class="n">split_improper_bound</span><span class="p">(</span><span class="n">parentBounds</span><span class="p">,</span><span class="n">bounds</span><span class="p">,</span><span class="n">checkPoints</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">point_difference_of_improper_bounds</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span><span class="n">parentBounds</span><span class="p">)</span>
+    <span class="n">pd1</span> <span class="o">=</span> <span class="n">ib</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ib</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># point diff</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">rv</span> <span class="o">*</span> <span class="n">q</span> <span class="c1"># point add</span>
+    <span class="n">p2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">bounds</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">s_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">pd1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">s_</span>
+
+        <span class="c1"># if addition is greater than first half</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">px</span> <span class="o">=</span> <span class="n">parentBounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">d</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">px</span> <span class="o">=</span> <span class="n">p2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">s_</span>
+        <span class="n">p2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">px</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span><span class="n">roundDepth</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="vector_ratio"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.vector_ratio">[docs]</a><span class="k">def</span> <span class="nf">vector_ratio</span><span class="p">(</span><span class="n">bound</span><span class="p">,</span><span class="n">point</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">point_in_bounds</span><span class="p">(</span><span class="n">bound</span><span class="p">,</span><span class="n">point</span><span class="p">),</span> <span class="s2">&quot;point not in bounds&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">point</span> <span class="o">-</span> <span class="n">bound</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">bound</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bound</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span></div>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="vector_ratio_improper"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.vector_ratio_improper">[docs]</a><span class="k">def</span> <span class="nf">vector_ratio_improper</span><span class="p">(</span><span class="n">parentBounds</span><span class="p">,</span><span class="n">bounds</span><span class="p">,</span><span class="n">point</span><span class="p">):</span>
+    <span class="n">ib</span> <span class="o">=</span> <span class="n">split_improper_bound</span><span class="p">(</span><span class="n">parentBounds</span><span class="p">,</span><span class="n">bounds</span><span class="p">,</span><span class="n">checkPoints</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ib</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;bounds not improper&quot;</span>
+    <span class="n">pd</span> <span class="o">=</span> <span class="n">point_difference_of_improper_bounds</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span><span class="n">parentBounds</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">h</span><span class="p">(</span><span class="n">p_</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">pd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">p_</span> <span class="o">&gt;=</span> <span class="n">ib</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">p_</span> <span class="o">&lt;=</span> <span class="n">ib</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">p_</span> <span class="o">-</span> <span class="n">ib</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">ib</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ib</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="p">(</span><span class="n">p_</span> <span class="o">-</span> <span class="n">parentBounds</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="n">t</span>
+
+    <span class="n">v_</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">p_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">point</span><span class="p">):</span>
+        <span class="n">v_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">(</span><span class="n">p_</span><span class="p">,</span><span class="n">i</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">v_</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="bounded_point_to_hop_counts"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.bounded_point_to_hop_counts">[docs]</a><span class="k">def</span> <span class="nf">bounded_point_to_hop_counts</span><span class="p">(</span><span class="n">parentBound</span><span class="p">,</span><span class="n">bound</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">h</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    maps each value of the point `p` relative to the bound to the number</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">vector_ratio_improper</span><span class="p">(</span><span class="n">parentBound</span><span class="p">,</span><span class="n">bound</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r_</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">r_</span><span class="p">)</span> <span class="k">else</span> <span class="mf">1.</span> <span class="k">for</span> <span class="n">r_</span> <span class="ow">in</span> <span class="n">r</span><span class="p">])</span>
+    <span class="n">h_</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">h</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">r_</span> <span class="o">/</span> <span class="n">h_</span><span class="p">))</span> <span class="k">for</span> <span class="n">r_</span> <span class="ow">in</span> <span class="n">r</span><span class="p">])</span> 
+    <span class="k">return</span> <span class="n">q</span></div>
+
+<div class="viewcode-block" id="refit_points_for_new_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.refit_points_for_new_bounds">[docs]</a><span class="k">def</span> <span class="nf">refit_points_for_new_bounds</span><span class="p">(</span><span class="n">points</span><span class="p">,</span><span class="n">oldBounds</span><span class="p">,</span><span class="n">newBounds</span><span class="p">):</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">p_</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">refit_point_for_new_bounds</span><span class="p">(</span><span class="n">p_</span><span class="p">,</span><span class="n">oldBounds</span><span class="p">,</span><span class="n">newBounds</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="refit_point_for_new_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.refit_point_for_new_bounds">[docs]</a><span class="k">def</span> <span class="nf">refit_point_for_new_bounds</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">oldBounds</span><span class="p">,</span><span class="n">newBounds</span><span class="p">):</span>
+    <span class="n">vr</span> <span class="o">=</span> <span class="n">vector_ratio</span><span class="p">(</span><span class="n">oldBounds</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">point_on_bounds_by_ratio_vector</span><span class="p">(</span><span class="n">newBounds</span><span class="p">,</span><span class="n">vr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="area_of_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.matrix_methods.area_of_bounds">[docs]</a><span class="k">def</span> <span class="nf">area_of_bounds</span><span class="p">(</span><span class="n">bounds</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_proper_bounds_vector</span><span class="p">(</span><span class="n">bounds</span><span class="p">),</span> <span class="s2">&quot;not proper bounds vector&quot;</span>
+    <span class="n">pd</span> <span class="o">=</span> <span class="n">bounds</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bounds</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">pd</span><span class="p">)</span></div>
+
+<span class="c1">######## end: some methods on bounds</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">morebs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">morebs2</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Richard Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morebs2.random_generators &#8212; morebs 0.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for morebs2.random_generators</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.line</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="c1">################ START: line generators</span>
+
+<div class="viewcode-block" id="generate_random_line"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.generate_random_line">[docs]</a><span class="k">def</span> <span class="nf">generate_random_line</span><span class="p">(</span><span class="n">startPoint</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    generates a random line of `length` from .`startPoint` by a random angle in</span>
+<span class="sd">    [0,360].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># random angle</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
+    <span class="n">endPoint</span> <span class="o">=</span> <span class="n">hypotenuse_from_point</span><span class="p">(</span><span class="n">startPoint</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Line</span><span class="p">((</span><span class="n">startPoint</span><span class="p">,</span> <span class="n">endPoint</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="generate_random_line_at_center"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.generate_random_line_at_center">[docs]</a><span class="k">def</span> <span class="nf">generate_random_line_at_center</span><span class="p">(</span><span class="n">centerPoint</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    generates a random line of `length` at center `centerPoint`.</span>
+
+<span class="sd">    :param centerPoint: 2-tupules de duos</span>
+<span class="sd">    :type centerPoint: iterable</span>
+<span class="sd">    :param length: lengua</span>
+<span class="sd">    :type length: float</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># random angle</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">)</span>
+    <span class="n">altAngle</span> <span class="o">=</span> <span class="p">(</span><span class="n">angle</span> <span class="o">+</span> <span class="mf">180.0</span><span class="p">)</span> <span class="o">%</span> <span class="mf">360.0</span>
+
+    <span class="n">e1</span> <span class="o">=</span> <span class="n">hypotenuse_from_point</span><span class="p">(</span><span class="n">centerPoint</span><span class="p">,</span> <span class="n">length</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+    <span class="n">e2</span> <span class="o">=</span> <span class="n">hypotenuse_from_point</span><span class="p">(</span><span class="n">centerPoint</span><span class="p">,</span> <span class="n">length</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">altAngle</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Line</span><span class="p">((</span><span class="n">e1</span><span class="p">,</span> <span class="n">e2</span><span class="p">))</span></div>
+
+<span class="c1">################ END: line generators</span>
+
+<div class="viewcode-block" id="generate_line_by_length_and_angle"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.generate_line_by_length_and_angle">[docs]</a><span class="k">def</span> <span class="nf">generate_line_by_length_and_angle</span><span class="p">(</span><span class="n">startPoint</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+    <span class="n">endPoint</span> <span class="o">=</span> <span class="n">hypotenuse_from_point</span><span class="p">(</span><span class="n">startPoint</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Line</span><span class="p">((</span><span class="n">startPoint</span><span class="p">,</span> <span class="n">endPoint</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="hypotenuse_from_point"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.hypotenuse_from_point">[docs]</a><span class="k">def</span> <span class="nf">hypotenuse_from_point</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Outputs an endpoint given `point`; `endpoint` is distance `length` from .`point` and at `angle`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the x-delta and y-delta</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span>
+    <span class="n">opp</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">length</span>
+
+    <span class="n">q</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span>
+    <span class="n">adj</span> <span class="o">=</span> <span class="n">q</span> <span class="o">*</span> <span class="n">length</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">adj</span><span class="p">,</span> <span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">opp</span><span class="p">]</span></div>
+
+    <span class="c1">##################################################################</span>
+
+<span class="c1"># TODO: necessary??</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="closest_right_angle_to_angle"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.closest_right_angle_to_angle">[docs]</a><span class="k">def</span> <span class="nf">closest_right_angle_to_angle</span><span class="p">(</span><span class="n">angle</span><span class="p">):</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">angle</span> <span class="o">%</span> <span class="mi">360</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">270</span><span class="p">,</span> <span class="mi">360</span><span class="p">]</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">angle</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">right</span><span class="p">]</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">right</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="quadrant_of_angle"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.quadrant_of_angle">[docs]</a><span class="k">def</span> <span class="nf">quadrant_of_angle</span><span class="p">(</span><span class="n">angle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    determinini es angle y quadrillas</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="n">angle</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">angle</span> <span class="o">&gt;</span> <span class="mi">360</span><span class="p">),</span> <span class="s2">&quot;invalid angle&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">angle</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">angle</span> <span class="o">&lt;=</span> <span class="mi">90</span><span class="p">)</span> <span class="ow">or</span> <span class="n">angle</span> <span class="o">==</span> <span class="mi">360</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">angle</span> <span class="o">&gt;</span> <span class="mi">90</span> <span class="ow">and</span> <span class="n">angle</span> <span class="o">&lt;=</span> <span class="mi">180</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">angle</span> <span class="o">&gt;</span> <span class="mi">180</span> <span class="ow">and</span> <span class="n">angle</span> <span class="o">&lt;=</span> <span class="mi">270</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="mi">3</span></div>
+
+<span class="c1">############################### END: line generator</span>
+
+<span class="c1">################ START: area identification</span>
+
+<div class="viewcode-block" id="random_point_in_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.random_point_in_area">[docs]</a><span class="k">def</span> <span class="nf">random_point_in_area</span><span class="p">(</span><span class="n">area</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">is_valid_area</span><span class="p">(</span><span class="n">area</span><span class="p">),</span> <span class="s2">&quot;area is invalid&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">area</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">area</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="random_point_in_circle"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.random_point_in_circle">[docs]</a><span class="k">def</span> <span class="nf">random_point_in_circle</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">radiusRange</span><span class="p">):</span>
+    <span class="c1"># random x-delta    </span>
+    <span class="n">xDelta</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">radiusRange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">radiusRange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># select a radius range in [xDelta,radiusRange[1]]</span>
+    <span class="n">rr</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">xDelta</span><span class="p">,</span><span class="n">radiusRange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># random y-delta</span>
+    <span class="n">yDelta</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rr</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">xDelta</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">s1</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span> 
+    <span class="n">s2</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span> 
+    <span class="k">return</span> <span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">xDelta</span> <span class="o">*</span> <span class="n">s1</span><span class="p">,</span> <span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">yDelta</span> <span class="o">*</span> <span class="n">s2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="random_point_near_2d_point_pair"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.random_point_near_2d_point_pair">[docs]</a><span class="k">def</span> <span class="nf">random_point_near_2d_point_pair</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span><span class="n">rdistance</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    generates a random point near a 2d point pair by first</span>
+<span class="sd">    constructing a line b/t the the points in the pair,</span>
+<span class="sd">    choosing a random point `r` on the line, and then a random point</span>
+<span class="sd">    of distance `d` in range `rdistance` from `r`.  </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;invalid pair&quot;</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">Line</span><span class="p">([</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">point_from_source_by_value</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">random_point_in_circle</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">rdistance</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="generate_random_xyl_points_at_center"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.generate_random_xyl_points_at_center">[docs]</a><span class="k">def</span> <span class="nf">generate_random_xyl_points_at_center</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">drnp</span><span class="p">,</span><span class="n">l</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    for each element in `drnp`, generates </span>
+<span class="sd">            by std. python.</span>
+
+<span class="sd">    c := center point, (x,y,label)</span>
+<span class="sd">    drnp := list(&lt;(distance min to c,distance max to c, number of points)&gt;)</span>
+<span class="sd">    l := int,label</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">process_drn</span><span class="p">(</span><span class="n">drn</span><span class="p">):</span>
+        <span class="n">rps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">drn</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">random_point_in_circle</span><span class="p">(</span><span class="n">c</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span><span class="n">drn</span><span class="p">[:</span><span class="mi">2</span><span class="p">]))</span> <span class="o">+</span> <span class="p">[</span><span class="n">l</span><span class="p">]</span>
+            <span class="n">rps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rps</span>
+
+    <span class="n">ps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">drn</span> <span class="ow">in</span> <span class="n">drnp</span><span class="p">:</span>
+        <span class="n">ps</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">process_drn</span><span class="p">(</span><span class="n">drn</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="random_game_table_matrix"><a class="viewcode-back" href="../../morebs2.html#morebs2.random_generators.random_game_table_matrix">[docs]</a><span class="k">def</span> <span class="nf">random_game_table_matrix</span><span class="p">(</span><span class="n">xMoveSize</span><span class="p">,</span> <span class="n">yMoveSize</span><span class="p">,</span> <span class="n">rangeX</span><span class="p">,</span> <span class="n">rangeY</span><span class="p">):</span><span class="c1">#, rule):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rangeX</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">rangeY</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;arg. range is wrong&quot;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">xMoveSize</span><span class="p">,</span> <span class="n">yMoveSize</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">xMoveSize</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">yMoveSize</span><span class="p">):</span>
+            <span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="n">rangeX</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rangeX</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="n">rangeY</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rangeY</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">q</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">morebs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">morebs2</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Richard Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

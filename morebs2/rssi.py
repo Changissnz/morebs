@@ -6,8 +6,7 @@ from copy import deepcopy
 DEFAULT_RSSI__CR__NOISE_ADDER = np.array([[0.01,0.15]])
 
 class ResplattingSearchSpaceIterator:
-    """
-    :class:`ResplattingSearchSpaceIterator` is a data-structure
+    """:class:`ResplattingSearchSpaceIterator` is a data-structure
     that relies on :class:`SearchSpaceIterator>. There are two modes for this class when it resplats on
     the original bounds:
     - "relevance zoom": requires an RChainHead to determine relevance of
@@ -33,9 +32,9 @@ class ResplattingSearchSpaceIterator:
     :class:`ResplattingSearchSpaceIterator` uses an :class:`RChainHead` that updates itself
     after every time it finishes iterating through a relevant bounds.The arguments it passes to
     the :class:`RChainHead` instance are: 
+        
         [`self.bounds`, current bound, ssiHop] + list(`additionalUpdateArgs`)
 
-    
     :param bounds: all generated points lie in this matrix
     :type bounds: np.ndarray, n x 2 matrix
     :param startPoint: n-point

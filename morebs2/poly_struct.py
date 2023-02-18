@@ -4,10 +4,9 @@ from copy import deepcopy
 import random
 
 def merge_duplicates_cevector(v):
-    '''
-    merges elements of a (coefficient,exponent) vector
+    """merges elements of a (coefficient,exponent) vector
     so that there are no duplicate exponents
-    '''
+    """
     d = {}
     for v_ in v:
         x = v_[0]
@@ -127,11 +126,8 @@ class CEQPoly:
         x = np.array([(v[0],v[1],k) for k,v in d.items()])
         return CEQPoly(x)
 
-"""
-"""
 class CEPoly:
-    """
-    polynomial represented in coefficient-exponent form. 
+    """polynomial represented in coefficient-exponent form. 
     
     :param v: vector of values, length l -1 is power, index 0 is greatest power
     """
@@ -283,8 +279,7 @@ class CEPoly:
         return set(self.v[:,1]) - set(p2.v[:,1])
 
 class SPoly:
-    """
-    polynomial operator over 1 float variable;
+    """polynomial operator over 1 float variable;
     data structure uses vector-index notation.
 
     :param v: vector of values, length l -1 is power, index 0 is greatest power
@@ -404,11 +399,12 @@ class ISPoly:
         return q.apply(self.x)
 
 class RandomPolyGenerator:
-    '''
-    generates a random polynomial, an expression represented
+    """generates a random polynomial, an expression represented
     by :class:`SPoly` that has coefficients in the range
     `coefficientRange` with a NON-ZERO 
+
                 `cx^maxExp; c is a coefficient.`
+                
     The rest of the values have a probability of `nullPr`
     for being zero.
 
@@ -421,7 +417,7 @@ class RandomPolyGenerator:
     :type maxExp:
     :param nullPr:
     :type nullPr:
-    '''
+    """
 
     def __init__(self,rsf,coefficientRange,maxExp,nullPr):
         assert type(coefficientRange[0]) == int and type(coefficientRange[1]) == int, "invalid coefficient range,cond.1"

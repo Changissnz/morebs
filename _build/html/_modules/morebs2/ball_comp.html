@@ -1,0 +1,650 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morebs2.ball_comp &#8212; morebs 0.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for morebs2.ball_comp</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.ball_volume_estimators</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.ball_operator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.violation_handler</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="dec1"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.dec1">[docs]</a><span class="k">def</span> <span class="nf">dec1</span><span class="p">(</span><span class="n">u</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">u</span> <span class="o">/</span> <span class="n">t</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">t</span> <span class="o">/</span> <span class="n">p</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x1</span> <span class="o">+</span> <span class="n">x2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span></div>
+
+<div class="viewcode-block" id="dec2"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.dec2">[docs]</a><span class="k">def</span> <span class="nf">dec2</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">b1</span><span class="o">/</span><span class="n">b2</span> <span class="o">*</span> <span class="mi">1</span><span class="o">/</span><span class="mi">2</span></div>
+
+
+<span class="c1"># do violation recommendation</span>
+<span class="c1"># verbose</span>
+<span class="c1"># arg. history (max balls, max radius)</span>
+<div class="viewcode-block" id="BallComp"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp">[docs]</a><span class="k">class</span> <span class="nc">BallComp</span><span class="p">:</span>
+
+    <span class="n">MIN_LENGTH_RATIO</span> <span class="o">=</span> <span class="mf">0.01</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxBalls</span><span class="p">,</span><span class="n">maxRadius</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">vh1</span><span class="p">,</span><span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">maxRadius</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">maxBalls</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;invalid args. for BallComp&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span> <span class="o">=</span> <span class="n">maxBalls</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span> <span class="o">=</span> <span class="n">maxRadius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">balls</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># int:idn -&gt; Ball</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointMem</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># (label of last point added, last point added)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ballNeighborsUpdate</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">assert</span> <span class="n">verbose</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dve</span> <span class="o">=</span> <span class="n">DisjunctionVolumeEstimator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ballCounter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vh</span> <span class="o">=</span> <span class="n">vh1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">terminateDelta</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ts</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># timestamp</span>
+
+        <span class="c1"># keeps track of argument history</span>
+        <span class="c1"># each element is (value,timestamp)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bah</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rah</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1">#### start: main function --------------------------------------------------</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BallComp.conduct_decision"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.conduct_decision">[docs]</a>    <span class="k">def</span> <span class="nf">conduct_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminateDelta</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NO MORE ADD&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">* pre-decision measures&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">summarize_volume_measures</span><span class="p">()</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision_1_score</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision_2_score</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+
+        <span class="c1"># case: make new ball</span>
+        <span class="k">if</span> <span class="n">d2</span> <span class="o">&lt;</span> <span class="n">d1</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- choose decision 2&quot;</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">Ball</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ballCounter</span><span class="p">)</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">BallComp</span><span class="o">.</span><span class="n">MIN_LENGTH_RATIO</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ballCounter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1">## TODO: add ball here</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_ball</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_recommendation</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">b</span><span class="o">.</span><span class="n">idn</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-------------------------------------------&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># case: add to present ball</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- decision 1 ball&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;----&quot;</span><span class="p">)</span>
+
+            <span class="c1"># update neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_neighbors_of_ball</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="c1"># subcase: no merge</span>
+            <span class="c1">## update ball volume and its neighbor 2-intersection volumes</span>
+        <span class="k">if</span> <span class="n">d1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- choose decision 1-no merge&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_target_ball_volume</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_target_ball_2int</span><span class="p">(</span><span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">nbi</span> <span class="o">=</span> <span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># subcase: merge</span>
+                <span class="c1">## merge balls into one</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- choose decision 1-merge&quot;</span><span class="p">)</span>
+                <span class="c1">##bs = self.dataless_ball_copies(self.balls[d1[1]].neighbors | {d1[1]})</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">|</span> <span class="p">{</span><span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+            <span class="n">bs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">x_</span><span class="p">]</span> <span class="k">for</span> <span class="n">x_</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+            <span class="n">ball0</span> <span class="o">=</span> <span class="n">BallComp</span><span class="o">.</span><span class="n">merge_ball_list</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
+            <span class="n">ball0</span><span class="o">.</span><span class="n">idn</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ballCounter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ballCounter</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1">## delete all values in self.balls[d1[1]].neighbros | {d1[1]}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_ballset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">|</span> <span class="p">{</span><span class="n">d1</span><span class="p">[</span><span class="mi">1</span><span class="p">]})</span>
+                <span class="c1">## add ball0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_ball</span><span class="p">(</span><span class="n">ball0</span><span class="p">)</span>
+            <span class="n">nbi</span> <span class="o">=</span> <span class="n">ball0</span><span class="o">.</span><span class="n">idn</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_recommendation</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">nbi</span><span class="p">]</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="n">nbi</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-------------------------------------------&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BallComp.summarize_volume_measures"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.summarize_volume_measures">[docs]</a>    <span class="k">def</span> <span class="nf">summarize_volume_measures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">ballVolumes</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">d</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">********&quot;</span><span class="p">)</span></div>
+
+    <span class="c1">#### end: main function --------------------------------------------------</span>
+
+    <span class="c1">#### start: method requirements for decision 1</span>
+    <span class="c1">########### start: point add functions</span>
+
+<div class="viewcode-block" id="BallComp.update_neighbors_of_ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.update_neighbors_of_ball">[docs]</a>    <span class="k">def</span> <span class="nf">update_neighbors_of_ball</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idn</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        calculates the new neighbor set N1 of the bl&#39;th ball that used to have the neighbor</span>
+<span class="sd">        set N0. Then update the `neighbors` variable for all affected neighbors of the</span>
+<span class="sd">        bl&#39;th ball.</span>
+
+<span class="sd">        :param idn:</span>
+<span class="sd">        :type idn: int</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors_of_ball</span><span class="p">(</span><span class="n">idn</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ballNeighborsUpdate</span> <span class="o">=</span> <span class="p">(</span><span class="n">idn</span><span class="p">,</span><span class="n">q</span><span class="p">,</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_ball_neighbors_var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ballNeighborsUpdate</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>\
+            <span class="bp">self</span><span class="o">.</span><span class="n">ballNeighborsUpdate</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ballNeighborsUpdate</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="BallComp.update_ball_neighbors_var"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.update_ball_neighbors_var">[docs]</a>    <span class="k">def</span> <span class="nf">update_ball_neighbors_var</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idn</span><span class="p">,</span><span class="n">n0</span><span class="p">,</span><span class="n">n1</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        updates the neighbors of each ball after a ball has a radius change by the rule: </span>
+<span class="sd">        - positive difference set N1 - N0: adds `idn` to these balls&#39; neighbors.</span>
+<span class="sd">        - negative difference set N0 - N1: subtracts `idn` from .these balls&#39; neighbors.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">pd</span> <span class="o">=</span> <span class="n">n1</span> <span class="o">-</span> <span class="n">n0</span>
+        <span class="n">nd</span> <span class="o">=</span> <span class="n">n0</span> <span class="o">-</span> <span class="n">n1</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pd</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">|</span> <span class="p">{</span><span class="n">idn</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nd</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">-</span> <span class="p">{</span><span class="n">idn</span><span class="p">}</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="BallComp.revert_update_neighbors_of_ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.revert_update_neighbors_of_ball">[docs]</a>    <span class="k">def</span> <span class="nf">revert_update_neighbors_of_ball</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_ball_neighbors_var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ballNeighborsUpdate</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>\
+            <span class="bp">self</span><span class="o">.</span><span class="n">ballNeighborsUpdate</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ballNeighborsUpdate</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ballNeighborsUpdate</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span></div>
+
+    <span class="c1">#@</span>
+<div class="viewcode-block" id="BallComp.neighbors_of_ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.neighbors_of_ball">[docs]</a>    <span class="k">def</span> <span class="nf">neighbors_of_ball</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idn</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">idn</span> <span class="o">==</span> <span class="n">k</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_neighbor</span><span class="p">(</span><span class="n">b</span><span class="p">):</span> <span class="n">n</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">n</span></div>
+
+<div class="viewcode-block" id="BallComp.add_point_to_ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.add_point_to_ball">[docs]</a>    <span class="k">def</span> <span class="nf">add_point_to_ball</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">idn</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="BallComp.ball_label_for_point"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.ball_label_for_point">[docs]</a>    <span class="k">def</span> <span class="nf">ball_label_for_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    determines the ball idn for point based on minumum</span>
+<span class="sd">    euclidean point distance</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">bc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">euclidean_point_distance</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">center</span><span class="p">,</span><span class="n">p</span><span class="p">),</span><span class="n">b</span><span class="o">.</span><span class="n">idn</span><span class="p">)</span>\
+            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">bc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">bc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span></div>
+
+            <span class="c1">###### special cases for adding point to ball</span>
+
+<div class="viewcode-block" id="BallComp.ball_label_for_point__qualify_radius"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.ball_label_for_point__qualify_radius">[docs]</a>    <span class="k">def</span> <span class="nf">ball_label_for_point__qualify_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines ball label for point based on balls&#39; current radii, as they say,</span>
+<span class="sd">        &quot;variantate` de las labelovos de los qualifacados&quot;</span>
+
+<span class="sd">        :param p: vector</span>
+<span class="sd">        :type p: np.array</span>
+<span class="sd">        :return: los labelovas</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">euclidean_point_distance</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">center</span><span class="p">,</span><span class="n">p</span><span class="p">),</span><span class="n">b</span><span class="o">.</span><span class="n">idn</span><span class="p">)</span>\
+            <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="c1"># sort by ascending euclidean point distance</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">bc</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bc</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">bc</span><span class="p">[</span><span class="n">o</span><span class="p">,</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">idn</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="BallComp.restrict_add_point"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.restrict_add_point">[docs]</a>    <span class="k">def</span> <span class="nf">restrict_add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+    <span class="c1">########### end: point add functions</span>
+
+<div class="viewcode-block" id="BallComp.dataless_ball_copies"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.dataless_ball_copies">[docs]</a>    <span class="k">def</span> <span class="nf">dataless_ball_copies</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">indices</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        returnia the dataless ball copies of that indices</span>
+
+<span class="sd">        :type indices: iter</span>
+<span class="sd">        :return: returnia</span>
+<span class="sd">        :rtype: list&lt;listinia de ballco&gt;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Ball</span><span class="o">.</span><span class="n">dataless_copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span></div>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    assumes all balls are neighbors</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="BallComp.merge_ball_list"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.merge_ball_list">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">merge_ball_list</span><span class="p">(</span><span class="n">bs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># sort ball set in ascending distance from .ball-set mean</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">bs_</span><span class="o">.</span><span class="n">center</span> <span class="k">for</span> <span class="n">bs_</span> <span class="ow">in</span> <span class="n">bs</span><span class="p">])</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">euclidean_point_distance</span><span class="p">(</span><span class="n">bs_</span><span class="o">.</span><span class="n">center</span><span class="p">,</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">bs_</span> <span class="ow">in</span> <span class="n">bs</span><span class="p">]</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+
+        <span class="c1"># merge in that order</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">b_</span> <span class="o">=</span> <span class="n">bs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">b_</span> <span class="o">=</span> <span class="n">b_</span> <span class="o">+</span> <span class="n">bs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">b_</span></div>
+
+    <span class="c1">#### end: method requirements for decision 1</span>
+
+    <span class="c1">#### start: decision function 1</span>
+
+<div class="viewcode-block" id="BallComp.pre_decision_1_"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.pre_decision_1_">[docs]</a>    <span class="k">def</span> <span class="nf">pre_decision_1_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">idn</span><span class="p">):</span>
+
+        <span class="c1"># add point to ball</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_point_to_ball</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">idn</span><span class="p">)</span>
+
+        <span class="c1"># update its neighbors</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">previous neighbors:</span><span class="se">\n\t</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">vector_to_string</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_neighbors_of_ball</span><span class="p">(</span><span class="n">idn</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">new neighbors:</span><span class="se">\n\t</span><span class="s2">&quot;</span><span class="p">,</span><span class="n">vector_to_string</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span><span class="p">)))</span>
+
+        <span class="c1"># update target ball volume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_target_ball_volume</span><span class="p">(</span><span class="n">idn</span><span class="p">)</span>
+
+        <span class="c1"># update target ball 2-int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_target_ball_2int</span><span class="p">(</span><span class="n">idn</span><span class="p">)</span>
+
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="BallComp.update_target_ball_volume"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.update_target_ball_volume">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_ball_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idn</span><span class="p">):</span>
+        <span class="c1">###print(&quot;logging ball volume for {}: {}&quot;.format(idn,self.balls[idn].radius))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">log_ball_volume</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="BallComp.update_target_ball_2int"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.update_target_ball_2int">[docs]</a>    <span class="k">def</span> <span class="nf">update_target_ball_2int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idn</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span>
+        <span class="k">for</span> <span class="n">q_</span> <span class="ow">in</span> <span class="n">q</span><span class="p">:</span>
+            <span class="n">b2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">q_</span><span class="p">]</span>
+            <span class="c1">###print(&quot;LOGGING 2INT&quot;)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">log_ball_volume_2intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">],</span><span class="n">b2</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="BallComp.post_decision_1_"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.post_decision_1_">[docs]</a>    <span class="k">def</span> <span class="nf">post_decision_1_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idn</span><span class="p">):</span>
+        <span class="c1"># revert all changes made</span>
+            <span class="c1"># target ball add point</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">revert_add_point</span><span class="p">()</span>
+            <span class="c1"># target ball neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">revert_update_neighbors_of_ball</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">revert_cache_delta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">revert_cache_delta</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BallComp.decision_1_score"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.decision_1_score">[docs]</a>    <span class="k">def</span> <span class="nf">decision_1_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">bl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ball_label_for_point</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">SIM:</span><span class="se">\n\t</span><span class="s2">decision 1&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">adding point to: &quot;</span><span class="p">,</span><span class="n">bl</span><span class="p">)</span>
+        <span class="c1"># case: no balls to choose</span>
+        <span class="k">if</span> <span class="n">bl</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">bl</span><span class="p">,</span><span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_decision_1_</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">bl</span><span class="p">)</span>
+
+        <span class="n">bs1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">bl</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">|</span> <span class="p">{</span><span class="n">bl</span><span class="p">}</span>
+        <span class="c1"># simulate 1: no merge</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;estimating disjunction&quot;</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="n">vu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">estimate_disjunction_at_target_ball</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">bl</span><span class="p">]</span><span class="o">.</span><span class="n">idn</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="mi">500</span><span class="p">)</span>
+        <span class="n">vt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">ball_area</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bs1</span><span class="p">])</span>
+        <span class="n">vp</span> <span class="o">=</span> <span class="n">ball_area</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span><span class="p">,</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">bs1</span><span class="p">)</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">dec1</span><span class="p">(</span><span class="n">vu</span><span class="p">,</span><span class="n">vt</span><span class="p">,</span><span class="n">vp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2"> no-merge volume measures: &quot;</span><span class="p">,</span><span class="n">vu</span><span class="p">,</span><span class="n">vt</span><span class="p">,</span><span class="n">vp</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2"> no-merge score: &quot;</span><span class="p">,</span> <span class="n">d1</span><span class="p">)</span>
+
+        <span class="c1"># simulate 2: merge target ball w/ its neighbors</span>
+        <span class="n">ballSet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataless_ball_copies</span><span class="p">(</span><span class="n">bs1</span><span class="p">)</span>
+
+        <span class="n">ball0</span> <span class="o">=</span> <span class="n">BallComp</span><span class="o">.</span><span class="n">merge_ball_list</span><span class="p">(</span><span class="n">ballSet</span><span class="p">)</span>
+        <span class="n">vu</span> <span class="o">=</span> <span class="n">ball_area</span><span class="p">(</span><span class="n">ball0</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">vt</span> <span class="o">=</span> <span class="n">vu</span>
+        <span class="n">vp</span> <span class="o">=</span> <span class="n">ball_area</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span><span class="p">,</span><span class="n">p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">dec1</span><span class="p">(</span><span class="n">vu</span><span class="p">,</span><span class="n">vt</span><span class="p">,</span><span class="n">vp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2"> merge volume measures: &quot;</span><span class="p">,</span><span class="n">vu</span><span class="p">,</span><span class="n">vt</span><span class="p">,</span><span class="n">vp</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2"> merge score: &quot;</span><span class="p">,</span> <span class="n">d2</span><span class="p">)</span>
+
+        <span class="c1"># choose the better option</span>
+        <span class="n">option</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">bl</span><span class="p">,</span><span class="n">d1</span><span class="p">)</span> <span class="k">if</span> <span class="n">d1</span> <span class="o">&lt;=</span> <span class="n">d2</span> <span class="k">else</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="n">bl</span><span class="p">,</span><span class="n">d2</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2"> decision 1 option: &quot;</span><span class="p">,</span><span class="n">option</span><span class="p">)</span>
+
+        <span class="c1"># revert changes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">post_decision_1_</span><span class="p">(</span><span class="n">bl</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">option</span></div>
+
+    <span class="c1">#### end: decision function 1</span>
+
+    <span class="c1">#### start: decision function 2</span>
+
+<div class="viewcode-block" id="BallComp.decision_2_score"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.decision_2_score">[docs]</a>    <span class="k">def</span> <span class="nf">decision_2_score</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">dec2</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">decision 2 option:</span><span class="se">\n\t\t</span><span class="s2">balls </span><span class="si">{}</span><span class="s2"> max balls </span><span class="si">{}</span><span class="s2"> score </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span><span class="p">,</span><span class="n">score</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">score</span></div>
+
+    <span class="c1">#### end: decision function 2</span>
+
+    <span class="c1">#### start: decision 1 merge- ballset removal from .neighbors</span>
+
+<div class="viewcode-block" id="BallComp.remove_ballset"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.remove_ballset">[docs]</a>    <span class="k">def</span> <span class="nf">remove_ballset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idns</span><span class="p">):</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># get affected neighbors from .ballset removal</span>
+        <span class="k">for</span> <span class="n">idn</span> <span class="ow">in</span> <span class="n">idns</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span>
+
+            <span class="c1"># delete ball</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span>
+
+        <span class="c1"># filter out all balls found in idns</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">-</span> <span class="n">idns</span>
+
+        <span class="c1"># remove labels of ballset from .affected neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_balls_from_affected_neighbors</span><span class="p">(</span><span class="n">idns</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+
+        <span class="c1"># remove all volume and intersection values in `dve` that contain</span>
+        <span class="c1"># any label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">delete_keyset</span><span class="p">(</span><span class="n">idns</span><span class="p">)</span>
+
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="BallComp.delete_balls_from_affected_neighbors"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.delete_balls_from_affected_neighbors">[docs]</a>    <span class="k">def</span> <span class="nf">delete_balls_from_affected_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">bs</span><span class="p">,</span><span class="n">neighbors</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">-</span> <span class="n">bs</span>
+        <span class="k">return</span></div>
+
+    <span class="c1">#### start: adjustment</span>
+
+<div class="viewcode-block" id="BallComp.add_ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.add_ball">[docs]</a>    <span class="k">def</span> <span class="nf">add_ball</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> * adding ball &quot;</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">idn</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">idn</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_ball_info</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">idn</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="BallComp.update_ball_info"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.update_ball_info">[docs]</a>    <span class="k">def</span> <span class="nf">update_ball_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idn</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_neighbors_of_ball</span><span class="p">(</span><span class="n">idn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_target_ball_volume</span><span class="p">(</span><span class="n">idn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_target_ball_2int</span><span class="p">(</span><span class="n">idn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dve</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span></div>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    decision := (1,ball radius::(merged|non-merged),ball idn) | (2,p,ballIdn)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BallComp.load_recommendation"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.load_recommendation">[docs]</a>    <span class="k">def</span> <span class="nf">load_recommendation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">decision</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">decision</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span> <span class="s2">&quot;invalid decision&quot;</span>
+
+        <span class="k">if</span> <span class="n">decision</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$$ violation 1 check&quot;</span><span class="p">)</span>
+            <span class="n">res1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vh</span><span class="o">.</span><span class="n">check_violation_1</span><span class="p">(</span><span class="n">decision</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span><span class="p">)</span>
+
+            <span class="c1"># perform ball-split</span>
+            <span class="k">if</span> <span class="n">res1</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- max radius exceeded: splitting ball&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fix_violation_1_by_ball_split</span><span class="p">(</span><span class="n">decision</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+            <span class="c1">### TODO: add ball-split here as well</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">res1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">res1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+                <span class="c1"># log old argument</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_arg</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+
+                <span class="c1"># update `maxRadius`</span>
+                <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span> <span class="o">+</span> <span class="n">res1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- updating max radius: </span><span class="si">{}</span><span class="s2">-&gt;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span><span class="p">,</span><span class="n">q</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">change_arg</span><span class="p">((</span><span class="s1">&#39;r&#39;</span><span class="p">,</span><span class="n">q</span><span class="p">))</span>
+                <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$$ violation 2 check&quot;</span><span class="p">)</span>
+            <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vh</span><span class="o">.</span><span class="n">check_violation_2</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fix_violation_2</span><span class="p">((</span><span class="n">decision</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">decision</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span><span class="n">res2</span><span class="p">)</span>
+            <span class="k">return</span></div>
+
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    splits balls by a greedy splitting scheme</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BallComp.split_ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.split_ball">[docs]</a>    <span class="k">def</span> <span class="nf">split_ball</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idn</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">]</span><span class="o">.</span><span class="n">radius</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span><span class="p">,</span> <span class="s2">&quot;cannot split ball under radius&quot;</span>
+
+        <span class="n">b</span> <span class="o">=</span> <span class="n">BallOperator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">idn</span><span class="p">])</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">run_subball_split</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">,</span><span class="s2">&quot;literal&quot;</span><span class="p">),</span><span class="s2">&quot;minimal&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span></div>
+
+<div class="viewcode-block" id="BallComp.save_split_ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.save_split_ball">[docs]</a>    <span class="k">def</span> <span class="nf">save_split_ball</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idn</span><span class="p">,</span><span class="n">bo</span><span class="p">):</span>
+        <span class="c1"># save balls</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">bo</span><span class="o">.</span><span class="n">subballs</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">idn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ballCounter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ballCounter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">idn</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+
+        <span class="c1"># update their info</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">bo</span><span class="o">.</span><span class="n">subballs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_ball_info</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">idn</span><span class="p">)</span>
+
+        <span class="c1"># delete ball</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_ballset</span><span class="p">({</span><span class="n">idn</span><span class="p">})</span>
+        <span class="k">return</span></div>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    violation 1 occurs when target ball needs to be split</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BallComp.fix_violation_1_by_ball_split"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.fix_violation_1_by_ball_split">[docs]</a>    <span class="k">def</span> <span class="nf">fix_violation_1_by_ball_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">bIdn</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** Fixing violation 1 by split&quot;</span><span class="p">)</span>
+        <span class="n">bo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_ball</span><span class="p">(</span><span class="n">bIdn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of additional balls </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bo</span><span class="o">.</span><span class="n">subballs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># check for violation of number of balls</span>
+        <span class="n">newNumberOfBalls</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balls</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">bo</span><span class="o">.</span><span class="n">subballs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">newNumberOfBalls</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; violation: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+            <span class="n">res2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vh</span><span class="o">.</span><span class="n">check_violation_2</span><span class="p">(</span><span class="n">newNumberOfBalls</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span><span class="p">)</span>
+
+            <span class="c1"># terminate: cannot fix violation 1</span>
+            <span class="k">if</span> <span class="n">res2</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;violation 1 cannot be fixed. terminate delta.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">terminateDelta</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="n">bo</span><span class="o">.</span><span class="n">revert_split</span><span class="p">()</span>
+            <span class="c1"># do not terminate:</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># log old argument</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log_arg</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+                <span class="c1"># update `maxBalls`</span>
+                <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span> <span class="o">+</span> <span class="n">res2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">change_arg</span><span class="p">((</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="n">q</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;violation 1 -&gt; new max balls: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">q</span><span class="p">))</span>
+
+                <span class="c1"># save split</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_split_ball</span><span class="p">(</span><span class="n">bIdn</span><span class="p">,</span><span class="n">bo</span><span class="p">)</span>
+
+        <span class="c1"># no violation</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_split_ball</span><span class="p">(</span><span class="n">bIdn</span><span class="p">,</span><span class="n">bo</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    number of balls violation</span>
+
+<span class="sd">    newBallInfo := (ball idn,new point)</span>
+<span class="sd">    violation := (bool::violation,value)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="BallComp.fix_violation_2"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.fix_violation_2">[docs]</a>    <span class="k">def</span> <span class="nf">fix_violation_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">newBallInfo</span><span class="p">,</span><span class="n">violation</span><span class="p">):</span>
+        <span class="c1"># case: max balls reached</span>
+
+        <span class="k">if</span> <span class="n">violation</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** violation 2 cannot be fixed&quot;</span><span class="p">)</span>
+            <span class="c1"># delete new ball</span>
+            <span class="c1">## new ball will not have any neighbors</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_ballset</span><span class="p">({</span><span class="n">newBallInfo</span><span class="p">[</span><span class="mi">0</span><span class="p">]})</span>
+                <span class="c1">##del self.balls[newBallInfo[0]]</span>
+                <span class="c1">##self.dve.delete_keyset({newBallInfo[0]})</span>
+
+            <span class="c1"># find a ball label for point</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ball_label_for_point__qualify_radius</span><span class="p">(</span><span class="n">newBallInfo</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="c1"># ball found, add point to ball</span>
+            <span class="k">if</span> <span class="n">l</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;found alternative ball @ </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pre_decision_1_</span><span class="p">(</span><span class="n">newBallInfo</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">l</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="c1"># case: update maxBalls</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">violation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">violation</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;*** violation 2 fixed&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_arg</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span> <span class="o">+</span> <span class="n">violation</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">change_arg</span><span class="p">((</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="n">q</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;new max number of balls: &quot;</span><span class="p">,</span><span class="n">q</span><span class="p">)</span>
+            <span class="k">return</span></div>
+
+<div class="viewcode-block" id="BallComp.log_arg"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.log_arg">[docs]</a>    <span class="k">def</span> <span class="nf">log_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">arg</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">arg</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">},</span> <span class="s2">&quot;invalid argument&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span> <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="s1">&#39;b&#39;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span>
+
+        <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bah</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rah</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ts</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="BallComp.change_arg"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp.BallComp.change_arg">[docs]</a>    <span class="k">def</span> <span class="nf">change_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">newArg</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">newArg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">},</span> <span class="s2">&quot;invalid argument&quot;</span>
+        <span class="k">if</span> <span class="n">newArg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maxBalls</span> <span class="o">=</span> <span class="n">newArg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maxRadius</span> <span class="o">=</span> <span class="n">newArg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">morebs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">morebs2</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Richard Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

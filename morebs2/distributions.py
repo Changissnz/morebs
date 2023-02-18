@@ -1,4 +1,6 @@
-# file contains code for distributions
+"""
+file contains code for distributions
+"""
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -11,8 +13,6 @@ random.seed(100)
 
 ############################# start: plotting functions
 
-'''
-'''
 def basic_2d_lineplot(x,y):
     fig, ax = plt.subplots()  # Create a figure containing a single axes.
     ax.plot(x, y)
@@ -24,10 +24,9 @@ def basic_2d_scatterplot(x,y,c=None):
     plt.show()
 
 def generate_2d_data_from_function(f,xRange,xInc,additionalArgs = ()):
-    '''
-    generates a sequence of (x,y) pairs such that every x-value has exactly
-    one y-value and the x-values are evenly distributed across the x-range.
-    '''
+    """generates a sequence of (x,y) pairs such that every x-value has exactly one y-value and the x-values are evenly distributed across the x-range.
+    """
+    
     x = []
     y = []
     q = xRange[0]
@@ -38,10 +37,9 @@ def generate_2d_data_from_function(f,xRange,xInc,additionalArgs = ()):
     return x,y
 
 def generate_2d_data_from_function__multipleY(f,xRange,xInc,additionalArgs = ()):
-    '''
-    generates a sequence of (x,y) pairs such that every x-value can have any
-    integer n >= 0 of y-values according to arguments. 
-    '''
+    """generates a sequence of (x,y) pairs such that every x-value can have any integer n >= 0 of y-values according to arguments. 
+    """
+
     x = []
     y = []
     q = xRange[0]
@@ -53,13 +51,9 @@ def generate_2d_data_from_function__multipleY(f,xRange,xInc,additionalArgs = ())
         q = q + xInc
     return x,y
 
-'''
-'''
 def function_to_2dplot(g,f,xRange,xInc,additionalArgs=(),mode="scatter"):
     assert mode in ["line","scatter"]
     x,y = g(f,xRange,xInc,additionalArgs)
-    print("X: ", len(x))
-    print("Y: ", len(y))
     if mode == "line":
         basic_2d_lineplot(x,y)
     else:
@@ -82,11 +76,9 @@ def poisson_distribution_function():
     return -1
 
 def multiple_y_function_stdrand(x,yRange,multipleRange):
-    '''
-    generates multiple y-values for the x-value based on
-    python standard random. The x-value has no bearing on
-    the y-values generated.
-    '''
+    """generates multiple y-values for the x-value based on python standard random. The x-value has no bearing on the y-values generated.
+    """
+
     assert yRange[1] >= yRange[0], "invalid range for y-values"
     assert multipleRange[1] >= multipleRange[0], "invalid range for multiples"
 
@@ -98,10 +90,11 @@ def multiple_y_function_stdrand(x,yRange,multipleRange):
     return l
 
 def multiple_y_function_x_effector(x,f,multipleRange):
-    '''
-    generates variable # of y-values for the x-value in which
-    the x-value has an effect on the y-values generated.
-    '''
+    """generates variable # of y-values for the 
+    x-value in which the x-value has an 
+    effect on the y-values generated.
+    """
+
     p1 = multipleRange[0] + int((multipleRange[1] - multipleRange[0]) * random.random())
     l = []
     for i in range(1,p1 + 1):
@@ -110,11 +103,13 @@ def multiple_y_function_x_effector(x,f,multipleRange):
     return l
 
 def x_effector_function_type_modulo(xyiOp,yRange):
-    '''
-    outputs a function 
+    """outputs a function 
                 `f(x,i) -> y`
-    using a function `xyiOp(x,yRange,i)`. 
-    '''
+        using a function `xyiOp(x,yRange,i)`. 
+
+    :param xyiOp: function
+    :param yRange: range of the y-values 
+    """
 
     def q(x,i):
         return xyiOp(x,yRange,i)

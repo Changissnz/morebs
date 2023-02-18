@@ -212,12 +212,11 @@ class RCInst:
         return s
 
     def inst_update_var(self):
-        '''
-        updates each key `k` in `updatePath` by the following:
-        - for `k`, retrieve all relevant variables `q` from `updateInfo`
-          by the indices specified by `updatePath`[k] and then 
-          then uses the update function `updateFunc`[k] on `q` to 
-          produce the updated value for variable `k`. 
+        ''' updates each key `k` in `updatePath` by the following:
+        for `k`, retrieve all relevant variables `q` from `updateInfo`
+        by the indices specified by `updatePath`[k] and then 
+        then uses the update function `updateFunc`[k] on `q` to 
+        produce the updated value for variable `k`. 
         '''
 
         for k,v in self.updatePath.items():
@@ -631,17 +630,15 @@ def RCHF__point_in_bounds_subvector_selector(b):
 from .poly_struct import *
 
 def RCHF__ISPoly(x:'float',largs):
-    '''
-    constructs a class<RChainHead> function that has as its first function
+    """constructs a :class:`RChainHead` function that has as its first function
     a polynomial function represented by :class:`ISPoly` over float `x`. The
     remaining nodes of the :class:`RChainHead` instance are constructed by the
     sequence of arguments `largs` to produce a :class:`RChainHead` with 1+ nodes.
     
     :param x: value that single-variable polynomial applies over
     :type x: float
-    :param largs: sequence of `kwargs` used by :method:`RChainHead.make_node`
-    
-    '''
+    :param largs: sequence of `kwargs` used by `RChainHead.make_node`
+    """
 
     rc = RChainHead()
 
@@ -657,12 +654,9 @@ def RCHF__ISPoly(x:'float',largs):
         rc.add_node_at(a)
     return rc.apply
 
-"""
-outputs the func for in bounds
-"""
 def RCHF___in_bounds(bounds0):
     '''
-    non-referential class<RChainHead> instance that 
+    non-referential class<RChainHead> instance that outputs the func for in bounds
     '''
 
     kwargs = ['nr', lambda_pointinbounds, bounds0]
@@ -733,21 +727,22 @@ def rpmem_func(rf,rOp):
 
     return p
 
-"""
-is permutation map valid?
-"""
+
 def is_valid_pm(pm):
+    """
+    is permutation map valid?
+    """
     assert pm.shape[1] == 2, "invalid pm shape"
     tf1 = len(np.unique(pm[:,0])) == pm.shape[0]
     tf2 = len(np.unique(pm[:,1])) == pm.shape[0]
     return tf1 and tf2
 
-"""
-is permutation map proper?
-
-"proper" := valid and all valids in range [0,n-1]
-"""
 def is_proper_pm(pm):
+    """
+    is permutation map proper?
+
+    "proper" := valid and all valids in range [0,n-1]
+    """
     s = is_valid_pm(pm)
     if not s: return s
     s1 = min(pm[:,0]) == 0 and max(pm[:,0])  == pm.shape[0]

@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morebs2.tests.rssi_test &#8212; morebs 0.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for morebs2.tests.rssi_test</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.rssi_test_cases</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="c1">################################ start tests: relevance zoom, euclidean point distance on 5.0</span>
+<span class="c1">#</span>
+
+<div class="viewcode-block" id="TestRSSIClass"><a class="viewcode-back" href="../../../morebs2.tests.html#morebs2.tests.rssi_test.TestRSSIClass">[docs]</a><span class="k">class</span> <span class="nc">TestRSSIClass</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TestRSSIClass.test__rssi__case1"><a class="viewcode-back" href="../../../morebs2.tests.html#morebs2.tests.rssi_test.TestRSSIClass.test__rssi__case1">[docs]</a>    <span class="k">def</span> <span class="nf">test__rssi__case1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n\t</span><span class="s2">*** testing case 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">sample_rssi_1</span><span class="p">(</span><span class="n">rchl</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">rssi</span><span class="o">.</span><span class="n">rssi__display_n_bounds</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &lt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TestRSSIClass.test__rssi__case2"><a class="viewcode-back" href="../../../morebs2.tests.html#morebs2.tests.rssi_test.TestRSSIClass.test__rssi__case2">[docs]</a>    <span class="k">def</span> <span class="nf">test__rssi__case2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n\t</span><span class="s2">*** testing case 2</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">sample_rssi_1</span><span class="p">(</span><span class="n">rchl</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">rssi</span><span class="o">.</span><span class="n">rssi__display_n_bounds</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &gt;= and &lt;=</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TestRSSIClass.test__rssi__case3"><a class="viewcode-back" href="../../../morebs2.tests.html#morebs2.tests.rssi_test.TestRSSIClass.test__rssi__case3">[docs]</a>    <span class="k">def</span> <span class="nf">test__rssi__case3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n\t</span><span class="s2">*** testing case 3</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">sample_rssi_1</span><span class="p">(</span><span class="n">rchl</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">rssi</span><span class="o">.</span><span class="n">rssi__display_n_bounds</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+        <span class="c1">################################ end tests: relevance zoom, euclidean point distance on 5.0</span>
+
+        <span class="c1">################################ start tests: png, euclidean point distance on 5.0</span>
+
+<div class="viewcode-block" id="TestRSSIClass.test__rssi__case4"><a class="viewcode-back" href="../../../morebs2.tests.html#morebs2.tests.rssi_test.TestRSSIClass.test__rssi__case4">[docs]</a>    <span class="k">def</span> <span class="nf">test__rssi__case4</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n\t</span><span class="s2">*** testing case 4</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="n">sample_rssi_1</span><span class="p">(</span><span class="n">rmMode</span> <span class="o">=</span> <span class="s2">&quot;prg&quot;</span><span class="p">)</span>
+        <span class="n">rssi</span><span class="o">.</span><span class="n">rssi__display_n_bounds</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># check relevant points</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        print(&quot;relevant points&quot;)</span>
+<span class="sd">        for (i,v) in enumerate(rssi.ri.centerResplat.relevantPointsCache):</span>
+<span class="sd">            print(&quot;{} : {}&quot;.format(i,v))</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ri</span><span class="o">.</span><span class="n">centerResplat</span><span class="o">.</span><span class="n">relevantPointsCache</span><span class="p">)</span> <span class="o">==</span> <span class="mi">32</span><span class="p">,</span> <span class="s2">&quot;incorrect number of relevant pts.&quot;</span>
+
+        <span class="c1">#print(&quot;\n\n\tNEZXTING 10\n&quot;)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="c1">#print(next(rssi))</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">rssi</span><span class="o">.</span><span class="n">point_in_bounds</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ri</span><span class="o">.</span><span class="n">centerResplat</span><span class="o">.</span><span class="n">centerBounds</span><span class="p">,</span><span class="n">q</span><span class="p">),</span> <span class="s2">&quot;point w/ noise must stay in bounds&quot;</span>
+
+        <span class="c1"># display index counter</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RPI COUNTER&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ri</span><span class="o">.</span><span class="n">centerResplat</span><span class="o">.</span><span class="n">rpIndexCounter</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">ri</span><span class="o">.</span><span class="n">centerResplat</span><span class="o">.</span><span class="n">rpIndexCounter</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;center-resplat index counter cannot be empty&quot;</span>
+        <span class="k">return</span></div></div>
+
+<span class="c1"># testing for relevant points</span>
+<span class="c1">################################ end tests: png, euclidean point distance on 5.0</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">()</span>
+
+
+<span class="c1"># NEXT: verbose mode</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">morebs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">morebs2</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Richard Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

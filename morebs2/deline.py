@@ -1,12 +1,28 @@
-from morebs2.fit_2n2 import *
-from morebs2.random_generators import *
-from morebs2.deline_helpers import *
+#from morebs2.fit_2n2 import *
+#from morebs2.random_generators import *
+#from morebs2.deline_helpers import *
+from .fit_2n2 import *
+from .random_generators import *
+from .deline_helpers import *
 from collections import defaultdict,Counter
 
-# TODO: make a `number of break points per edge` parameter
 class Delineation:
 
     def __init__(self,label,clockwise,parentIds = [],childIds = [],idn = "0"):
+        """
+        data structure used to store and calculate points for delineation of a sequence
+        of two-dimensional points
+
+        :attribute d: container for point sequences corresponding to each direction (l,r,t,b)
+        :type d: dict 
+        :attribute d_: sequence of :class>`DCurves` corresponding to `d`. 
+        :type d_: list 
+        :attribute label: the classification of the points  
+        :type label: int
+        :attribute clockwise: is the delineation clockwise? 
+        :type clockwise: bool
+        """
+        
         self.d = {}
         self.d_ = None
         self.label = label
@@ -19,6 +35,9 @@ class Delineation:
         self.d[direction] = edge
 
     def no_duplicates(self):
+        '''
+        sequence correction algorithm by condition `no duplicates`. 
+        '''
         # left and right
         self.d['l'],self.d['r'] = eliminate_duplicate_points(\
             self.d['l'],self.d['r'],0)
@@ -29,6 +48,7 @@ class Delineation:
 
     def no_cross(self):
         '''
+        sequence correction algorithm by condition `no cross`. 
         '''
         self.d['l'],self.d['r'] = eliminate_contrary_points(\
             self.d['l'],self.d['r'],1)
@@ -61,6 +81,9 @@ class Delineation:
                 break
 
     def no_jags(self):
+        '''
+        sequence correction algorithm by condition `no jags`. 
+        '''
         self.no_jags_on_edge('l')
         self.no_jags_on_edge('r')
         self.no_jags_on_edge('t')
@@ -121,10 +144,9 @@ class Delineation:
                 deepcopy(ps[i]),deepcopy(ps[i+1]),ad))
         return cs
 
-    # TODO: test
     def classify_point(self,p):
         '''
-        return := label if p in delineation, otherwise -1
+        :rtype: label if p in delineation, otherwise -1
         '''
         x1,x2,x3,x4 = self.point_to_relevant_curvepair(p)
 
@@ -140,10 +162,12 @@ class Delineation:
         sc = self.classify_point_by_complementary_curves(p,x1,x2)
         return self.label if sc else -1
 
-    #### 
-
     def classify_point_special_case(self,p,c1,c2,c3,c4):
         '''
+        provides a classification to point `p` by ('l','t') curves in
+        the case where the value by the `l` and `r` OR `t` and `b` curves
+        are equal. 
+
         NOTE: caution 
         '''
 
@@ -181,12 +205,6 @@ class Delineation:
                 elif x.ad == 't': t = x
                 elif x.ad == 'b': b = x
 
-        '''
-        if type(l) == type(None) or type(r) == type(None):
-            if type(t) == type(None) or type(b) == type(None):
-                return None,None
-            return t,b
-        '''
         return l,r,t,b
 
     def classify_point_by_complementary_curves(self,p,c1,c2):
@@ -260,36 +278,52 @@ class Delineation:
 class DLineate22:
 
     def __init__(self,xyl,clockwise=True,dmethod = "nocross",idn="0"):
+        """
+        Delineates a sequence of three-dimensional points using the :class:`Delineator`
+        by one of the methods `nojag`,`nocross`, or `nodup`, each of which provides a
+        different and possibly inaccurate delineation of the points (if data is "complex").
+
+        Delineation targets the subset of points with the label of lowest frequency.
+
+        :attribute xyl: three-dimensional points of (x,y,label). 
+        :type xyl: np.ndarray 
+        :attribute xyl_sorted_x: the `xyl` points sorted by x-axis. 
+        :type xyl_sorted_x: nd.nparray 
+        :attribute xyl_sorted_y: the `xyl` points sorted by y-axis. 
+        :type xyl_sorted_y: nd.nparray  
+        :attribute lc: label to label indices
+        :type lc: dict  
+
+        :attribute clockwise: is delineation clockwise?
+        :type clockwise: bool
+        :attribute label: target label of points to delineate
+        :type label: int
+        :attribute lpoints: target points to delineate
+        :type lpoints: np.ndarray
+        :attribute linfo: information of target points, [x-center,y-center,x-min,x-max,y-min,y-max]
+        :type linfo: np.ndarray
+        :attribute d: used to delineate the target points
+        :type d: :class:`Delineator`
+        :attribute dmethod: methodology used to correct points
+        :type dmethod: string
+        :attribute idn: identifier of class 
+        :type idn: stringized int
+        """
+
+
         assert xyl.shape[1] == 3, "invalid shape"
         assert dmethod in ["nodup","nojag","nocross"]
         
-        # starting data
         self.xyl = np.round(xyl,5)
-        # tmp holder
         self.xyl_sorted_x = None
         self.xyl_sorted_y = None 
-        # labels -> label indices
         self.lc = None
-        # center
-        self.c = None 
-        # reference point
-        self.rp = None
-        # bool
         self.clockwise = clockwise
-        # label to delineate
         self.label = None
-        # label points
         self.lpoints = None
-        # label info
         self.linfo = None
-        # delineation
         self.d = None
-
-        # container for finalized delineations
-        self.ds = []
-        # delineation method
         self.dmethod = dmethod
-        # identifier
         self.idn = idn
         return
 

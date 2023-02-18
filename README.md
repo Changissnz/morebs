@@ -10,7 +10,9 @@ sudo python3 setup.py install
 Features
 =========
 - `main.py` file not yet coded.
-- some information on the code can be found in the `docs` @ `docs/build/index.html`.
+- some information on the code can be found in the `docs` @ `docs/build/index.html`. To update the documentation there, do 
+    `sphinx-build -b html docs/source/ docs/build/html`
+after getting sphinx-docs installed. 
 
 Update 11/13/22
 ===============

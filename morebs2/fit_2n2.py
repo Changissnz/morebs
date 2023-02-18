@@ -3,8 +3,8 @@
 2 and 2 fit: various fit-formulae between two points
             in a 2-d space. 
 '''
-from morebs2.distributions import *
-from morebs2.line import *
+from .distributions import *
+from .line import *
 from copy import deepcopy
 
 class Fit22:

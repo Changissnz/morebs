@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morebs2.ball_comp_components &#8212; morebs 0.0.3 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for morebs2.ball_comp_components</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.numerical_generator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.point_weight_function</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1">#################### start: area estimation methods</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">table contains values of curvature estimation between two</span>
+<span class="sd">circles that intersect.</span>
+
+<span class="sd">These values are used to `gauge` the volume of intersection between</span>
+<span class="sd">two n-balls.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">CURVATURE_EST</span> <span class="o">=</span> <span class="p">{</span><span class="mf">1.0</span><span class="p">:</span><span class="mf">0.46792</span><span class="p">,</span>\
+                <span class="mi">5</span><span class="o">/</span><span class="mi">6</span><span class="p">:</span><span class="mf">0.52544</span><span class="p">,</span>\
+                <span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">:</span><span class="mf">0.61026</span><span class="p">,</span>\
+                <span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span><span class="mf">0.72842</span><span class="p">,</span>\
+                <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">:</span><span class="mf">0.88860</span><span class="p">,</span>\
+                <span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">:</span><span class="mf">0.96300</span><span class="p">,</span>\
+                <span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="p">:</span><span class="mf">1.0</span><span class="p">}</span>
+
+<span class="n">CURVATURE_EST_KEYS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+
+<div class="viewcode-block" id="intersection_ratio"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.intersection_ratio">[docs]</a><span class="k">def</span> <span class="nf">intersection_ratio</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Calculates the intersection ratios of b1 and b2.</span>
+<span class="sd">The intersection ratio of a ball is the proportion of its diameter that</span>
+<span class="sd">lies in the intersection.</span>
+
+<span class="sd">:return: intersection ratio of b1, intersection ratio of b2</span>
+<span class="sd">:rtype: (float,float)|(None,None)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ed</span> <span class="o">=</span> <span class="n">euclidean_point_distance</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">center</span><span class="p">,</span><span class="n">b2</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+
+    <span class="c1"># case: no intersection</span>
+    <span class="k">if</span> <span class="n">ed</span> <span class="o">&gt;=</span> <span class="n">b1</span><span class="o">.</span><span class="n">radius</span> <span class="o">+</span> <span class="n">b2</span><span class="o">.</span><span class="n">radius</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span><span class="kc">None</span>
+
+    <span class="c1"># case: b2 completely in b1</span>
+    <span class="k">if</span> <span class="n">b2</span><span class="o">.</span><span class="n">radius</span> <span class="o">+</span> <span class="n">ed</span> <span class="o">&lt;=</span> <span class="n">b1</span><span class="o">.</span><span class="n">radius</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span>
+
+    <span class="c1"># case: b1 completely in b2</span>
+    <span class="k">if</span> <span class="n">b1</span><span class="o">.</span><span class="n">radius</span> <span class="o">+</span> <span class="n">ed</span> <span class="o">&lt;=</span> <span class="n">b2</span><span class="o">.</span><span class="n">radius</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mf">1.0</span><span class="p">,</span><span class="mf">0.0</span>
+
+    <span class="c1"># get intersection ratio of b1</span>
+        <span class="c1"># first point is the farthest boundary point of b1 that lies in b2</span>
+        <span class="c1"># point on ray (b1.center,b2.center) of distance b1.radius from .b1.center</span>
+    <span class="n">coeff1</span> <span class="o">=</span> <span class="n">b1</span><span class="o">.</span><span class="n">radius</span> <span class="o">/</span> <span class="n">ed</span>
+    <span class="n">x1</span> <span class="o">=</span> <span class="n">b1</span><span class="o">.</span><span class="n">center</span> <span class="o">+</span> <span class="n">coeff1</span> <span class="o">*</span> <span class="p">(</span><span class="n">b2</span><span class="o">.</span><span class="n">center</span> <span class="o">-</span> <span class="n">b1</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+
+        <span class="c1"># second point of interest is the farthest boundary point of b2 that lies in b1</span>
+        <span class="c1"># the point on the ray (b2.center,b1.center) at</span>
+        <span class="c1"># distance b1.radius + ed</span>
+    <span class="n">coeff2</span> <span class="o">=</span> <span class="n">b2</span><span class="o">.</span><span class="n">radius</span> <span class="o">/</span> <span class="n">ed</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">b2</span><span class="o">.</span><span class="n">center</span> <span class="o">+</span> <span class="n">coeff2</span> <span class="o">*</span> <span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">center</span> <span class="o">-</span> <span class="n">b2</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="n">euclidean_point_distance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">x2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">distance</span> <span class="o">/</span> <span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">radius</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">distance</span> <span class="o">/</span> <span class="p">(</span><span class="n">b2</span><span class="o">.</span><span class="n">radius</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span><span class="mi">5</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="prelim_2intersection_estimate"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.prelim_2intersection_estimate">[docs]</a><span class="k">def</span> <span class="nf">prelim_2intersection_estimate</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">ir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    estimate does not include curvature estimation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ir</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ball_area</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="n">b1</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">ir</span>
+    <span class="k">return</span> <span class="n">ball_area</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="n">b1</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">prelim_2intersection_estimate</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">ir</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="reference_intersection_ratio_to_curvature_est_key"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.reference_intersection_ratio_to_curvature_est_key">[docs]</a><span class="k">def</span> <span class="nf">reference_intersection_ratio_to_curvature_est_key</span><span class="p">(</span><span class="n">ri</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">ri</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">ri</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;invalid intersection ratio&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">ri</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">CURVATURE_EST_KEYS</span><span class="p">])</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">CURVATURE_EST_KEYS</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+
+<span class="c1"># CAUTION</span>
+<span class="c1">##this is an approximation for Ball volume.</span>
+<span class="c1">##Value calculated from .this method is to be used as a reference</span>
+<span class="c1">##rather than directly as a numerical value.</span>
+<div class="viewcode-block" id="ball_area"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.ball_area">[docs]</a><span class="k">def</span> <span class="nf">ball_area</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">k</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">,</span><span class="s2">&quot;invalid k&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">x2</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x2</span></div>
+
+<div class="viewcode-block" id="reference_volume_ratio"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.reference_volume_ratio">[docs]</a><span class="k">def</span> <span class="nf">reference_volume_ratio</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="n">b1</span><span class="o">.</span><span class="n">radius</span> <span class="o">/</span> <span class="n">b2</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="n">b2</span><span class="o">.</span><span class="n">radius</span> <span class="o">/</span> <span class="n">b1</span><span class="o">.</span><span class="n">radius</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="volume_2intersection_estimate"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.volume_2intersection_estimate">[docs]</a><span class="k">def</span> <span class="nf">volume_2intersection_estimate</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">):</span>
+    <span class="n">r1</span><span class="p">,</span><span class="n">r2</span> <span class="o">=</span> <span class="n">intersection_ratio</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">)</span>
+    <span class="c1">###print(&quot;RI: &quot;,r1,r2, ball_area(b1.radius,6),ball_area(b2.radius,6))</span>
+    <span class="c1"># case: no intersection</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">r1</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="c1"># case: ball 1 in ball 2</span>
+    <span class="k">if</span> <span class="n">r1</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ball_area</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="n">b1</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># case: ball 2 in ball 1</span>
+    <span class="k">if</span> <span class="n">r2</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ball_area</span><span class="p">(</span><span class="n">b2</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="n">b2</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># case: intersection</span>
+    <span class="n">ie1</span> <span class="o">=</span> <span class="n">prelim_2intersection_estimate</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">r1</span><span class="p">)</span>
+    <span class="n">ie2</span> <span class="o">=</span> <span class="n">prelim_2intersection_estimate</span><span class="p">(</span><span class="n">b2</span><span class="p">,</span><span class="n">r2</span><span class="p">)</span>
+
+    <span class="c1">###print(&quot;IE1 &quot;, ie1, &quot;\t&quot;,ie2)</span>
+
+    <span class="n">referenceIntersectionRatio</span> <span class="o">=</span> <span class="n">r1</span> <span class="k">if</span> <span class="n">b1</span><span class="o">.</span><span class="n">radius</span> <span class="o">&gt;</span> <span class="n">b2</span><span class="o">.</span><span class="n">radius</span> <span class="k">else</span> <span class="n">r2</span>
+    <span class="n">cek</span> <span class="o">=</span> <span class="n">reference_intersection_ratio_to_curvature_est_key</span><span class="p">(</span><span class="n">referenceIntersectionRatio</span><span class="p">)</span>
+    <span class="n">rv</span> <span class="o">=</span> <span class="n">reference_volume_ratio</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">)</span>
+    <span class="n">curvatureEst</span> <span class="o">=</span> <span class="n">CURVATURE_EST</span><span class="p">[</span><span class="n">cek</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">CURVATURE_EST</span><span class="p">[</span><span class="n">cek</span><span class="p">])</span> <span class="o">*</span> <span class="n">rv</span>
+    <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="n">ie1</span><span class="p">,</span><span class="n">ie2</span><span class="p">])</span> <span class="o">*</span> <span class="n">curvatureEst</span></div>
+
+<span class="c1">#################### end: area estimation methods</span>
+
+<div class="viewcode-block" id="Ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball">[docs]</a><span class="k">class</span> <span class="nc">Ball</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    implementation of n-ball, see `ball_operator` for related methods.</span>
+
+<span class="sd">    :param center: center of ball</span>
+<span class="sd">    :type center: np.ndarray, vector</span>
+<span class="sd">    :param idn: int</span>
+<span class="sd">    :type idn: int</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># used for reversion</span>
+    <span class="n">DELTA_MEMORY_CAPACITY</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span><span class="n">idn</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">is_vector</span><span class="p">(</span><span class="n">center</span><span class="p">),</span> <span class="s2">&quot;invalid center point for Ball&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">center</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idn</span> <span class="o">=</span> <span class="n">idn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">PointSorter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># [0] is radial reference, [1] is</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radiusDeltas</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointAddDeltas</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># container that holds the most recent delta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_delta</span><span class="p">()</span> <span class="c1"># (point,radius delta)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span> <span class="c1"># of ball neighbor identifiers</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s0</span> <span class="o">=</span> <span class="s2">&quot;ball idn: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idn</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ball center:</span><span class="se">\n\t</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vector_to_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">,</span><span class="nb">float</span><span class="p">))</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ball radius: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">)</span>
+        <span class="n">s3</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ball neighbors: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">)</span>
+        <span class="n">s3</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ball data shape: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">newData</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">s0</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="n">s2</span> <span class="o">+</span> <span class="n">s3</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Ball.dataless_copy"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.dataless_copy">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">dataless_copy</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="n">b_</span> <span class="o">=</span> <span class="n">Ball</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">center</span><span class="p">))</span>
+        <span class="n">b_</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">radius</span>
+        <span class="n">b_</span><span class="o">.</span><span class="n">neighbors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">neighbors</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b_</span></div>
+
+<div class="viewcode-block" id="Ball.is_neighbor"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.is_neighbor">[docs]</a>    <span class="k">def</span> <span class="nf">is_neighbor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">euclidean_point_distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">,</span><span class="n">b</span><span class="o">.</span><span class="n">center</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">radius</span></div>
+
+<div class="viewcode-block" id="Ball.area"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.area">[docs]</a>    <span class="k">def</span> <span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">ball_area</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ball.one_ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.one_ball">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">one_ball</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Ball</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span></div>
+
+<div class="viewcode-block" id="Ball.one_ball_"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.one_ball_">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">one_ball_</span><span class="p">(</span><span class="n">center</span><span class="p">,</span><span class="n">radius</span><span class="p">,</span><span class="n">centerAsPoint</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Ball</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">random_npoint_from_point</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">center</span><span class="p">),</span><span class="n">radius</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">b</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b</span></div>
+
+    <span class="c1"># TODO: test this.</span>
+<div class="viewcode-block" id="Ball.in_bounds"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.in_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">in_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">bounds</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">bounds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;invalid bounds&quot;</span>
+
+        <span class="n">bs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">):</span>
+            <span class="n">c0</span><span class="p">,</span><span class="n">c1</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="n">c</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span>
+            <span class="n">bs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c0</span><span class="p">,</span><span class="n">c1</span><span class="p">))</span>
+        <span class="n">bs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bs</span><span class="p">)</span>
+        <span class="n">bs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bounds_is_subbounds</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span><span class="n">bs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ball.point_in_data"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.point_in_data">[docs]</a>    <span class="k">def</span> <span class="nf">point_in_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">vector_exists</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Ball.point_in_ball"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.point_in_ball">[docs]</a>    <span class="k">def</span> <span class="nf">point_in_ball</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">ed</span> <span class="o">=</span> <span class="n">euclidean_point_distance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ed</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span></div>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    adds single point to Ball</span>
+<span class="sd">    and updates mean</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Ball.add_element"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.add_element">[docs]</a>    <span class="k">def</span> <span class="nf">add_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">insert_point</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointAddDeltas</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointAddDeltas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointAddDeltas</span><span class="p">[:</span><span class="n">Ball</span><span class="o">.</span><span class="n">DELTA_MEMORY_CAPACITY</span><span class="p">]</span>
+
+        <span class="c1"># update radius</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">euclidean_point_distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">,</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">radiusDeltas</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">radiusDeltas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radiusDeltas</span><span class="p">[:</span><span class="n">Ball</span><span class="o">.</span><span class="n">DELTA_MEMORY_CAPACITY</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">r</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="Ball.revert_add_point"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.revert_add_point">[docs]</a>    <span class="k">def</span> <span class="nf">revert_add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pointAddDeltas</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointAddDeltas</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># remove from .data</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">equal_iterables</span><span class="p">(</span><span class="n">q</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">revert_delta</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">delete_point</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+    <span class="c1"># TODO:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Ball.revert_delta"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.revert_delta">[docs]</a>    <span class="k">def</span> <span class="nf">revert_delta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">delete_point</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radiusDeltas</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radiusDeltas</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>\
+                        <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Ball.clear_delta"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.clear_delta">[docs]</a>    <span class="k">def</span> <span class="nf">clear_delta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radiusDelta</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span></div>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    determines if two balls intersect</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Ball.does_intersect"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.does_intersect">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">does_intersect</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">):</span>
+        <span class="n">epd</span> <span class="o">=</span> <span class="n">euclidean_point_distance</span><span class="p">(</span><span class="n">b1</span><span class="o">.</span><span class="n">center</span><span class="p">,</span><span class="n">b2</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">epd</span> <span class="o">=</span> <span class="n">epd</span> <span class="o">-</span> <span class="n">b1</span><span class="o">.</span><span class="n">radius</span> <span class="o">-</span> <span class="n">b2</span><span class="o">.</span><span class="n">radius</span>
+        <span class="k">return</span> <span class="n">epd</span> <span class="o">&lt;=</span> <span class="mi">0</span></div>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    upper-bound estimate on the k-dimensional sub-area of</span>
+<span class="sd">    intersection b/t b1 and b2.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Ball.area_intersection_estimation"><a class="viewcode-back" href="../../morebs2.html#morebs2.ball_comp_components.Ball.area_intersection_estimation">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">area_intersection_estimation</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">):</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="n">Ball</span><span class="o">.</span><span class="n">area_intersection_estimation_</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span><span class="n">b2</span><span class="p">)</span>
+        <span class="n">a2</span> <span class="o">=</span> <span class="n">Ball</span><span class="o">.</span><span class="n">area_intersection_estimation_</span><span class="p">(</span><span class="n">b2</span><span class="p">,</span><span class="n">b1</span><span class="p">)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">b2</span><span class="o">.</span><span class="n">area</span><span class="p">()</span> <span class="o">*</span> <span class="n">a1</span><span class="p">,</span> <span class="n">b1</span><span class="o">.</span><span class="n">area</span><span class="p">()</span> <span class="o">*</span> <span class="n">a2</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span><span class="n">x1</span><span class="p">])</span></div>
+
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    merges two balls</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b2</span><span class="p">):</span>
+
+        <span class="n">r1</span><span class="p">,</span><span class="n">r2</span> <span class="o">=</span> <span class="n">intersection_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">b2</span><span class="p">)</span>
+        <span class="c1"># case: self in b2</span>
+        <span class="k">if</span> <span class="n">r1</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">b2</span>
+
+        <span class="c1"># case: b2 in self</span>
+        <span class="k">if</span> <span class="n">r2</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="c1"># case: other</span>
+        <span class="n">ed</span> <span class="o">=</span> <span class="n">euclidean_point_distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">,</span><span class="n">b2</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+            <span class="c1"># get the farthest boundary point of b2 on line (b1.center,b2.center)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">b2</span><span class="o">.</span><span class="n">radius</span> <span class="o">/</span> <span class="n">ed</span>
+        <span class="n">e2</span> <span class="o">=</span> <span class="n">b2</span><span class="o">.</span><span class="n">center</span> <span class="o">+</span> <span class="n">x2</span> <span class="o">*</span> <span class="p">(</span><span class="n">b2</span><span class="o">.</span><span class="n">center</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+
+            <span class="c1"># get the farthest boundary point of b1 on line (b1.center,b2.center)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">/</span> <span class="n">ed</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">+</span> <span class="n">x1</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">-</span> <span class="n">b2</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+
+            <span class="c1"># get midpoint of line</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">e1</span> <span class="o">+</span> <span class="n">e2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">b3</span> <span class="o">=</span> <span class="n">Ball</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+        <span class="n">b3</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">euclidean_point_distance</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span><span class="n">e2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">dr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">newData</span><span class="p">,</span><span class="n">b2</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">newData</span><span class="p">))</span>
+        <span class="n">b3</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">PointSorter</span><span class="p">(</span><span class="n">dr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">b3</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">morebs</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">morebs2</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Richard Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
