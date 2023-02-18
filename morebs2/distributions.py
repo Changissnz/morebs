@@ -20,7 +20,7 @@ def basic_2d_lineplot(x,y):
 
 
 def basic_2d_scatterplot(x,y,c=None):
-    plt.scatter(x, y,c=c)#, s=area, c=colors, alpha=0.5)
+    plt.scatter(x, y,c=c,s=1)#, s=area, c=colors, alpha=0.5)
     plt.show()
 
 def generate_2d_data_from_function(f,xRange,xInc,additionalArgs = ()):

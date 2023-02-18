@@ -186,14 +186,19 @@ class DCurve:
         '''
         is activation point?
         '''
+        #print("P ",p)
+        #print("PR ",self.point_range())
         if self.ad in {'t','b'}:
             p2 = round(self.y_given_x(p[0]),5)
+            #print(self.ad," : ", p2)
             if self.ad == 't':
                 return p[1] <= p2
             return p[1] >= p2
         else:
             p2 = round(self.x_given_y(p[1]),5)
+            #print(self.ad," : ", p2, "")
             if self.ad == 'l':
+                
                 return p[0] >= p2
             return p[0] <= p2
 
