@@ -58,12 +58,10 @@ def eliminate_contrary_points(e1,e2,axis):
 
     while len(e1) > 1 and len(e2) > 1:
         edge1 = np.array([e1_[-1],e1[0]])
-        #print("E1: ",edge1)
         
         # iterate through e2 and pop each point not in range
         # stopping at the first point
         j = next_point_in_range(e2,edge1,axis)
-        ##print("J ",j)
         if j == -1:
             e1_.append(e1[0])
             e1 = e1[1:]
@@ -75,11 +73,9 @@ def eliminate_contrary_points(e1,e2,axis):
 
         # check edge 1 and edge 2
         edge2 = np.array([e2_[-1],e2[0]])
-        ##print("E2 ",edge2)
         s1,s2 = correct_rectangle_cross(edge1,edge2,axis)
 
         # case: delete the second point
-        ##print("SS: ",s1,s2)
         if not s1:
             e1 = e1[1:]
 
@@ -203,7 +199,7 @@ def remove_jags_on_edges(edges,direction):
         if j == -1:
             indices.append(i + 1)
     indices = np.array(indices)
-    if indices != []: 
+    if len(indices) != 0: 
         edges = np.delete(edges,indices,0)
     return edges
 
@@ -223,7 +219,6 @@ def jags_on_edges(edges,direction):
     while len(edges) > 0:
         q = np.array([x,edges[0]])
         ij = is_jagged(q,direction)
-        print("IS {}\nJAGGED? ",ij)
         if ij:
             jags.append(-1)
         else:
@@ -245,9 +240,6 @@ def is_jagged(edge,direction):
 
     if direction == 'b':
         return edge[1,1] > edge[0,1]
-
-
-#point_in_diag_area(p,d)
 
 ############## approach: partitioning
 

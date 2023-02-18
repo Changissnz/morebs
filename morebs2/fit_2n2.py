@@ -136,14 +136,18 @@ class DCurve:
         self.ad = activationDirection
 
     def x_given_y(self,y):
+
         if type(self.fs) == Line:
             return self.fs.x_given_y(y)
-        return self.fs.g(y)
+        return round(self.fs.g(y),5)
 
     def y_given_x(self,x):
         if type(self.fs) == Line:
-            return self.fs.y_given_x(x)
-        return self.fs.f(x)
+            #try:
+            return self.fs.y_given_x(round(x,5))
+            #except:
+            #    return None
+        return round(self.fs.f(x),5)
 
     def __str__(self):
         l = None
@@ -185,22 +189,23 @@ class DCurve:
     def is_ap(self,p):
         '''
         is activation point?
+
+        NOTE: use at discretion, method assumes curve direction is oriented
+              by ascending order on the number line, but correct usage 
+              could be ascending or descending order.
         '''
-        #print("P ",p)
-        #print("PR ",self.point_range())
+
+        vp = self.value_on_curve(p)
+        axis = 1 if self.ad in {'t','d'} else 0
+
+        if self.ad in {'t','r'}:
+            return p[axis] <= vp
+        return p[axis] >= vp
+
+    def value_on_curve(self,p):
         if self.ad in {'t','b'}:
-            p2 = round(self.y_given_x(p[0]),5)
-            #print(self.ad," : ", p2)
-            if self.ad == 't':
-                return p[1] <= p2
-            return p[1] >= p2
-        else:
-            p2 = round(self.x_given_y(p[1]),5)
-            #print(self.ad," : ", p2, "")
-            if self.ad == 'l':
-                
-                return p[0] >= p2
-            return p[0] <= p2
+            return round(self.y_given_x(p[0]),5)
+        return round(self.x_given_y(p[1]),5)
 
     def modulate_fit(self):
         if type(self.fs) == Line:

@@ -406,7 +406,7 @@ line/line segment class
     def y_given_x(self, x, rangeCheck = True):
         xs = [self.endpoints[0][0], self.endpoints[1][0]]
         if rangeCheck:
-            assert not (x < min(xs) or x > max(xs)), "x not in range of line, {}, actual {}".format(x,self.endpoints[:,0])
+            assert not (x < min(xs) or x > max(xs)), "x not in range of line, {}, actual {}".format(x,self.endpoints)
         return round(self.slope * x + self.yint,5) ###?
 
     # TODO: check for horizontal lines

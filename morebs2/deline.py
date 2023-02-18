@@ -36,10 +36,6 @@ class Delineation:
         self.d['t'],self.d['b'] = eliminate_contrary_points(\
             self.d['t'],self.d['b'],0)
 
-        """
-        self.no_cross_on_axis(1)
-        self.no_cross_on_axis(0)
-        """
         return
 
     def no_cross_on_axis(self,axis,maxNumberOfPoints=10):
@@ -130,14 +126,46 @@ class Delineation:
         '''
         return := label if p in delineation, otherwise -1
         '''
+        x1,x2,x3,x4 = self.point_to_relevant_curvepair(p)
 
-        x1,x2 = self.point_to_relevant_curvepair(p) 
-        if x1 == None:
+        if x1 == None and x3 == None:
             return -1
-            
-        if x1.is_ap(p) and x2.is_ap(p):
-            return self.label
-        return -1
+
+        sc = self.classify_point_special_case(p,x1,x2,x3,x4)
+        if sc != None:
+            return self.label if sc else -1
+
+        x1,x2 = (x1,x2) if type(x1) != None else (x3,x4)
+
+        sc = self.classify_point_by_complementary_curves(p,x1,x2)
+        return self.label if sc else -1
+
+    #### 
+
+    def classify_point_special_case(self,p,c1,c2,c3,c4):
+        '''
+        NOTE: caution 
+        '''
+
+        if type(c1) != type(None): 
+            p1,p2 = round(c1.x_given_y(p[1]),5),round(c2.x_given_y(p[1]),5)
+            if p1 == p2:
+                if type(c3) == type(None):
+                    return None
+                else:
+                    return c1.is_ap(p) and c3.is_ap(p)
+            return None
+        
+        if type(c3) != type(None): 
+            p1,p2 = round(c3.y_given_x(p[0]),5),round(c4.y_given_x(p[0]),5)
+
+            if p1 == p2:
+                if type(c1) == type(None):
+                    return None
+                else:
+                    return c1.is_ap(p) and c3.is_ap(p)
+            return None
+        return None
 
     def point_to_relevant_curvepair(self,p):
         '''
@@ -153,19 +181,33 @@ class Delineation:
                 elif x.ad == 't': t = x
                 elif x.ad == 'b': b = x
 
+        '''
         if type(l) == type(None) or type(r) == type(None):
             if type(t) == type(None) or type(b) == type(None):
                 return None,None
             return t,b
-        return l,r
+        '''
+        return l,r,t,b
 
-    def classify_point_by_curveset(self,p,cs):
+    def classify_point_by_complementary_curves(self,p,c1,c2):
+
+        s1 = c1.value_on_curve(p)
+        s2 = c2.value_on_curve(p)
+
+        if c1.ad in {'t','b'}:
+            axis = 1
+        else:
+            axis = 0
+        return p[axis] >= min([s1,s2]) and p[axis] <= max([s1,s2])
+
+    def classify_point_by_curveset(self,p,rp,cs):
         for c in cs:
             if not c.in_point_range(p):
                 continue
 
-            if not c.is_ap(p):
+            if not self.classify_point_by_complementary_curves(p,rp,c):
                 return -1
+
         return self.label
 
     def complement_set_to_curve(self,c):
@@ -429,24 +471,24 @@ class DLineate22:
         # get pertinent points to curve
         pp = self.pertinent_points_to_curve(c)
         # get curveset
-        cs = self.d.complement_set_to_curve(c) + [c]
+        cs = self.d.complement_set_to_curve(c)
 
         # classify points
-        s1 = self.classify_pertinent_points(cs,pp)
+        s1 = self.classify_pertinent_points(c,cs,pp)
         # alternate and reclassify
         c.modulate_fit()
-        s2 = self.classify_pertinent_points(cs,pp)
+        s2 = self.classify_pertinent_points(c,cs,pp)
 
         if s1 > s2:
             c.modulate_fit()
             return 0 
         return s2 - s1
 
-    def classify_pertinent_points(self,cs,pp):
+    def classify_pertinent_points(self,rc,cs,pp):
 
         s = 0
         for p in pp:
-            l = self.d.classify_point_by_curveset(p[:2],cs)
+            l = self.d.classify_point_by_curveset(p[:2],rc,cs)
             if l != -1:
                 s += 1
         return s
@@ -574,3 +616,18 @@ def test_dataset__Dlineate22_3():
     return np.array([[5.,0.,0],\
         [7.5,15.,0],\
         [20.,0.,0]])
+
+
+def test_dataset__Dlineate22_4():
+    # NOTE: delineation does not work for triangles
+    '''
+       x   
+
+    
+    x      x
+    '''
+    return np.array([[5.,0.,0],\
+        [7.5,15.,0],\
+        [20.,-5.,0]])
+
+
