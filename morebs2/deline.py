@@ -658,10 +658,40 @@ def test_dataset__Dlineate22_4():
        x   
 
     
-    x      x
+    x      
+            x
     '''
     return np.array([[5.,0.,0],\
         [7.5,15.,0],\
         [20.,-5.,0]])
 
 
+def test_dataset__DLineateMC_1():
+    '''
+    completely separable; 4 labels.
+    '''
+    c1 = [0.,0.]
+    drnp1 = [[0.,5.,100],[5.,15.,1000],[15.,30.,30]]
+    l1 = 0
+    d1 = generate_random_xyl_points_at_center(c1,drnp1,l1)
+
+    c2 = [80.,20.]
+    drnp2 = [[0.,5.,50],[10.,20.,500],[10.,15.,30]]
+    l2 = 1
+    d2 = generate_random_xyl_points_at_center(c2,drnp2,l2)
+
+    c3 = [-50.,-30.]
+    drnp3 = [[10.,15.,500],[20.,25.,50],[25.,27.,30]]
+    l3 = 2
+    d3 = generate_random_xyl_points_at_center(c3,drnp3,l3)
+
+    c4 = [-150.,-70.]
+    drnp4 = [[10.,20.,500],[20.,40.,500]]
+    l4 = 3
+    d4 = generate_random_xyl_points_at_center(c4,drnp4,l4)
+    
+    d = d1
+    d = np.vstack((d,d2))
+    d = np.vstack((d,d3))
+    d = np.vstack((d,d4))
+    return d

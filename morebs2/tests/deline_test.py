@@ -140,6 +140,19 @@ class DelineClass(unittest.TestCase):
         c = dl.d.classify_point(p)
         assert c == -1, "misclassification for case 4, dmethod=nojag"
 
+    def test__DLineate22__classify_points__case_4(self):
+        data = deline.test_dataset__DLineateMC_1()
+
+        dl = deline.DLineate22(data,dmethod="nojag")
+        dl.preprocess()
+        dl.collect_break_points()
+
+        c = dl.d.classify_point([65,20.])
+        assert c == 1., "incorrect classification for point 1, got {} want {}".format(c,1)
+
+        c = dl.d.classify_point([80,20.])
+        assert c == 1., "incorrect classification for point 2, got {} want {}".format(c,1)
+        return
     
     def test__DLineate22__collect_break_points__AND__classify_point__case_1(self):
         data = deline.test_dataset__Dlineate22_1_v2()
@@ -151,7 +164,6 @@ class DelineClass(unittest.TestCase):
             c = dl.d.classify_point(q)
             assert c == 0
      
-
     def test__DLineate22__optimize_delineation__case_1(self):
         data = deline.test_dataset__Dlineate22_1_v3(500,[0.000001,1.])
         dl = deline.DLineate22(data)
