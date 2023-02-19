@@ -19,3 +19,10 @@ Update 11/13/22
 - I am expecting to write some further documentation for the code in this project before moving on to writing the main file.
 
 *NOTE* otherwise, all of this code is spaghetti code and then I would have no job as a software developer/engineer. Just kidding!!
+
+Update 2/18/23
+==============
+
+Development of this program by me is indefinitely halted. 
+My last file `deline.py` demonstrates an algorithm to differentiate between 2+ classes of points, but has several inefficiencies made very evident by 
+testing it on large datasets.Enjoy the code library functions provided! 
