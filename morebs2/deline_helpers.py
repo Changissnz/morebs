@@ -271,6 +271,15 @@ def critical_dpoints_by_partition(edges,direction,p):
 
 ###################################################
 
+def delineation_in_delineation(d1,d2):
+
+    # go curve by curve
+    
+
+
+
+    return -1
+
 # given i1,i2 for e1,e2
 # 
 #

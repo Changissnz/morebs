@@ -275,6 +275,35 @@ class Delineation:
         basic_2d_scatterplot(ps[:,0],ps[:,1],c=cs)
         return
 
+    def is_proper_subset(self,d2):
+        '''
+
+        iterate through each curve, and check that their
+        endpoints lay in the bounds of class:`Delineation` `d2`.
+
+        NOTE: inefficient
+
+        :return: bool, is instance in d2?
+        '''
+
+        for x in self.d_:
+            p = x.get_point()
+            for p_ in p:
+                if d2.classify_point(p_) == -1:
+                    return False
+        return True
+
+    @staticmethod
+    def pertinent_curves_to_point(d,p):
+        '''
+        :return: list(curves with point `p` in its range)
+        '''
+
+        cs = []
+        for c in d.d_:
+            if c.in_point_range(p): cs.append(c)
+        return cs 
+
 class DLineate22:
 
     def __init__(self,xyl,clockwise=True,dmethod = "nocross",idn="0"):
@@ -528,6 +557,10 @@ class DLineate22:
         return s
 
     def pertinent_points_to_curve(self,c):
+        '''
+        :return: np.ndarray, points pertinent to curve `c`
+        '''
+        
         ps = []
         for p in self.xyl:
             if c.in_point_range(p):
@@ -543,7 +576,7 @@ class DLineate22:
         delineation is done on the points in `d` for
         separability.
 
-        return := [indices of xyl points in delineation,\
+        :return: [indices of xyl points in delineation,\
                 counter(label->count),score of delineation] 
         '''
 
@@ -556,8 +589,28 @@ class DLineate22:
             c = self.d.classify_point(p)
             if c != -1:
                 indices.append(i)
-                if c == int(p[2]): q += 1
+                # case: classification equals label
+                if c == int(p[2]): 
+                    q += 1
                 counter[int(p[2])] += 1
+            else:
+                if int(p[2]) == self.label:
+                    counter[-1] += 1
+
+
+
+
+            '''
+                if c == int(p[2]): q += 1
+            else:
+                if int(p[2]) == self.label:
+                    counter[-1] += 1
+                counter[int(p[2])] += 1
+            else:
+                if p[2] 
+                counter[c]
+            '''
+
         return indices,counter,q
 
     def full_process(self,preprocess = True):
@@ -566,6 +619,7 @@ class DLineate22:
         '''
         if preprocess:
             self.preprocess()
+            print("finished preprocessing ")
         self.collect_break_points()
         self.optimize_delineation()
         indices,c,q = self.analyze_delineation()
@@ -671,22 +725,22 @@ def test_dataset__DLineateMC_1():
     completely separable; 4 labels.
     '''
     c1 = [0.,0.]
-    drnp1 = [[0.,5.,100],[5.,15.,1000],[15.,30.,30]]
+    drnp1 = [[0.,5.,1000],[5.,15.,10000],[15.,30.,300]]
     l1 = 0
     d1 = generate_random_xyl_points_at_center(c1,drnp1,l1)
 
     c2 = [80.,20.]
-    drnp2 = [[0.,5.,50],[10.,20.,500],[10.,15.,30]]
+    drnp2 = [[0.,5.,500],[10.,20.,5000],[10.,15.,300]]
     l2 = 1
     d2 = generate_random_xyl_points_at_center(c2,drnp2,l2)
 
     c3 = [-50.,-30.]
-    drnp3 = [[10.,15.,500],[20.,25.,50],[25.,27.,30]]
+    drnp3 = [[10.,15.,5000],[20.,25.,500],[25.,27.,300]]
     l3 = 2
     d3 = generate_random_xyl_points_at_center(c3,drnp3,l3)
 
     c4 = [-150.,-70.]
-    drnp4 = [[10.,20.,500],[20.,40.,500]]
+    drnp4 = [[10.,20.,5000],[20.,40.,5000]]
     l4 = 3
     d4 = generate_random_xyl_points_at_center(c4,drnp4,l4)
     
