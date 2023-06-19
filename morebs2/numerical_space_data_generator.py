@@ -27,7 +27,8 @@ class NSDataInstructions:
     :param noiseRange: n x 2
     :type noiseRange: np.ndarray
     :param writeOutMode: "literal" to write out every point iterated,
-                        "relevant" to write out only points deemed relevant by RCH
+                        "relevant" to write out only points deemed relevant by RCH,
+                        RCH to write out RCH(p) for every point p. 
     '''
 
     def __init__(self, bInf, rm,filePath,modeia,noiseRange = None,writeOutMode = "literal"):

@@ -1,4 +1,3 @@
 interface.py
-__pycache__
-.gitignore
-ARGHONIA.txt
+__pycache__/*
+gen_t.py

@@ -682,6 +682,11 @@ def string_to_vector(s, castFunc = int):
         s = s2
     return np.array(q)
 
+def write_vector_sequence_to_file(f,s,mode='w'):
+    with open(f,mode) as fo:
+        s2 = [vector_to_string(s_,cr) + "\n" for s_ in s]
+        fo.writelines(s2)
+
 ######## start: some methods on bounds
 
 euclidean_point_distance = lambda p1, p2: np.sqrt(np.sum((p1 - p2)**2))

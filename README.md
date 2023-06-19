@@ -26,3 +26,8 @@ Update 2/18/23
 Development of this program by me is indefinitely halted. 
 My last file `deline.py` demonstrates an algorithm to differentiate between 2+ classes of points, but has several inefficiencies made very evident by 
 testing it on large datasets.Enjoy the code library functions provided! 
+
+Update 6/18/23
+==============
+
+Add `gen_t.py` for two datasets, `t4.csv` and `t5.csv`, used for tests in project `deline_crypto`. 
