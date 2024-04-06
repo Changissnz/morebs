@@ -18,11 +18,10 @@ class BallComp:
 
     MIN_LENGTH_RATIO = 0.01
 
-    def __init__(self, maxBalls,maxRadius,k,vh1,verbose = 0):
+    def __init__(self, maxBalls,maxRadius,vh1,verbose = 0):
         assert maxRadius > 0.0 and maxBalls > 0, "invalid args. for BallComp"
         self.maxBalls = maxBalls
         self.maxRadius = maxRadius
-        self.k = k
         self.balls = {} # int:idn -> Ball
         self.pointMem = None # (label of last point added, last point added)
         self.ballNeighborsUpdate = None

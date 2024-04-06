@@ -1,3 +1,7 @@
 interface.py
 __pycache__/*
-gen_t.py
+scratch_work.py
+dist 
+__pycache__
+pyproject.toml
+morebs2.egg-info

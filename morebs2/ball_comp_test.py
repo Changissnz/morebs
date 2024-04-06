@@ -9,7 +9,7 @@ def test__BallComp__sample_1_sample_data_1():
     td = ballcomp_sample_data_1()
 
     vh = ViolationHandler1(maxBalls,maxRadius)
-    bc = BallComp(maxBalls,maxRadius,5, vh,True)
+    bc = BallComp(maxBalls,maxRadius,vh,True)
     
     for t in td:
         bc.conduct_decision(t)
@@ -22,7 +22,7 @@ def test__BallComp__sample_1_sample_data_2():
     maxRadius = 0.2
     td = ballcomp_sample_data_2()
     vh = ViolationHandler1(maxBalls,maxRadius)
-    bc = BallComp(maxBalls,maxRadius,5,vh,2)
+    bc = BallComp(maxBalls,maxRadius,vh,2)
 
     for t in td:
         bc.conduct_decision(t)
@@ -44,7 +44,7 @@ def test__BallComp__sample_1_sample_data_3():
     vh = ViolationHandler1(maxBalls,maxRadius)
 
     # TODO: delete k
-    bc = BallComp(maxBalls,maxRadius,5,vh,True)
+    bc = BallComp(maxBalls,maxRadius,vh,True)
     print("TD ",td.shape)
 
     for t in td:
@@ -67,7 +67,7 @@ def test__BallComp__sample_1_sample_data_4():
 
     filePath = "indep/ballcomp_sample_data_4.txt"
     ms = MessageStreamer(filePath,readMode = 'r')
-    bc = BallComp(maxBalls,maxRadius,5,vh,2)
+    bc = BallComp(maxBalls,maxRadius,vh,2)
 
     q = 20
     s = 0

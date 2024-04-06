@@ -1,7 +1,6 @@
 '''
 methods on integers such as multiple-finding
 '''
-from .poly_struct import * 
 
 def all_multiples(i):
     l = abs(int(i / 2))
