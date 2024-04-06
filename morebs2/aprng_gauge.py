@@ -235,19 +235,24 @@ class APRNGGauge:
         ## [0]: cycle coverage
         ## [1]: unidirectional weighted point distance measure
         self.measurements = []
+        self.cycle = None
         return 
+
+    def assign_cycle(self,cycle):
+        self.cycle = cycle
 
     def measure_cycle(self,max_size=100000,\
         term_func=lambda l,l2: type(l) == type(None)):
-        cycle = self.cycle_one(max_size,term_func)
-        assert cycle.ndim == 1
+
+        if type(self.cycle) == type(None):
+            self.cycle = self.cycle_one(max_size,term_func)
+        assert self.cycle.ndim == 1
 
         # get the coverage
-        cov = coverage_of_sequence(cycle,self.frange,self.pradius)
+        cov = coverage_of_sequence(self.cycle,self.frange,self.pradius)
 
         # get the normed uwpd
-        nuwpd = normalized_float_uwpd(cycle,self.frange)
-        
+        nuwpd = normalized_float_uwpd(self.cycle,self.frange)
         self.measurements.append([cov,nuwpd])
         return [cov,nuwpd]
 
