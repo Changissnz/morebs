@@ -211,10 +211,6 @@ class ResplattingSearchSpaceIterator:
     def update_vars_for_rch(self): 
         return [np.copy(self.bounds),self.ssi.de_bounds(),deepcopy(self.SSIHop)] + list(deepcopy(self.aua))
 
-
-
-
-
     def check_duplicate_range(self,d):
         '''
         checks if range `d` is already present in `self.rangeHistory`.

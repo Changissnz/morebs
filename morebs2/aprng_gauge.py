@@ -1,26 +1,3 @@
-"""
-- required methods (from previous model): 
-
-
-"""
-############################################
-"""
-    APRNGGauge(AbstractPRNG* aprng, std::pair<float,float> fr, float point_radius = 0.) {
-        assert(fr.second > fr.first);
-        this->aprng = aprng; 
-        this->fr = fr;
-        this->point_radius = point_radius;
-        cycle_scores = mat(0,0,fill::zeros);
-    }
-
-    void MeasureCycle(bool floatgen);
-    void DefaultSetRadius(vec v);
-    std::vector<float> CycleOne(bool floatgen);
-    void GaugePROutput();
-    void GauagePROutputReferential(vec r);
-"""
-############################################
-
 from .search_space_iterator import *
 
 def range_op(rangez,default_value=0.,f_inner=np.subtract,f_outer=np.add):
@@ -57,10 +34,26 @@ def not_permutation_condition(v):
 def is_reflective_condition(v):
     return len(v) == len(np.unique(v))
 
+"""
+Generates numbers in an n-dimensional square
+structure according to variables such as 
+`is_perm`, `is_reflective`. The variable 
+`subset_size` indicates the dimension of the 
+output from `__next__`. 
+
+The value `length` is the length of the vector
+that the output of this class is supposed to 
+accomodate. 
+"""
 class BatchIncrStruct:
 
     def __init__(self,length:int,is_perm=False,\
         is_reflective=False,subset_size=2):
+        """
+        length := int or float, specifies the max 
+                for each bound
+        subset_size := int, otherwise known as the n in n-dim.
+        """
 
         assert type(length) == type(subset_size)
         assert type(length) == int

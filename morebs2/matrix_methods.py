@@ -197,7 +197,6 @@ def is_point_qualified(unqualifiedAreas, point):
         if point_in_area(point, x): return False
     return True
 
-# UPDATE:
 """
 if degree in [0,90,180,270],
 
@@ -207,13 +206,7 @@ if degree in [0,90,180,270],
 270: 3
 """
 def quadrant_of_corner_point_in_area(cp, area):
-
-    #deg = degree
-    #def angle_between_two_points_clockwise(startX, endX):
-    ##print("AREA ", area)
-
     corners = area_to_corners(area)
-
     indices = indices_of_vector_in_matrix(corners, cp)
     if len(indices) != 1: raise ValueError("quadrant for corner point {} could not be obtained for\n{}".format(cp, corners))
     return indices[0]
@@ -314,10 +307,6 @@ def greatest_qualifying_area_in_direction(point, unqualifiedAreas, area, increme
         area2 = trim_area(area, corners_to_area(np.array([maxXGivenY, pointY, point, mp2])))
         return area2
     raise ValueError("invalid wanted area arg.")
-
-# TODO: problem: what if want x > y or y < x ?
-
-# TODO: code this. delete above.
 
 """
 iterate from .min x (point) in `incrementDirections` at in

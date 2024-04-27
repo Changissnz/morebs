@@ -5,3 +5,6 @@ dist
 __pycache__
 pyproject.toml
 morebs2.egg-info
+*.html
+*.js
+.gitignore

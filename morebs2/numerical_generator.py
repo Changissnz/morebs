@@ -177,16 +177,16 @@ def generate_random_binary_sequence(vecOrder):
 
 """
 """
-def generate_uniform_sequence_in_bounds(vecOrder, bounds):
+def generate_uniform_sequence_in_bounds(vecOrder, bounds,rnd_struct=rng):
     assert is_2dmatrix(bounds), "invalid bounds {}".format(bounds)
     assert vecOrder == len(bounds) or len(bounds) == 1, "invalid bounds"
 
     if len(bounds) == 1:
-        return rng.uniform(bounds[0,0], bounds[0,1], (vecOrder,))
+        return rnd_struct.uniform(bounds[0,0], bounds[0,1], (vecOrder,))
     else:
         q = np.zeros((vecOrder,))
         for i in range(vecOrder):
-            q[i] = rng.uniform(bounds[i,0], bounds[i,1])#, (vecOrder,))
+            q[i] = rnd_struct.uniform(bounds[i,0], bounds[i,1])#, (vecOrder,))
         return q
 
 def random_bounds_edge(bounds):

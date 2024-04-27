@@ -87,6 +87,11 @@ class TestAPRNGGaugeMethods(unittest.TestCase):
         assert np.round(ans / q1,5) == \
             nuwpd, "got {} wanted {}".format(nuwpd,ans/q1) 
 
+    def test__to_noncontiguous_ranges(self):
+        ranges = [[0,1],[0.7,1.5],[1.6,2.0],[1.65,2.3]]
+        tnr = aprng_gauge.to_noncontiguous_ranges(ranges)
+        assert tnr == [[0, 1.5], [1.6, 2.3]]
+
     def test_APRNGGauge__measure_cycle(self):
 
         bounds = np.array([[0,5],\
