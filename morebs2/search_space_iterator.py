@@ -153,10 +153,20 @@ class SearchSpaceIterator:
         :param dividor: partition value for each :class:`HopPattern` instance. 
         :type dividor: int
         '''
-
+        stat = is_vector(dividor) 
+        qdiv = None
+        if not stat:
+            assert type(dividor) in {int,np.int32,float,np.float64}
+            qdiv = np.ones((self.bounds.shape[0],)) * dividor 
+        else: 
+            assert len(dividor) == self.bounds.shape[0]
+            qdiv = dividor
+        
         for (i,c) in enumerate(self.startPoint):
-            hp = HopPattern(c, self.bounds[i,0], self.bounds[i,1], DIR = round(dividor ** -1, 10))
+            diver = float(qdiv[i])
+            hp = HopPattern(c, self.bounds[i,0], self.bounds[i,1], DIR = round(diver ** -1, 10))
             self.hopPatterns.append(hp)
+
     ###------------------------------------------------------------
 
     def finished(self):

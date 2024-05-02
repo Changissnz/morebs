@@ -84,6 +84,25 @@ class TestSearchSpaceIteratorClass(unittest.TestCase):
         assert np.all(cycleLengths == cycleLengths[0])
         return
 
+
+    def test__SearchSpaceIterator__next__9(self): 
+        ssi = SearchSpaceIterator_case_9() 
+        ans = {16: np.array([0.,0.,0.,0.,2.,2.]),\
+        71: np.array([0.,0.,0.,2.,0.,1.]),\
+        702: np.array([0.,0.,3.,2.,0.,2.])}
+
+        i = 0 
+        while not ssi.reached_end(): 
+            q_ = next(ssi) 
+            if i in ans: 
+                q = ans[i] 
+                assert matrix_methods.equal_iterables(q,q_)
+            
+            i += 1
+        refpoint = np.array([1.,2.,3.,5.,4.,6.])
+        assert matrix_methods.equal_iterables(ssi.referencePoint,refpoint)
+        assert i == 2 * 3 * 4 * 5 * 6 * 7 
+
 #-------------------------------------------------------------
 
     '''

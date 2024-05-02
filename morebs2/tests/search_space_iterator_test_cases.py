@@ -1,4 +1,4 @@
-from morebs2 import search_space_iterator
+from morebs2 import search_space_iterator,matrix_methods
 import numpy as np
 
 def SearchSpaceIterator_case_1():
@@ -96,6 +96,23 @@ def SearchSpaceIterator_case_8(head):
     columnOrder = [4,3,2,1,0]
     ssih = 2
     return search_space_iterator.SearchSpaceIterator(bounds,startPoint,columnOrder,ssih, True,cycleIs = head)
+
+def SearchSpaceIterator_case_9(): 
+
+    bounds = np.array([[0,2],\
+        [0,3],\
+        [0,4],\
+        [0,6],\
+        [0,5],\
+        [0,7]])
+
+    start_point = np.array([0,0,0,0,0,0])
+    column_order = [i for i in range(6)][::-1]
+    ssihop = np.array([2,3,4,6,5,7])
+
+    ssi = search_space_iterator.SearchSpaceIterator(bounds, start_point,\
+        column_order, SSIHop = ssihop,cycleOn=False)
+    return ssi 
 
 def SkewedSearchSpaceIterator_args_1():
 
