@@ -1,10 +1,10 @@
-#from .contextia_de_lo_vego_de_la_vegas import morebs2
-#from .contextia_de_lo_vego_de_la_vegas import hop_pattern
-#from .contextia_de_lo_vego_de_la_vegas import hop_pattern
 from morebs2 import hop_pattern
 import unittest
 
 # TODO: check reversing bounds [1,0] <-> [0,1]
+'''
+python -m morebs2.tests.hop_pattern_test  
+'''
 class TestHopPatternClass(unittest.TestCase):
 
     def test__HopPattern__calculate_hop_directions(self):
@@ -73,7 +73,7 @@ class TestHopPatternClass(unittest.TestCase):
         for i in range(10):
             assert next(q) == x[c % 2], "incorrect "
             c += 1
-        return -1
+        return
 
     def test__HopPattern__hop_one_5(self):
         q = hop_pattern.HopPattern(0.0,0.0,1.0, DIR = round(1/3,10))

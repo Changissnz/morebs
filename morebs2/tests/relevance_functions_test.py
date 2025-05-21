@@ -4,6 +4,10 @@ import unittest
 import numpy as np
 import operator
 
+'''
+python -m morebs2.tests.relevance_functions_test  
+'''
+
 # modulo
 """
 

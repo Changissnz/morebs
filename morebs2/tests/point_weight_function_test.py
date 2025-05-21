@@ -2,6 +2,9 @@ from morebs2 import point_weight_function
 import unittest
 import numpy as np
 
+'''
+python -m morebs2.tests.point_weight_function_test  
+'''
 class TestPointWeightFunction(unittest.TestCase):
 
     '''

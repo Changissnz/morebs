@@ -12,6 +12,9 @@ def pfe_case1():
     pfe1.set_exponential_bounds((0,6),(3,6))
     return pfe1 
 
+'''
+python -m morebs2.tests.poly_factor_test  
+'''
 class TestPolyFactorEst(unittest.TestCase):
 
     def test__pfe__initial_bounds_hypothesis(self):

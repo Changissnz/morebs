@@ -2,6 +2,9 @@ from morebs2 import poly_struct
 import unittest
 import numpy as np
 
+'''
+python -m morebs2.tests.poly_struct_test  
+'''
 class TestPolyClasses(unittest.TestCase):
     
     def test__SPoly__apply(self):

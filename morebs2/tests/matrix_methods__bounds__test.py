@@ -7,6 +7,9 @@ from morebs2 import matrix_methods
 import unittest
 import numpy as np
 
+'''
+python -m morebs2.tests.matrix_methods__bounds__test  
+'''
 class TestNumericalGeneratorClass(unittest.TestCase):
 
     def test__point_in_improper_bounds(self):

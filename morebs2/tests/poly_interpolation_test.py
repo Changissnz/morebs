@@ -2,6 +2,9 @@ from morebs2 import poly_interpolation
 import numpy as np
 import unittest
 
+'''
+python -m morebs2.tests.poly_interpolation_test  
+'''
 class TestLagrangePolySolverMethods(unittest.TestCase):
 
     def test__LagrangePolySolver_vector_form_solution(self):

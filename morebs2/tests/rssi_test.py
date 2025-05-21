@@ -3,6 +3,9 @@ import unittest
 ################################ start tests: relevance zoom, euclidean point distance on 5.0
 #
 
+'''
+python -m morebs2.tests.rssi_test  
+'''
 class TestRSSIClass(unittest.TestCase):
 
     """

@@ -2,6 +2,10 @@ from morebs2 import point_sorter
 import unittest
 import numpy as np
 
+'''
+python -m morebs2.tests.point_sorter_test  
+'''
+
 def sample_pointsort_vector_1():
     return np.array([[0.0,5.0,12.0],\
         [0.0, 7.1, 6.3],\

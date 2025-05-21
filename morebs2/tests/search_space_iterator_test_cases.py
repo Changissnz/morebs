@@ -147,7 +147,6 @@ def SkewedSearchSpaceIterator_case_3():
 
     bi = [0,1,1,0,0]
     sp = np.array([b[i,bi_] for (i,bi_) in enumerate(bi)])
-    print("START POINT: ",sp)
     return search_space_iterator.SkewedSearchSpaceIterator(b,pb,sp,None,SSIHop = 3, cycleOn = True, cycleIs = 1)
 
 

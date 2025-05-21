@@ -1,6 +1,10 @@
 from .search_space_iterator_test_cases import *
 import unittest
 
+'''
+python -m morebs2.tests.search_space_iterator_test  
+'''
+
 # TODO: write tests on inverted bounds [1,0]
 def test__SearchSpaceIterator__set_hop_pattern_fo():
     HopPattern.DEF_INCREMENT_RATIO = 0.5

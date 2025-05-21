@@ -2,6 +2,10 @@ from morebs2 import numerical_space_data_generator,relevance_functions
 import unittest
 import numpy as np
 
+'''
+python -m morebs2.tests.numerical_space_data_generator_test  
+'''
+
 def sample_nsdi_1(q, filePath = "tests/s.txt", nr = None):
     """
     :param q: one of [relevance zoom,prg,np.ndarray]

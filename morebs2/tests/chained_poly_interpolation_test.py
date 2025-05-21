@@ -2,6 +2,9 @@ from morebs2 import chained_poly_interpolation
 import numpy as np
 import unittest
 
+'''
+python -m morebs2.tests.chained_poly_interpolation_test  
+'''
 class TestChainedLagrangePolySolverClass(unittest.TestCase):
 
     """

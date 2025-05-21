@@ -3,7 +3,7 @@ import numpy as np
 import unittest
 
 """
-python3 -m morebs2.tests.aprng_gauge_test  
+python -m morebs2.tests.aprng_gauge_test  
 """
 
 def equal_BatchIncrStruct_output(bis,wanted):

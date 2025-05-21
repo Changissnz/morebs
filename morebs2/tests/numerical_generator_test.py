@@ -4,6 +4,9 @@ from collections import OrderedDict
 
 import unittest
 
+'''
+python -m morebs2.tests.numerical_generator_test  
+'''
 class TestNumericalGeneratorClass(unittest.TestCase):
 
 

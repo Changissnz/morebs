@@ -1,6 +1,9 @@
 from .ball_comp_components_test_cases import *
 import unittest
 
+"""
+python -m morebs2.tests.ball_comp_components_test  
+"""
 class TestBallCompComponents(unittest.TestCase):
 
     def test__intersection_ratio(self):

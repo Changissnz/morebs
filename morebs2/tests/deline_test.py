@@ -3,6 +3,9 @@ import numpy as np
 
 import unittest
 
+'''
+python -m morebs2.tests.deline_test  
+'''
 class DelineClass(unittest.TestCase):
 
     def test__DLineate22__collect_break_points__case_1(self):

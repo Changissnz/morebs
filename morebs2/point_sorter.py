@@ -253,7 +253,7 @@ class PointSorter:
         assert additionBool in [1,-1], "invalid addition bool"
         q = self.deltaCache[additionBool]
 
-        if q == []:
+        if len(q) == 0:
             q = np.array([p])
         else:
             q = np.vstack((q,p))
@@ -386,7 +386,7 @@ class PointSorter:
 
     def update_extremum_(self,referencePoint, additionalPoints):
         # case: no additional points
-        if additionalPoints == []: return
+        if len(additionalPoints) == 0: return
         if additionalPoints.shape[0] == 0: return
 
         q = 0
