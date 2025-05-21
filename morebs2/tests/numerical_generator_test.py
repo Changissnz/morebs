@@ -32,8 +32,10 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         assert len(g) == 2 ** 5, "incorrect generation"
 
         # uncomment for viewing
+        '''
         for g_ in g:
             print(g_)
+        '''
 
     def test__random_npoint_from_point_in_bounds(self):
 
@@ -62,44 +64,25 @@ class TestNumericalGeneratorClass(unittest.TestCase):
             assert type(p2) != type(None)
         return
 
-######################## START: cycle map
+    def test__CycleMap__next(self): 
+        cm = numerical_generator.CycleMap(5)
+        d = OrderedDict({10:13,13:74,74:21,21:16,16:10})
+        cm.set_map(d)
+        q = set() 
 
-def test_CycleMap__set_map():
-    f = CycleMap.random_cycle_map(5)
-    cm = CycleMap(5)
-    cm.set_map(f)
-    return
+        for i in range(10): 
+            q_ = next(cm) 
+            q |= {q_}
+        assert len(q) == 5 
 
-###########################
-
-
-def test_FloatDeltaGenerator__next__():
-    # case 1
-    func = DELTA_ADD
-    mox = round(1/7,5)
-    fdg = FloatDeltaGenerator(0.0, DELTA_ADD, mox,1.0)
-
-    c = 10
-    while c > 0:
-        q = next(fdg)
-        print("r: ", q)
-        if q == None: break
-        c -= 1
-
-    print("CELAS ", c)
-
-    # case 2
-    fdg = FloatDeltaGenerator_pattern1((1.0,0.0), 15.0)
-
-    c = 20
-    while c > 0:
-        q = next(fdg)
-        print("Q: ", q)
-        c -= 1
-        if q == None: break
-
-    print("CELAS ", c)
-
+        cm = numerical_generator.CycleMap(7)
+        f = numerical_generator.CycleMap.random_cycle_map(7)
+        cm.set_map(f) 
+        q = set()
+        for i in range(10): 
+            q_ = next(cm) 
+            q |= {q_}
+        assert len(q) == 7
 
 if __name__ == '__main__':
     unittest.main()

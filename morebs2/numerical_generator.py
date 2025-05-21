@@ -54,8 +54,8 @@ class CycleMap:
         assert type(cRange) is int, "invalid type for cycle range"
         self.cRange = cRange
         self.mahp = OrderedDict()
+        self.c = None 
         self.head = None
-        self.phead = None
         return
 
     def set_map(self, m):
@@ -91,11 +91,11 @@ class CycleMap:
 
     @staticmethod
     def is_valid_map(m):
+        if len(m) == 0: 
+            return False 
+
         # fetch the first element in the map
-        q = None
-        for k in m.keys():
-            q = k
-            break
+        q = list(m.keys())[0]
 
         # check for cycle
         x = [q]
@@ -128,33 +128,7 @@ class CycleMap:
         return self.mahp[k]
 
     #### TODO: make generators for non-cycles
-
-##########################################################################################
-
-DELTA_ADD = lambda x,c: x + c
-DELTA_MULT = lambda x,c: x * c
-# TODO: future
-DELTA_POLY = lambda x, poly: 1
-
-'''
-- rangesGanges: 2-tuple
-- divider: 0.0|(float >= 1.0)
-
-constant: 0 or 1
-delta: divider n^-1
-'''
-def FloatDeltaGenerator_pattern1(rangesGanges, divider):
-    assert is_valid_point(rangesGanges), "ranges ganges ranges ganges"
-    assert divider >= 0.0, "invalid divider"
-
-    # no delta
-    if divider != 0.0:
-        dividingLengthon = abs(rangesGanges[1] - rangesGanges[0]) / divider
-        directororios = 1 if rangesGanges[1] > rangesGanges[0] else -1
-        lengthonLengthon = dividingLengthon * directororios
-        divider = lengthonLengthon
-    return FloatDeltaGenerator(rangesGanges[0], DELTA_ADD, divider, rangesGanges[1])
-
+    
 #------------------------------------------------------------------
 #### binary sequence generators
 
