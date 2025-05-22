@@ -115,6 +115,13 @@ class G2TDecomp:
         self.component = set() 
         return True 
 
+    def connected_to(self,idn): 
+        neighbors = self.d_[idn] 
+        for k,v in self.d_.items():
+            if idn in v: 
+                neighbors |= {k}
+        return neighbors 
+
     #----------------------- first half of tree decomposition for 
     #----------------------- component 
 
@@ -167,28 +174,33 @@ class G2TDecomp:
     ################### next node selectors for tree construction 
 
     def prg_next_selector(self,tn): 
-        neighbors = deepcopy(self.d_[tn.idn])
+        neighbors = self.connected_to(tn.idn)
         if len(neighbors) == 0: return False 
 
         c = [] 
         skipped_nodes = set()
         self.component |= neighbors
         for x in neighbors: 
+            # case: parental neighbor 
+            if x not in self.d_[self.tn.idn]: 
+                skipped_nodes |= {x} 
+                continue 
+
             stat = (self.d_[x] - {tn.idn}) == 0 
             self.remove_edge(tn.idn,x,False)
 
-            skipped = 0 
+            skipped = 1
             # case: x does not have any other neighbors 
             #       besides from `tn.idn`. Add it.  
             if stat: 
                 c.append(TNode(x)) 
                 self.remove_edge(x,tn.idn,False)
-                skipped = 1  
+                skipped = 0  
             # case: prg selects x to be a next 
             elif self.prg() % 2: 
                 c.append(TNode(x)) 
                 self.remove_edge(x,tn.idn,False)
-                skipped = 1 
+                skipped = 0 
 
             # case: skipped child after add-child decision
             if skipped: 
@@ -197,21 +209,28 @@ class G2TDecomp:
                 self.untouched_nodes -= {x}
 
         tn.add_children(c)
-        self.add_skipped_nodes(tn.idn,skipped_nodes)
+        self.add_skipped_edges(tn.idn,skipped_nodes)
         return True  
 
     def default_next_selector(self,tn): 
-        neighbors = deepcopy(self.d_[tn.idn])
+        neighbors = self.connected_to(tn.idn)
         if len(neighbors) == 0: return False 
         self.component |= neighbors
 
-        c = [] 
+        c = []
+        skipped_nodes = set()  
         for x in neighbors: 
+            # case: parental neighbor, skip it 
+            if x not in self.d_[tn.idn]: 
+                skipped_nodes |= {x} 
+                continue
+
             self.remove_edge(tn.idn,x,True)
             c.append(TNode(x)) 
 
         self.untouched_nodes -= neighbors 
         tn.add_children(c)
+        self.add_skipped_edges(tn.idn,skipped_nodes)
         return True  
 
     def remove_edge(self,e0,e1,is_directed:bool=False): 
