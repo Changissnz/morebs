@@ -8,5 +8,4 @@ vector data. Important classes include:
 For the source code to this project's latest version, go to 
 `https://github.com/changissz/morebs`.
 
-# Updating
-
+# Updates For Project On and Off 
