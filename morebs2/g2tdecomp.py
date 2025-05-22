@@ -22,15 +22,40 @@ def prg_seqsort(l,prg):
 
 class TNode: 
 
-    def __init__(self,idn,next_cycling:bool=False,root_stat:bool=False): 
+    def __init__(self,idn,next_cycling:bool=False,root_stat:bool=False,\
+        rdistance:int = 0): 
         self.idn = idn 
         self.next_cycling = next_cycling
         self.children = []  
-        self.cindex = -1 # used to traverse children node in search process 
+        self.cindex = 0 # used to traverse children node in search process 
         self.root_stat = root_stat 
-
         self.scached = False 
+        self.rdistance = rdistance 
         return
+
+    @staticmethod
+    def dfs(tn,display:bool,collect:bool,reset_index:bool):
+        if not display and not collect: return 
+        assert type(tn) == TNode 
+        if reset_index: tn.cindex = 0 
+        cache = [tn] 
+        d = defaultdict(set) 
+        while len(cache) > 0: 
+            t_ = cache.pop(0)
+            if display: 
+                print(t_)
+            cx = set([c.idn for c in t_.children])
+
+            if collect: 
+                d[t_] = d[t_] | cx 
+            
+            q = next(t_)
+            if type(q) != type(None): 
+                if reset_index: 
+                    q.cindex = 0 
+                cache.insert(0,t_)
+                cache.insert(0,q) 
+        return d  
 
     def index_of_child(self,idn): 
         for (i,c) in enumerate(self.children): 
@@ -46,9 +71,21 @@ class TNode:
         if not self.next_cycling and self.cindex >= len(self.children): 
             return None 
         if len(self.children) == 0: return None 
+        
+        q = self.children[self.cindex % len(self.children)] 
+        self.cindex += 1
+        return q
 
-        self.cindex = (self.cindex + 1) % len(self.children) 
-        return self.children[self.cindex] 
+    def __str__(self): 
+        s = "idn:\t" + str(self.idn) + "\n"
+        s += "rdistance:\t" + str(self.rdistance) + "  index:\t" \
+            + str(self.cindex) + "\n"
+        q = [str(c.idn) for c in self.children] 
+        q = " ".join(q) 
+        s += "children: " + q + "\n"
+        s += "is root: " + str(self.root_stat) + "\n"
+        return s 
+
 
 class G2TDecomp: 
 
@@ -69,7 +106,7 @@ class G2TDecomp:
         # a collection of tree instances 
         self.decompositions = dict() 
         self.decomp = []
-        self.components = [] # of sets 
+        self.components = dict() # of sets 
         self.component = set() 
 
         self.dfs_nodecache = [] 
@@ -93,13 +130,12 @@ class G2TDecomp:
         stat = True 
         while stat: 
             stat = self.tree_from_skipped_edge() 
-        while len(self.skipped_edges) > 0: 
-            self.init_skipped_edge_to_tree() 
 
         if len(self.decompositions) > 0: 
             k = max(self.decompositions) + 1 
         else: 
             k = 0 
+
         self.decompositions[k] = self.decomp 
         self.decomp = [] 
 
@@ -116,7 +152,7 @@ class G2TDecomp:
         return True 
 
     def connected_to(self,idn): 
-        neighbors = self.d_[idn] 
+        neighbors = deepcopy(self.d_[idn])
         for k,v in self.d_.items():
             if idn in v: 
                 neighbors |= {k}
@@ -127,7 +163,8 @@ class G2TDecomp:
 
     def init_component_search_(self): 
         assert len(self.dfs_nodecache) == 0 
-        self.skipped_nodes.clear() 
+        self.skipped_edges.clear() 
+
         if len(self.decomp_rootnodes) == 0: 
             if len(self.untouched_nodes) == 0: 
                 return None 
@@ -140,10 +177,10 @@ class G2TDecomp:
         if type(x) == type(None): 
             return False 
 
-        tn = TNode(x,root_stat=True) 
+        tn = TNode(x,root_stat=True,rdistance=0) 
         self.decomp = [tn] 
         self.dfs_nodecache.append(tn) 
-
+        self.untouched_nodes -= {x}
         self.component |= {x} 
         return True 
         
@@ -161,15 +198,15 @@ class G2TDecomp:
     def next_from_TNode_p2(self,tn):
         q = next(tn) 
         if type(q) == type(None): 
-            return
+            return False 
         self.dfs_nodecache.insert(0,tn)
         self.dfs_nodecache.insert(0,q) 
+        return True 
 
     def next_from_TNode(self,tn): 
         assert type(tn) == TNode 
         self.next_from_TNode_p1(tn) 
-        self.next_from_TNode_p2(tn)
-        return
+        return self.next_from_TNode_p2(tn)
 
     ################### next node selectors for tree construction 
 
@@ -183,6 +220,7 @@ class G2TDecomp:
         for x in neighbors: 
             # case: parental neighbor 
             if x not in self.d_[self.tn.idn]: 
+                self.remove_edge(x,tn.idn,False)
                 skipped_nodes |= {x} 
                 continue 
 
@@ -193,12 +231,12 @@ class G2TDecomp:
             # case: x does not have any other neighbors 
             #       besides from `tn.idn`. Add it.  
             if stat: 
-                c.append(TNode(x)) 
+                c.append(TNode(x,rdistance=tn.rdistance+1)) 
                 self.remove_edge(x,tn.idn,False)
                 skipped = 0  
             # case: prg selects x to be a next 
             elif self.prg() % 2: 
-                c.append(TNode(x)) 
+                c.append(TNode(x,rdistance=tn.rdistance+1)) 
                 self.remove_edge(x,tn.idn,False)
                 skipped = 0 
 
@@ -207,7 +245,6 @@ class G2TDecomp:
                 skipped_nodes |= {x} 
             else:
                 self.untouched_nodes -= {x}
-
         tn.add_children(c)
         self.add_skipped_edges(tn.idn,skipped_nodes)
         return True  
@@ -223,10 +260,11 @@ class G2TDecomp:
             # case: parental neighbor, skip it 
             if x not in self.d_[tn.idn]: 
                 skipped_nodes |= {x} 
+                self.remove_edge(x,tn.idn,False)
                 continue
 
             self.remove_edge(tn.idn,x,True)
-            c.append(TNode(x)) 
+            c.append(TNode(x,rdistance=tn.rdistance+1)) 
 
         self.untouched_nodes -= neighbors 
         tn.add_children(c)
@@ -255,7 +293,7 @@ class G2TDecomp:
             if type(self.prg) != type(None): 
                 neighbors = prg_seqsort(neighbors,self.prg) 
 
-            if node not in l: 
+            if idn not in l: 
                 l.append(idn) 
             index = l.index(idn) 
 
@@ -279,7 +317,7 @@ class G2TDecomp:
         while len(skipped_nodes) > 0: 
             c = skipped_nodes.pop(0) 
             neighbors = self.d_[c] - done 
-            self.sort_element(c,list(neighbors))
+            sort_element(c,list(neighbors))
             done |= {c}
         return l 
 
@@ -293,24 +331,24 @@ class G2TDecomp:
         while len(self.dfs_nodecache) > 0: 
             tn = self.dfs_nodecache.pop(0)
             self.next_from_TNode__skipped_edges(tn) 
+        return True 
 
     def init_skipped_edge_to_tree(self): 
         if len(self.skipped_edges) == 0: 
             return False 
         
         q = self.skipped_edges[0] 
-        tn = TNode(q[0],root_stat=True) 
+        tn = TNode(q[0],root_stat=True,rdistance=0) 
         cx = self.children_in_skipped_edges(tn) 
         self.add_children_to_tn(tn,cx)
         self.decomp.append(tn) 
         self.dfs_nodecache.append(tn)
-        self.tn.scached = True 
+        tn.scached = True 
         return True
 
     def next_from_TNode__skipped_edges(self,tn): 
         q = next(tn) 
         if type(q) == type(None): return False 
-
         if not q.scached: 
             cx = self.children_in_skipped_edges(q)
             self.add_children_to_tn(q,cx) 
@@ -331,5 +369,5 @@ class G2TDecomp:
         return cx 
 
     def add_children_to_tn(self,tn,cx_idn):
-        cxnode = [TNode(cx_) for cx_ in cx_idn]
+        cxnode = [TNode(cx_,rdistance=tn.rdistance+1) for cx_ in cx_idn]
         tn.add_children(cxnode)
