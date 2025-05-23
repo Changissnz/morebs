@@ -47,7 +47,7 @@ class TNode:
             cx = set([c.idn for c in t_.children])
 
             if collect: 
-                d[t_] = d[t_] | cx 
+                d[t_.idn] = d[t_.idn] | cx 
             
             q = next(t_)
             if type(q) != type(None): 
@@ -55,6 +55,9 @@ class TNode:
                     q.cindex = 0 
                 cache.insert(0,t_)
                 cache.insert(0,q) 
+            else: 
+                if reset_index:
+                    t_.cindex = 0 
         return d  
 
     def index_of_child(self,idn): 
