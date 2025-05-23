@@ -304,3 +304,13 @@ def random_noise_sequence(s,b,noiseRange):
 def generate_gaussian_sequence_in_bounds(mean, var):
     rng.normal()
     return -1
+
+def prg_seqsort(l,prg): 
+    """
+    sorts a sequence using a pseudo-random number generator 
+    """
+    l_ = [] 
+    while len(l) > 0: 
+        i = prg() % len(l) 
+        l_.append(l.pop(i))
+    return l_ 
