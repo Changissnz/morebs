@@ -1,11 +1,329 @@
 from collections import defaultdict 
 from copy import deepcopy 
 
-def is_directed_graph(d):
+def is_undirected_graph(d):
     assert type(d) in {defaultdict,dict}
     
     for k,v in d.items(): 
         for v_ in v: 
-            if v_ not in d: return False 
             if k not in d[v_]: return False 
-    return True 
+    return True
+
+def is_directed_graph(d): 
+    return not is_undirected_graph(d)
+
+def graph_childkey_fillin(d): 
+    kx = list(d.keys()) 
+    for k in kx: 
+        V = d[k]
+        for v in V: 
+            if v not in d: 
+                d[v] = set()
+
+def edge_count(d): 
+    return sum([len(v) for v in d.values()])
+
+def index_of_element_in_setseq(s,n):
+    for (i,s_) in enumerate(s): 
+        if n in s_: return i 
+    return None 
+
+def directed_edge_partition(d,k,V): 
+    partition = [set(),set()]
+    for v_ in V: 
+        if k not in d[v_]: 
+            partition[1] |= {v_} 
+        else: 
+            partition[0] |= {v_} 
+    return partition
+
+def connected_to(G,n): 
+    ks = list(G[n]) 
+    for k,v in G.items():
+        if k == n: continue 
+        if n in v: ks.append(k) 
+    return set(ks)
+
+def parents_of(G,n): 
+    p = [] 
+    for k,v in G.items(): 
+        if k == n: continue 
+        if n in v and k not in G[n]: 
+            p.append(k) 
+    return set(p)
+
+def children_of(G,n): 
+    p = G[n]
+    l = []
+    for p_ in p: 
+        if n not in G[p_]: 
+            l.append(p_)
+    return set(l) 
+
+def doubly_connected(G,n): 
+    ks = list(G[n]) 
+    i = 0 
+    while i < len(ks): 
+        v = G[ks[i]] 
+        if n not in v: 
+            ks.pop(i)
+        else: 
+            i+=1 
+    return set(ks)
+
+def cpc_order(G,n): 
+    return connected_to(G,n),parents_of(G,n),children_of(G,n) 
+
+def delete_graph_edges(G,E,is_directed:bool=False): 
+    
+    while len(E) > 0: 
+        e1 = E.pop() 
+        G[e1[0]] = G[e1[0]] - {e1[1]} 
+
+        if not is_directed: 
+            e2 = (e1[1],e1[0]) 
+            G[e2[0]] = G[e2[0]] - {e2[1]} 
+            E = E - {e2}
+    return
+
+def flatten_setseq(s): 
+    s_ = set() 
+    for s2 in s: s_ |= s2 
+    return s_
+
+class GraphComponentDecomposition:
+
+    def __init__(self,d): 
+        assert type(d) == defaultdict
+        assert d.default_factory == set 
+
+        graph_childkey_fillin(d) 
+        self.d = d 
+        self.d_ = deepcopy(self.d)
+        self.is_directed = is_directed_graph(self.d)
+
+        self.components = []
+        self.key_queue = [] 
+        self.key_cache = set()
+
+        self.cyclic_keys = defaultdict(set) 
+
+        self.finstat = False 
+
+    def finstat_(self): 
+        self.finstat = len(self.key_cache) == len(self.d) 
+        return self.finstat
+
+    def next_key(self): 
+        if self.finstat_(): 
+            return 
+
+        if not self.is_directed: 
+            self.undirected_next_key() 
+            return 
+
+        if len(self.key_queue) == 0: 
+            x = set(self.d_.keys()) - self.key_cache
+            x = sorted(list(x))
+            self.init_decomp(x[0]) 
+            return 
+
+        k = self.key_queue.pop(0) 
+        self.update_dircomp_by_kv_pair(k)
+
+    def undirected_next_key(self): 
+
+        if len(self.key_queue) == 0: 
+            x = set(self.d_.keys()) - self.key_cache
+            x = sorted(list(x))
+            self.key_queue.append(x[0])
+
+        q = self.key_queue.pop(0) 
+        self.merge_by_edges(q)
+        self.key_cache |= {q}  
+        rem = self.d[q] - self.key_cache 
+        self.key_queue.extend(list(rem)) 
+        return 
+    
+    def init_decomp(self,k): 
+
+        partition = directed_edge_partition(self.d_,k,list(self.d_[k]))
+
+        if len(partition[0]) + len(partition[1]) == 0: 
+            self.components.append([{k}])
+            return 
+
+
+        nc = self.doubly_connected_subsets(partition[1])
+        if len(nc) == 0: 
+            self.components.append([{k} | partition[0]]) 
+        else: 
+            nc = [[{k} | partition[0],nc_] for nc_ in nc] 
+            self.components.extend(nc) 
+
+        self.key_cache |= {k}
+        self.queue_update(partition)
+        self.graph_edge_update(k,partition)
+
+    #---------------- undirected case 
+
+    def merge_by_edges(self,k): 
+        i = index_of_element_in_setseq(self.components,k)
+        kx = {k} | self.d[k]
+
+        if type(i) == type(None): 
+            self.components.append(kx)
+            return 
+        self.components[i] |= kx 
+
+
+    #---------------- indexing and travel memory
+
+    def index_of(self,k): 
+        if not self.is_directed: 
+            return index_of_element_in_setseq(self.components,k)
+
+        for (i,d_) in enumerate(self.components): 
+            i2 = index_of_element_in_setseq(d_,k) 
+            if type(i2) != type(None): 
+                return (i,i2) 
+        return None 
+
+    def graph_edge_update(self,k,partition): 
+        px0 = set([(k,p) for p in partition[0]])
+        px1 = set([(k,p) for p in partition[1]])
+
+        delete_graph_edges(self.d_,px0,is_directed=False)
+        delete_graph_edges(self.d_,px1,is_directed=True)
+
+    def queue_update(self,partition): 
+        q = partition[0] | partition[1]
+
+        for q_ in q: 
+            if q_ not in self.key_cache: 
+                self.key_queue.append(q_)
+
+    #------------------------------ 
+
+    def update_dircomp_by_kv_pair(self,k): 
+        V = [k] + list(self.d_[k]) 
+
+        partition = directed_edge_partition(self.d_,V[0],V[1:]) 
+
+        partition[0] |= {k}
+    
+        i = 0 
+        new_comps = [] 
+        cc = set()
+        while i < len(self.components): 
+            o1,new_comp,cyclic_children = self.update_dircomp(i,partition)
+            if type(o1) == type(None): 
+                i += 1 
+                continue 
+            self.components.pop(i)
+            new_comps.extend(new_comp)
+            cc |= cyclic_children
+        self.components.extend(new_comps) 
+        partition[0] -= {k}
+        self.key_cache |= {k} 
+        self.queue_update(partition)
+        self.graph_edge_update(k,partition)
+        self.update_cyclic_children(k,cc)
+
+    def update_cyclic_children(self,k,cc):
+        if len(cc) == 0: return  
+        self.cyclic_keys[k] |=  cc 
+
+    def update_dircomp(self,i,partition): 
+
+        o1,o2,o3 = self.check_dircomp_with_partition(i,partition)
+        
+        # case: no connection 
+        if type(o1) == type(None):
+            return o1,[],o2 
+
+        # case: connection, reform 
+            # subcase: there are cyclic children 
+        cp = deepcopy(self.components[i]) 
+        cp[o1] = cp[o1] | partition[0] 
+
+        if len(o3) == 0: 
+            return o1,[cp],o2 
+
+        new_components = self.new_components_from_children_(cp,o1,o3) 
+        return o1,new_components,o2  
+
+    def new_components_from_children_(self,cp,i,c_q): 
+        
+        nc = []
+        # case: neighbor set in cp is last element 
+        if i == len(cp) - 1: 
+            for x in c_q: 
+                cp2 = deepcopy(cp) 
+                cp2.append(x) 
+                nc.append(cp2)
+            return nc         
+
+        # case: not of the last 
+        ns1 = flatten_setseq(cp[i+1:])
+        nc = [deepcopy(cp)] 
+        for x in c_q: 
+            chk = x - ns1 
+            # component has unrelated children from previous 
+            # make new component without cp[i+1:]
+            if len(chk) > 0:     
+                cp2 = deepcopy(cp[:i+1]) 
+                cp2.append(x) 
+                nc.append(cp2) 
+                continue 
+        return nc 
+
+    """
+    return: 
+    - index of intersected nodeset with partition neighbors in component
+    - set of cyclic children 
+    - remaining children (not cyclic) grouped into neighbors and lones 
+    """
+    def check_dircomp_with_partition(self,ci,partition): 
+
+        C_d = self.components[ci]
+        # check for intersection of neighbors with any in 
+        # directed component 
+        i = -1 
+        for (j,c) in enumerate(C_d):
+            cx = c.intersection(partition[0]) 
+            if len(cx) > 0: 
+                i = j 
+                break 
+        
+        # case: no relation, nothing to do 
+        if i == -1: return None,None,None 
+
+        # check that there are no children before the i'th 
+        # index 
+        cyclic_children = set()
+        for c in partition[1]: 
+            j = index_of_element_in_setseq(C_d,c) 
+            if type(j) == type(None): continue 
+
+            if j < i: 
+                cyclic_children |= {c}
+
+        p2 = partition[1] - cyclic_children
+        q = self.doubly_connected_subsets(p2)
+        return i,cyclic_children,q
+
+    def doubly_connected_subsets(self,ns): 
+        s = [{ns_} for ns_ in ns]  
+        for ns_ in ns: 
+            q = index_of_element_in_setseq(s,ns_) 
+            dconn = doubly_connected(self.d,ns_)
+
+            to_remove = []
+            for d in dconn: 
+                q2 = index_of_element_in_setseq(s,d) 
+                if type(q2) != type(None): 
+                    s[q] = s[q] | s[q2] 
+                    to_remove.append(q2) 
+            
+        return list(s)

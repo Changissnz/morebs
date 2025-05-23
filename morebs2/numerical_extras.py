@@ -27,7 +27,6 @@ def all_multiple_pairs(i):
             s |= set([j,int(i/j)])
 
             # case: negative
-            
             if i < 0:
                 s |= set([-j,-int(i/j)])
                 m.append((-j,-int(i/j)))
