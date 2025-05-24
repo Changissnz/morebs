@@ -463,46 +463,55 @@ def missing_area_point_for_three_points(threePoints):
 
     return (xPoint[0], yPoint[1])
 
+# TODO: test this 
+def diagonal_type__2d(twoPoints): 
+    """
+    :return: 0 for not diagonal, 1 for left-hand diagonal, 2 for right-hand diagonal
+    :rtype: int
+    """
+    assert is_2dmatrix(twoPoints), "invalid points"
+    assert twoPoints.shape[0] == 2 and twoPoints.shape[1] == 2, "invalid shape for points"
+
+    dx = round(twoPoints[0,0] - twoPoints[1,0],5)
+    if dx == 0.0: return 0 
+    dy = round(twoPoints[0,1] - twoPoints[1,1],5)
+    if dy == 0.0: return 0 
+
+    p1,p2 = None,None
+    if twoPoints[0,0] < twoPoints[1,0]: 
+        p1 = twoPoints[0]
+        p2 = twoPoints[1] 
+    else: 
+        p1 = twoPoints[1]
+        p2 = twoPoints[0]  
+
+    if p1[1] > p2[1]: 
+        return 1 
+    return 2 
+
 # TODO: untested, wrong
 def other_points_for_two_points_in_area(twoPoints):
     assert is_2dmatrix(twoPoints), "invalid points"
     assert twoPoints.shape[0] == 2 and twoPoints.shape[1] == 2, "invalid shape for points"
 
-    # quads
-    # 0 -> (max,max)
-    # 1 -> (min,max)
-    # 2 -> (min,min)
-    # 3 -> (max,min)
-    ## can only obtain 1 and 3
-    '''
-    assert abs(twoPoints[0,0] - twoPoints[1,0]) > 10 ** -5, "two points cannot have same x-coord."
-    assert abs(twoPoints[0,1] - twoPoints[1,1]) > 10 ** -5, "two points cannot have same y-coord."
-    '''
+    dt = diagonal_type__2d(twoPoints) 
+    if dt == 0: 
+        return None,None 
 
-    ####
-    '''
-[[55.      75.     ]
- [54.95113 77.79957]]
+    px0,py0,px1,py1 = None,None,None,None 
+    if dt == 1: 
+        px0 = min(twoPoints[:,0])
+        py0 = min(twoPoints[:,1])
+        px1 = max(twoPoints[:,0])
+        py1 = max(twoPoints[:,1])
+    else: 
+        px0 = min(twoPoints[:,0])
+        py0 = max(twoPoints[:,1])
+        px1 = max(twoPoints[:,0])
+        py1 = min(twoPoints[:,1])        
 
-
-min,min
-54,75
-
-max,max
-55,77
-
-    '''
-    ####
-
-    # check which corners are which
-
-    # get 1
-    p1 = (min(twoPoints[:,0]), max(twoPoints[:,1]))
-
-    # get 3
-    p3 = (max(twoPoints[:,0]), min(twoPoints[:,1]))
-
-    return (p1,p3)
+    M = np.array([[px0,py0],[px1,py1]])
+    return M 
 
 # TODO: untested
 def two_points_to_area(twoPoints):
