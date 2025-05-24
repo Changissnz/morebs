@@ -30,11 +30,11 @@ that wish to train their artificial intelligence systems, but do not have
 authentic datasets in adequate quantity. I'm not surprised that no one has 
 decided to help contribute code to this project. Not to mean any insult, but 
 big data, machine learning, that kind of stuff really is not a normal person's 
-interest. Besides, most open-source projects that really take off are heavily 
-funded. I have been out of the academic environment for almost half a decade 
-now. Big data, machine learning, that kind of stuff, was mainly an academic
-business. It still is, pretty much, because all I ever read about from technology 
-corporations is their business products, consumer-side. 
+interest (sorry, populists). Besides, most open-source projects that really take 
+off are heavily funded. I have been out of the academic environment for almost 
+half a decade now. Big data, machine learning, that kind of stuff, was mainly an 
+academic business. It still is, pretty much, because all I ever read about from 
+technology corporations is their business products, consumer-side. 
 
 I was reviewing some of the code in this project. The project definitely needs 
 more thorough documentation as well as unit-testing. `morebs` was originally 

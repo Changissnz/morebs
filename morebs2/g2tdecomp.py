@@ -21,7 +21,7 @@ class TNode:
         return
 
     @staticmethod
-    def dfs(tn,display:bool,collect:bool,reset_index:bool):
+    def dfs(tn,display:bool=True,collect:bool=True,reset_index:bool=True):
         if not display and not collect: return 
         assert type(tn) == TNode 
         if reset_index: tn.cindex = 0 
@@ -62,7 +62,7 @@ class TNode:
         self.children_set = True 
 
     def add_xclusion(self,xclude):
-        assert type(xclude) == set 
+        assert type(xclude) == list 
         self.xclist.extend(xclude) 
 
     def __next__(self):
@@ -86,7 +86,7 @@ class TNode:
 
 class G2TDecomp: 
 
-    def __init__(self,d,decomp_rootnodes=[],excl_mem_depth=-1,\
+    def __init__(self,d,decomp_rootnodes=[],excl_mem_depth=float('inf'),\
             child_capacity=float('inf'),parent_capacity=float('inf'),prg=None): 
         """
         finds a directed acyclic graph (DAG) decomposition of a graph `d`. Every 
@@ -111,6 +111,7 @@ class G2TDecomp:
         self.predecomp() 
 
         # vars used for dfs search 
+        self.decompositions = [] 
         self.decomp_queue = [] 
             # stores skipped nodes for every dfs search 
             # by a root node 
@@ -129,15 +130,28 @@ class G2TDecomp:
         
         gd = GraphComponentDecomposition(self.d) 
         gd.decompose() 
-        self.dr_map = gd.depth_rank_map() 
-        self.rn = [(k,v) for k,v in self.dr_map.items()] 
 
+        self.preset_depth_rank_map()
+        self.rn = [(k,v) for k,v in self.dr_map.items()] 
         if type(self.prg) == type(None): 
             self.rn = sorted(self.rn,key=lambda x:x[1]) 
         else: 
             vf = lambda x: x[1] 
             self.rn = prg_seqsort_ties(self.rn,self.prg,vf)
+        self.rn = [k for (k,v) in self.rn]
         return
+
+    def preset_depth_rank_map(self): 
+        if self.is_directed: 
+            self.dr_map = gd.depth_rank_map() 
+        else: 
+            for k in self.d.keys(): 
+                self.dr_map[k] = 0
+
+
+    def decompose(self): 
+        while not self.fstat:
+            next(self)
 
     def __next__(self): 
         if len(self.decomp_queue) == 0: 
@@ -157,6 +171,7 @@ class G2TDecomp:
 
         x = self.rn.pop(0)
         tn = TNode(x,False,True,0)
+        self.decompositions.append(tn) 
         self.decomp_queue.append(tn) 
         self.store_np_degrees() 
         return True 
@@ -179,11 +194,10 @@ class G2TDecomp:
         if len(cx_) == 0: return False 
 
         cx_ = sorted(cx_) 
-        cc = self.cc 
+        cc = len(cx_) if float('inf') == self.cc else self.cc 
         if type(self.prg) != type(None): 
             cx_ = prg_seqsort(cx_)
             cc = (self.prg() % self.cc) + 1 
-
         cx_ = cx_[:cc]
         self.init_children_for_node(tn,cx_)
         return True 
@@ -193,10 +207,9 @@ class G2TDecomp:
 
         # exclusion list for every child
         df = len(q) + 1 - self.excl_mem_depth
-        if df < 0: 
-            df = -df 
+        if df > 0: 
             q = q[df:]
-        q.append({tn.idn} | cx_idn)
+        q.append({tn.idn} | set(cx_idn))
 
         cxs = []
         E = [] 
@@ -215,19 +228,15 @@ class G2TDecomp:
         return df < self.pc 
 
     def next_node(self):
-        if len(self.decomp_queue) == 0: 
-            return False 
-
         tn = self.decomp_queue.pop(0) 
+        if not tn.children_set: 
+            self.set_children_for_node(tn)
+
         tn2 = next(tn) 
-        if type(tn2) == type(None): 
+        if type(tn2) == type(None):
             return False 
 
         self.decomp_queue.insert(0,tn)
-
-        if not tn2.children_set: 
-            self.set_children_for_node(tn2)
-
         self.decomp_queue.insert(0,tn2)
         return
 
@@ -240,5 +249,3 @@ class G2TDecomp:
             self.cdeg_map[k] += v[0] + v[1] 
         self.cdeg_map2 = deepcopy(self.cdeg_map)
         return
-
-
