@@ -147,6 +147,39 @@ def generate_random_binary_sequence(vecOrder):
     assert type(vecOrder) is int, "invalid vec. order"
     return np.random.randint(0, 2, (vecOrder,))
 
+def prg__constant(x=0): 
+
+    def f(): 
+        return x
+    return f 
+
+class ModuloAlternator: 
+
+    def __init__(self,s0,s1,s=None): 
+        assert s1 > s0 
+        assert type(s1) == type(s0)
+        assert type(s1) == int 
+
+        self.s0 = s0 
+        self.s1 = s1 
+        if s == None: 
+            self.s = self.s0 
+        else: 
+            self.s = (s % self.s1) + self.s0 
+
+    def __next__(self): 
+        q = self.s
+        self.s += 1
+        if self.s >= self.s1: 
+            self.s = (self.s % self.s1) + self.s0 
+        return q 
+
+
+def prg__n_ary_alternator(s0=0,s1=2,start=0): 
+    ma = ModuloAlternator(s0,s1,start) 
+    return ma.__next__ 
+
+
 ####---------------------------------------------------------------------
 #### uniform dist. numerical generators
 
@@ -322,6 +355,7 @@ def prg_seqsort(l,prg):
         l_.append(l.pop(i))
     return l_ 
 
+# TODO: unit-test this more 
 def prg_seqsort_ties(l,prg,vf): 
     """
     sorts a sequence l
@@ -335,13 +369,13 @@ def prg_seqsort_ties(l,prg,vf):
     """
 
     # sort l by vf first 
-    l = sorted(l,key=vf)
-    q_ = [] 
-    while len(l) > 0: 
-        x = l.pop(0) 
+    q = sorted(l,key=vf)
+    Q = [] 
+    while len(q) > 0: 
+        x = q.pop(0) 
         y = vf(x) 
-        q2.append(x) 
-        
+        q2 = [x]
+
         # collect all ties with x
         j = -1 
         for (i,q_) in enumerate(q): 
@@ -355,8 +389,7 @@ def prg_seqsort_ties(l,prg,vf):
         while j > 0: 
             q.pop(0) 
             j -= 1 
-
         # permute q2 by prg 
         q2 = prg_seqsort(q2,prg)
-        q_.extend(q2) 
-    return q_ 
+        Q.extend(q2) 
+    return Q 

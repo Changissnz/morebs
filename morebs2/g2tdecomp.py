@@ -2,7 +2,8 @@
 graph-to-tree decomposition
 """
 from .graph_basics import * 
-from .numerical_generator import prg_seqsort,prg_seqsort_ties
+from .numerical_generator import prg_seqsort,prg_seqsort_ties,prg__constant,\
+    prg__n_ary_alternator
 
 class TNode: 
 
@@ -13,7 +14,6 @@ class TNode:
         self.children = []  
         self.cindex = 0 # used to traverse children node in search process 
         self.root_stat = root_stat 
-        self.scached = False 
         self.rdistance = rdistance 
         # children has been set? 
         self.children_set = False 
@@ -48,7 +48,7 @@ class TNode:
                     t_.cindex = 0 
         return d,mdepth 
 
-    # TODO: test this method 
+    # TODO: more thorough testing required. 
     @staticmethod
     def collate_keys(tn,is_bfs:bool=True,prg=None):
         tn.cindex = 0 
@@ -65,12 +65,12 @@ class TNode:
                     tn2.cindex = 0 
                     q2.append(tn2)
                 if type(prg) != type(None): 
-                    q2 = prg_seqsort(q2)
+                    q2 = prg_seqsort(q2,prg)
                 K.extend([q2_.idn for q2_ in q2])
                 q.extend(q2) 
             else: 
                 stat = True 
-                if type(prg) != type(None): 
+                if tn_.idn in K and type(prg) != type(None): 
                     stat = bool(prg() % 2)
 
                 if stat: 
@@ -78,7 +78,7 @@ class TNode:
 
                 tn2 = next(tn_)
                 if type(tn2) == type(None): continue 
-
+                tn2.cindex=0
                 q.insert(0,tn_)
                 q.insert(0,tn2)
         return K 
@@ -159,7 +159,7 @@ class G2TDecomp:
         self.excl_mem_depth = excl_mem_depth
         self.cc = child_capacity
         self.pc = parent_capacity
-        self.prg = None  
+        self.prg = prg  
         self.predecomp() 
 
         # vars used for dfs search 
@@ -245,11 +245,13 @@ class G2TDecomp:
         # case: no children 
         if len(cx_) == 0: return False 
 
+        # case: get the number of children based on `prg` or 
+        #       default of `cc`. 
         cx_ = sorted(cx_) 
         cc = len(cx_) if float('inf') == self.cc else self.cc 
         if type(self.prg) != type(None): 
-            cx_ = prg_seqsort(cx_)
-            cc = (self.prg() % self.cc) + 1 
+            cx_ = prg_seqsort(cx_,self.prg)
+            cc = (self.prg() % cc) + 1 
         cx_ = cx_[:cc]
         self.init_children_for_node(tn,cx_)
         return True 
@@ -286,6 +288,7 @@ class G2TDecomp:
 
         tn2 = next(tn) 
         if type(tn2) == type(None):
+            tn.xclist.clear() 
             return False 
 
         self.decomp_queue.insert(0,tn)
