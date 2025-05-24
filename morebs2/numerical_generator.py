@@ -305,12 +305,58 @@ def generate_gaussian_sequence_in_bounds(mean, var):
     rng.normal()
     return -1
 
+#-------------------------- sequence sorters using prgs
+
 def prg_seqsort(l,prg): 
     """
     sorts a sequence using a pseudo-random number generator 
+
+    :param l: sequence of elements; all elements of same type. 
+    :type l: list 
+    :param prg: pseudo-random number generator used to choose indices. 
+    :type prg: function, no parameters. 
     """
     l_ = [] 
     while len(l) > 0: 
         i = prg() % len(l) 
         l_.append(l.pop(i))
     return l_ 
+
+def prg_seqsort_ties(l,prg,vf): 
+    """
+    sorts a sequence l
+
+    :param l: sequence of elements; all elements of same type. 
+    :type l: list 
+    :param prg: pseudo-random number generator used to choose indices. 
+    :type prg: function, no parameters. 
+    :param vf: value-access function for element of l
+    :type vf: function, one parameter is instance of element type for `l`. 
+    """
+
+    # sort l by vf first 
+    l = sorted(l,key=vf)
+    q_ = [] 
+    while len(l) > 0: 
+        x = l.pop(0) 
+        y = vf(x) 
+        q2.append(x) 
+        
+        # collect all ties with x
+        j = -1 
+        for (i,q_) in enumerate(q): 
+            y2 = vf(q_) 
+            if y == y2: 
+                j = i 
+            else: 
+                break 
+        j += 1 
+        q2.extend(q[:j])
+        while j > 0: 
+            q.pop(0) 
+            j -= 1 
+
+        # permute q2 by prg 
+        q2 = prg_seqsort(q2,prg)
+        q_.extend(q2) 
+    return q_ 

@@ -2,7 +2,7 @@
 graph-to-tree decomposition
 """
 from .graph_basics import * 
-from .numerical_generator import prg_seqsort
+from .numerical_generator import prg_seqsort,prg_seqsort_ties
 
 class TNode: 
 
@@ -84,4 +84,52 @@ class TNode:
         s += "xchildren: " + str(self.xc_idn) + "\n"
         s += "is root: " + str(self.root_stat) + "\n"
         return s 
+
+class G2TDecomp: 
+
+    def __init__(self,d,decomp_rootnodes=[],excl_mem_depth=-1,\
+            child_capacity=-1,parent_capacity=-1,prg=None): 
+
+        assert type(d) == defaultdict
+        assert d.default_factory == set 
+
+        self.d = d 
+        self.is_directed = is_directed_graph(d) 
+        self.rn = decomp_rootnodes
+        self.dr_map = defaultdict(int) 
+        self.excl_mem_depth = excl_mem_depth
+        self.cc = child_capacity
+        self.pc = parent_capacity
+        self.prg = None  
+        self.predecomp() 
+
+        # vars used for dfs search 
+        self.decomp_queue = [] 
+
+    def predecomp(self):
+        if len(self.rn) > 0: 
+            return 
+        
+        gd = GraphComponentDecomposition(self.d) 
+        gd.decompose() 
+        self.dr_map = gd.depth_rank_map() 
+        self.rn = [(k,v) for k,v in self.dr_map.items()] 
+
+        if type(self.prg) == type(None): 
+            self.rn = sorted(self.rn,key=lambda x:x[1]) 
+        else: 
+            vf = lambda x: x[1] 
+            self.rn = prg_seqsort_ties(self.rn,self.prg,vf)
+        return
+
+    def next_key(self): 
+        '''
+        initializes a new tree, represented by class<TNode>. 
+        '''
+        if len(self.rn) == 0: 
+            return False 
+
+        x = self.rn.pop(0)
+        tn = TNode(x,False,True,0)
+        self.decomp_queue.append(tn) 
 
