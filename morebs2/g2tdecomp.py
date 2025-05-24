@@ -33,7 +33,6 @@ class TNode:
             if display: 
                 print(t_)
             cx = set([c.idn for c in t_.children])
-
             if collect: 
                 d[t_.idn] = d[t_.idn] | cx 
             
@@ -48,6 +47,59 @@ class TNode:
                 if reset_index:
                     t_.cindex = 0 
         return d,mdepth 
+
+    # TODO: test this method 
+    @staticmethod
+    def collate_keys(tn,is_bfs:bool=True,prg=None):
+        tn.cindex = 0 
+        q = [tn]
+        K = [tn.idn]
+
+        while len(q) > 0: 
+            tn_ = q.pop(0) 
+            if is_bfs: 
+                q2 = [] 
+                while True: 
+                    tn2 = next(tn_)
+                    if type(tn2) == type(None): break 
+                    tn2.cindex = 0 
+                    q2.append(tn2)
+                if type(prg) != type(None): 
+                    q2 = prg_seqsort(q2)
+                K.extend([q2_.idn for q2_ in q2])
+                q.extend(q2) 
+            else: 
+                stat = True 
+                if type(prg) != type(None): 
+                    stat = bool(prg() % 2)
+
+                if stat: 
+                    K.append(tn_.idn)
+
+                tn2 = next(tn_)
+                if type(tn2) == type(None): continue 
+
+                q.insert(0,tn_)
+                q.insert(0,tn2)
+        return K 
+
+    @staticmethod 
+    def size_count(tn): 
+        q = [tn]
+        c = 0 
+        
+        while len(q) > 0: 
+            x = q.pop(0)
+            x.cindex = 0 
+            c += 1
+
+            while True: 
+                x2 = next(x) 
+                if type(x2) == type(None): 
+                    break 
+                q.append(x2) 
+        return c 
+
 
     def index_of_child(self,idn): 
         for (i,c) in enumerate(self.children): 
@@ -131,7 +183,7 @@ class G2TDecomp:
         gd = GraphComponentDecomposition(self.d) 
         gd.decompose() 
 
-        self.preset_depth_rank_map()
+        self.preset_depth_rank_map(gd)
         self.rn = [(k,v) for k,v in self.dr_map.items()] 
         if type(self.prg) == type(None): 
             self.rn = sorted(self.rn,key=lambda x:x[1]) 
@@ -141,7 +193,7 @@ class G2TDecomp:
         self.rn = [k for (k,v) in self.rn]
         return
 
-    def preset_depth_rank_map(self): 
+    def preset_depth_rank_map(self,gd): 
         if self.is_directed: 
             self.dr_map = gd.depth_rank_map() 
         else: 

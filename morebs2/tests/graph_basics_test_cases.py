@@ -126,6 +126,15 @@ def graph_case_14():
     D[13] |= {10}
     return D 
 
+def graph_case_15(): 
+    D = defaultdict(set) 
+    D[0] = set([1,2,3,4]) 
+    D[1] = set([0,2,3,4]) 
+    D[2] = set([1,0,3,4]) 
+    D[3] = set([1,2,0,4]) 
+    D[4] = set([1,2,3,0]) 
+    return D 
+
 #----------------------------------------
 #----------- multi-component graphs 
 
@@ -161,7 +170,7 @@ def graph_case_11():
     D[12] = set([38,41])
     D[20] = set([15,64])
     D[38] = set([11])
-    D[11] = set([7,3])
+    D[11] = set([7,31])
 
     D.update(D2)
     return D 

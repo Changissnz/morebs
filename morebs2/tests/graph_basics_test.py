@@ -235,10 +235,9 @@ class TestGraphComponentDecompositionClass(unittest.TestCase):
         D = graph_case_11() 
         gd = graph_basics.GraphComponentDecomposition(D) 
         gd.decompose()
-        assert gd.components == [\
-            [{0, 1, 2, 3, 4}, {5}], [{0, 1, 2, 3, 4}, {6}], \
-            [{7}, {12}, {41}], [{7}, {20}, {64}], \
-            [{7}, {20}, {15}], [{7}, {12}, {38}, {11}, {3}]]
+        assert gd.components == [[{0, 1, 2, 3, 4}, {5}], \
+            [{0, 1, 2, 3, 4}, {6}], [{7}, {12}, {41}], [{7}, {20}, {64}], \
+            [{7}, {20}, {15}], [{7}, {12}, {38}, {11}, {31}]], "got {}".format(gd.components)
 
     def test__GraphComponentDecomposition__next_key_case9(self):
 
