@@ -612,8 +612,6 @@ def float_func(s):
 """
 always floor
 """
-#
-
 def int_func(s):
     return int(floorceil_to_n_places(float(s), 'f', places = 5))
 

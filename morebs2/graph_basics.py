@@ -1,5 +1,6 @@
 from collections import defaultdict 
 from copy import deepcopy 
+from .globalls import invert_map__seqvalue 
 
 def is_undirected_graph(d):
     assert type(d) in {defaultdict,dict}
@@ -159,13 +160,13 @@ class GraphComponentDecomposition:
         `cyclic_keys` maps each node to the nodeset that is its cyclic children. A cyclic 
         child is a parent of a node `n` but a child of another node `n2` connected to `n`. 
         The `cyclic_keys` map is used to determine if a directed component is of a 
-        cyclic ordering, as opposed to static order. A directed component of cyclic 
-        ordering means that all nodes are reachable starting from any node in the 
-        directed component. This then implies that all nodes of the directed component 
-        are of the same depth rank. If `d` is an undirected graph, every element of 
-        `components` is a nodeset. If a directed component is of static ordering, 
-        the depth rank of a node `n` in it is the index of the nodeset that `n` is 
-        present in. 
+        cyclic ordering, as opposed to static order. In a directed component `C` of 
+        cyclic ordering, there exists at least a pair of nodes (`n1`,`n2`). The nodes 
+        `n1` and `n2` belong to different nodesets of indices `i` and `i+j`. All nodes 
+        in the nodesets of `C[i:i+j+1]` are of the same depth. If `d` is an undirected 
+        graph, every element of `components` is a nodeset. If a directed component is 
+        of static ordering, the depth rank of a node `n` in it is the index of the nodeset 
+        that `n` is present in. 
 
         :param d: map representation of a graph 
         :type d: defaultdict(<set>)
@@ -184,6 +185,7 @@ class GraphComponentDecomposition:
         self.key_cache = set()
 
         self.cyclic_keys = defaultdict(set) 
+        self.cyclic_keys_inverted = defaultdict(set) 
 
         self.finstat = False 
 
@@ -197,6 +199,10 @@ class GraphComponentDecomposition:
     def decompose(self): 
         while not self.finstat:
             self.next_key()
+        q = invert_map__seqvalue(self.cyclic_keys) 
+        for k,v in q.items(): 
+            self.cyclic_keys_inverted[k] = set(v) 
+        return 
 
     def next_key(self): 
         if self.finstat_(): 
@@ -232,17 +238,16 @@ class GraphComponentDecomposition:
     def depth_rank_map(self): 
         if not self.is_directed: return None 
 
+        def update_map(Dx): 
+            for k,v in Dx.items(): 
+                D[k] += v 
+
         D = defaultdict(int) 
-        ci = self.cyclic_component_indices() 
-
-        for (i,c) in enumerate(self.components): 
-            if i in ci: continue 
-
-            q = flatten_setseq(c) 
-            for q_ in q: 
-                j = index_of_element_in_setseq(c,q_) 
-                D[q_] += j 
-        return D
+        
+        for i in range(len(self.components)): 
+            dx = self.depth_rank_map__component(i)
+            update_map(dx)
+        return D 
 
     def cyclic_component_indices(self): 
         if not self.is_directed: 
@@ -254,16 +259,69 @@ class GraphComponentDecomposition:
                 j.append(i)
         return j 
 
+    def depth_rank_map__component(self,ci): 
+        D = defaultdict(int) 
+        q = self.dcomponent_cyclic_indices(ci) 
+        C = self.components[ci] 
+
+        indexia = (-2,-2) if len(q) == 0 else q.pop(0)
+        d = 0 
+        for (i,c) in enumerate(C): 
+            # case: nodeset in cycle, all of same depth 
+            if i >= indexia[0] and i <= indexia[1]:
+                for c_ in c: 
+                    D[c_] = d
+                continue 
+            # case: move on to the next indexia 
+            elif i == indexia[1] + 1: 
+                indexia = (-2,-2) if len(q) == 0 else q.pop(0)
+                d += 1
+            for c_ in c: 
+                D[c_] = d 
+            d += 1 
+        return D 
+
+    def dcomponent_cyclic_indices(self,ci): 
+        c = self.components[ci] 
+        prev = 0 
+
+        # each element is (head index,tail index)
+        soln = []
+        for (i,c_) in enumerate(c): 
+            n_ = set()
+            V = set() 
+            for n in c_: 
+                if n in self.cyclic_keys: 
+                    n_ |= {n} 
+                    V |= self.cyclic_keys[n] 
+                    break 
+            
+            if len(n_) == 0: 
+                continue 
+
+            k = None 
+            for j in range(prev,i): 
+                if len(c[j].intersection(V)) > 0: 
+                    k = j 
+                    break 
+
+            if type(k) == type(None):
+                print("[!] weird") 
+                continue 
+
+            element = (j,i)
+            soln.append(element) 
+        return soln 
+            
     def is_dcomponent_cyclic(self,ci): 
         if not self.is_directed: 
             return False 
 
         q = flatten_setseq(self.components[ci])
-
         for q_ in q: 
             ck = self.cyclic_keys[q_] 
             if ck.intersection(q): 
-                return True 
+                return True  
         return False 
     
     #---------------- undirected case 
@@ -276,8 +334,6 @@ class GraphComponentDecomposition:
             self.components.append(kx)
             return 
         self.components[i] |= kx 
-
-
 
     #------------------------------ directed update methods 
 

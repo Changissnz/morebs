@@ -143,7 +143,7 @@ class G2TDecomp:
         x = self.rn.pop(0)
         tn = TNode(x,False,True,0)
         self.decomp_queue.append(tn) 
-        self.store_nc_degrees() 
+        self.store_np_degrees() 
 
     #--------------------- conditional methods for next 
 

@@ -182,8 +182,10 @@ class TestGraphComponentDecompositionClass(unittest.TestCase):
             [{0}, {1}, {8, 9, 3, 7}, {10}]]
         assert gd.cyclic_keys == defaultdict(set,{7: {0}})
         assert gd.cyclic_component_indices() == [3]
-        assert gd.depth_rank_map() == defaultdict(int, \
-            {0: 0, 1: 1, 4: 2, 2: 2, 5: 2, 6: 2})
+
+        drm = defaultdict(int, {0: 0, 1: 2, 4: 2, \
+            2: 2, 5: 2, 6: 2, 8: 2, 9: 2, 3: 2, 7: 2, 10: 3})
+        assert gd.depth_rank_map() == drm 
         return
 
     def test__GraphComponentDecomposition__next_key_case5(self):
@@ -262,6 +264,44 @@ class TestGraphComponentDecompositionClass(unittest.TestCase):
 
         assert gd.components == [{0, 1, 2, 3, 4}]
         assert type(dr) == type(None) 
+
+    def test__GraphComponentDecomposition__next_key_case11(self):
+        D = graph_case_13() 
+        gd = graph_basics.GraphComponentDecomposition(D)
+        gd.decompose()
+        assert gd.components == [[{0, 7}, {9, 6}, {8}, {10}]]
+        assert gd.cyclic_keys == defaultdict(set, {8: {0}})
+
+    def test__GraphComponentDecomposition__dcomponent_cyclic_indices(self): 
+
+        D = graph_case_14() 
+        gd = graph_basics.GraphComponentDecomposition(D)
+        gd.decompose()
+        assert gd.dcomponent_cyclic_indices(0) == [(0, 2), (3, 5)]
+        q = gd.depth_rank_map__component(0)
+        assert q == defaultdict(int, {0: 0, 7: 0, \
+            9: 0, 6: 0, 8: 0, 10: 1, 12: 1, \
+            11: 2, 13: 2})
+
+        D[13].clear() 
+        gd = graph_basics.GraphComponentDecomposition(D)
+        gd.decompose()
+        assert gd.dcomponent_cyclic_indices(0) == [(0, 2)]
+        q = gd.depth_rank_map__component(0)
+        assert q == defaultdict(int, {0: 0, \
+            7: 0, 9: 0, 6: 0, 8: 0, \
+            10: 1, 12: 1, 11: 2, 13: 3})
+
+    def test__GraphComponentDecomposition__depth_rank_map__component(self): 
+        D = graph_case_2() 
+        gd = graph_basics.GraphComponentDecomposition(D)
+        gd.decompose()
+        q = gd.depth_rank_map__component(0)
+        assert q == defaultdict(int,{0:0})
+        q2 = gd.depth_rank_map__component(1)
+        assert q2 == defaultdict(int, {1: 0, 0: 1})
+        return 
+
 
 if __name__ == '__main__':
     unittest.main()

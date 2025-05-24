@@ -88,7 +88,42 @@ def graph_case_9():
     D[3] = set([0])
     D[4] = set([0])
     D[5] = set([0])
+    return D 
 
+
+def graph_case_12(): 
+    D = defaultdict(set) 
+    D[0] = set([1,2,3,4])
+    D[1] = set([0,2,8])
+    D[2] = set([0,1,6,7])
+    D[3] = set([10])
+    D[4] = set([10])
+    D[5] = set([0])
+    D[6] = set([7])
+    D[7] = set([6])
+    D[8] = set([1,3,9])
+    D[9] = set([8,10])
+    D[10] = set([3,4,9])
+    return D 
+
+def graph_case_13(): 
+    D = defaultdict(set) 
+    D[0] = set([6,7])
+    D[6] = set([8,9])
+    D[7] = set([0])
+    D[8] = set([0,10])
+    D[9] = set([6,8])
+    D[10] = set([])
+    return D 
+
+
+def graph_case_14(): 
+    D = graph_case_13() 
+    D[10] |= {11,12}
+    D[11] |= {13}
+    D[12] |= {10,13}
+    # delete below edge for different result 
+    D[13] |= {10}
     return D 
 
 #----------------------------------------
@@ -129,20 +164,4 @@ def graph_case_11():
     D[11] = set([7,3])
 
     D.update(D2)
-    return D 
-
-
-def graph_case_12(): 
-    D = defaultdict(set) 
-    D[0] = set([1,2,3,4])
-    D[1] = set([0,2,8])
-    D[2] = set([0,1,6,7])
-    D[3] = set([10])
-    D[4] = set([10])
-    D[5] = set([0])
-    D[6] = set([7])
-    D[7] = set([6])
-    D[8] = set([1,3,9])
-    D[9] = set([8,10])
-    D[10] = set([3,4,9])
     return D 

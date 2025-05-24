@@ -1,6 +1,7 @@
 import os
 import glob
 import csv
+from collections import defaultdict
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
@@ -43,3 +44,24 @@ def make_csv_file(filePath, columnLabels):
 def is_valid_color(c):
     assert type(c) is tuple, "invalid color type"
     for c_ in c: assert type(c_) in [float,int], "invalid type for colores de la vegasvalueorios"
+
+# TODO: test these 
+def std_invert_map(m):
+    assert type(m) in {dict,defaultdict}
+
+    q = {}
+    for k,v in m.items():
+        if v in q:
+            q[v].append(k)
+        else:
+            q[v] = [k]
+    return q
+
+def invert_map__seqvalue(m): 
+    assert type(m) in {dict,defaultdict}
+
+    q = defaultdict(list) 
+    for k,v in m.items(): 
+        for v_ in v: 
+            q[v_].append(k) 
+    return q 
