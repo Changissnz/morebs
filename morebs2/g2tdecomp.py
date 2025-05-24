@@ -200,7 +200,9 @@ class G2TDecomp:
             for k in self.d.keys(): 
                 self.dr_map[k] = 0
 
-
+    """
+    main method 
+    """
     def decompose(self): 
         while not self.fstat:
             next(self)
