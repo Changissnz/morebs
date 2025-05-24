@@ -37,6 +37,63 @@ def directed_edge_partition(d,k,V):
             partition[0] |= {v_} 
     return partition
 
+"""
+neighbor-child degree map. A node n's neighbor-child degree is 
+    [|neighbors(n)|,|children(n)|]
+
+:return: map of node idn to its neighbor-child degree
+:rtype: defaultdict(list) 
+"""
+# TODO: test 
+def nc_degree_map(G): 
+
+    G_ = deepcopy(G) 
+    d = defaultdict(list)
+    for k in G_.keys(): 
+        d[k] = [0,0]
+
+    for k,v in G_.items():
+        q = list(v)  
+        for v_ in q: 
+            # case: v_ is child 
+            if k not in G_[v_]: 
+                d[k][1] += 1 
+            else: 
+                d[k][0] += 1 
+                d[v_][0] += 1 
+            G_[v_] -= {k} 
+        G_[k] = set() 
+    return d
+
+"""
+neighbor-parent degree map. A node n's neighbor-parent degree is 
+    [|neighbors(n)|,|parent(n)|]
+
+:return: map of node idn to its neighbor-child degree
+:rtype: defaultdict(list) 
+"""
+# TODO: test 
+def np_degree_map(G): 
+
+    G_ = deepcopy(G) 
+    d = defaultdict(list)
+    for k in G_.keys(): 
+        d[k] = [0,0]
+
+    for k,v in G_.items():
+        q = list(v) 
+        for v_ in q: 
+            # case: neighbors 
+            if k in G_[v_]: 
+                d[k][0] += 1
+                d[v_][0] += 1  
+                G_[v_] -= {k}
+            else: 
+                d[v_][1] += 1 
+        G_[k] = set() 
+    return d 
+
+
 def connected_to(G,n): 
     ks = list(G[n]) 
     for k,v in G.items():

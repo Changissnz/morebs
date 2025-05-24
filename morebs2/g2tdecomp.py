@@ -88,12 +88,15 @@ class TNode:
 class G2TDecomp: 
 
     def __init__(self,d,decomp_rootnodes=[],excl_mem_depth=-1,\
-            child_capacity=-1,parent_capacity=-1,prg=None): 
+            child_capacity=float('inf'),parent_capacity=float('inf'),prg=None): 
 
         assert type(d) == defaultdict
         assert d.default_factory == set 
+        assert child_capacity > 0 and parent_capacity > 0
 
+        graph_childkey_fillin(d)
         self.d = d 
+        self.d_ = deepcopy(self.d)
         self.is_directed = is_directed_graph(d) 
         self.rn = decomp_rootnodes
         self.dr_map = defaultdict(int) 
@@ -105,6 +108,14 @@ class G2TDecomp:
 
         # vars used for dfs search 
         self.decomp_queue = [] 
+            # stores skipped nodes for every dfs search 
+            # by a root node 
+        self.skipped_nodes = [] 
+            # neighbor-parent degree map. used as reference to 
+            # satisfy upper-threshold values set by `excl_mem_depth`,
+            # `cc`, and `pc`. 
+        self.cdeg_map = None 
+        self.cdeg_map2 = None 
 
     def predecomp(self):
         if len(self.rn) > 0: 
@@ -132,4 +143,16 @@ class G2TDecomp:
         x = self.rn.pop(0)
         tn = TNode(x,False,True,0)
         self.decomp_queue.append(tn) 
+        self.store_nc_degrees() 
+
+    #--------------------- conditional methods for next 
+
+    def store_np_degrees(self): 
+        q = np_degree_map(self.d_)
+        self.cdeg_map = defaultdict(int) 
+        for k,v in q.items(): 
+            self.cdeg_map[k] += v[0] + v[1] 
+        self.cdeg_map2 = deepcopy(self.cdeg_map)
+        return
+
 

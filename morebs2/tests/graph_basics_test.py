@@ -2,6 +2,21 @@ from .graph_basics_test_cases import *
 from morebs2 import graph_basics 
 import unittest
 
+
+def nx_mapcheck_with_functions(D,nx_map,is_np:bool): 
+    """
+    nx map is either neighbor-child or neighbor-parent 
+    map 
+    """
+
+    nf = graph_basics.doubly_connected
+    f = graph_basics.parents_of if is_np else graph_basics.children_of
+
+    for k,v in nx_map.items(): 
+        assert v[0] == len(nf(D,k))
+        assert v[1] == len(f(D,k))
+    return 
+
 '''
 python -m morebs2.tests.graph_basics_test  
 '''
@@ -66,8 +81,43 @@ class TestGraphBasicsMethods(unittest.TestCase):
         D = graph_case_3()
         assert not graph_basics.is_directed_graph(D)
 
+    def test__GraphBasics__connections_measures_case6(self):
+        D = graph_case_12() 
 
-class TestGraphBasicsClass(unittest.TestCase):
+        nc = graph_basics.nc_degree_map(D)
+        npx = graph_basics.np_degree_map(D) 
+        nx_mapcheck_with_functions(D,nc,False)
+        nx_mapcheck_with_functions(D,npx,True) 
+
+    def test__GraphBasics__connections_measures_case7(self):
+        D = graph_case_1() 
+
+        nc = graph_basics.nc_degree_map(D)
+        npx = graph_basics.np_degree_map(D) 
+        nx_mapcheck_with_functions(D,nc,False)
+        nx_mapcheck_with_functions(D,npx,True) 
+
+        assert nc == defaultdict(list, \
+            {0: [1, 0], 1: [1, 1], 2: [0, 1], 3: [0, 1]})
+        assert npx == defaultdict(list, \
+            {0: [1, 2], 1: [1, 0], 2: [0, 1], 3: [0, 0]})
+
+    def test__GraphBasics__connections_measures_case8(self):
+        D = graph_case_2() 
+
+        nc = graph_basics.nc_degree_map(D)
+        npx = graph_basics.np_degree_map(D) 
+        nx_mapcheck_with_functions(D,nc,False)
+        nx_mapcheck_with_functions(D,npx,True) 
+
+        assert nc == defaultdict(list, \
+            {0: [0, 0], 1: [0, 1], 2: [0, 1], 3: [0, 1], 4: [0, 1]})
+        assert npx == defaultdict(list, \
+            {0: [0, 4], 1: [0, 0], 2: [0, 0], 3: [0, 0], 4: [0, 0]})
+
+
+
+class TestGraphComponentDecompositionClass(unittest.TestCase):
 
     def test__GraphComponentDecomposition__init_decomp(self):
         D = graph_case_2() 
