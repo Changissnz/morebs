@@ -11,12 +11,12 @@ class TNode:
         self.idn = idn 
         self.next_cycling = next_cycling
         self.children = []  
-        self.xc_idn = set() 
         self.cindex = 0 # used to traverse children node in search process 
         self.root_stat = root_stat 
         self.scached = False 
         self.rdistance = rdistance 
-
+        # children has been set? 
+        self.children_set = False 
         self.xclist = [] 
         return
 
@@ -58,8 +58,8 @@ class TNode:
     def add_children(self,cs): 
         for c in cs: 
             assert type(c) == TNode 
-            if c.idn in self.xc_idn: continue 
             self.children.append(c)
+        self.children_set = True 
 
     def add_xclusion(self,xclude):
         assert type(xclude) == set 
@@ -81,7 +81,6 @@ class TNode:
         q = [str(c.idn) for c in self.children] 
         q = " ".join(q) 
         s += "children: " + q + "\n"
-        s += "xchildren: " + str(self.xc_idn) + "\n"
         s += "is root: " + str(self.root_stat) + "\n"
         return s 
 
@@ -89,6 +88,11 @@ class G2TDecomp:
 
     def __init__(self,d,decomp_rootnodes=[],excl_mem_depth=-1,\
             child_capacity=float('inf'),parent_capacity=float('inf'),prg=None): 
+        """
+        finds a directed acyclic graph (DAG) decomposition of a graph `d`. Every 
+        directed acyclic graph is of a subclass of the category of DAG. For this 
+        subclass of DAG, the siblings from a parent node cannot travel to each other.
+        """
 
         assert type(d) == defaultdict
         assert d.default_factory == set 
@@ -117,6 +121,8 @@ class G2TDecomp:
         self.cdeg_map = None 
         self.cdeg_map2 = None 
 
+        self.fstat = False 
+
     def predecomp(self):
         if len(self.rn) > 0: 
             return 
@@ -133,7 +139,16 @@ class G2TDecomp:
             self.rn = prg_seqsort_ties(self.rn,self.prg,vf)
         return
 
-    def next_key(self): 
+    def __next__(self): 
+        if len(self.decomp_queue) == 0: 
+            stat = self.next_tree() 
+            if not stat: 
+                self.fstat = True 
+            return 
+
+        self.next_node()
+        
+    def next_tree(self): 
         '''
         initializes a new tree, represented by class<TNode>. 
         '''
@@ -144,6 +159,77 @@ class G2TDecomp:
         tn = TNode(x,False,True,0)
         self.decomp_queue.append(tn) 
         self.store_np_degrees() 
+        return True 
+
+    def set_children_for_node(self,tn):
+        assert tn.children_set == False 
+
+        # iterate through possible children 
+        cx = children_of(self.d_,tn.idn)
+        nx = doubly_connected(self.d_,tn.idn)
+        cx = cx | nx 
+        cx_ = [] 
+        for q in cx: 
+            if self.is_possible_child(q): 
+                cx_.append(q)
+        
+        cx_ = set(cx_) - flatten_setseq(tn.xclist)
+
+        # case: no children 
+        if len(cx_) == 0: return False 
+
+        cx_ = sorted(cx_) 
+        cc = self.cc 
+        if type(self.prg) != type(None): 
+            cx_ = prg_seqsort(cx_)
+            cc = (self.prg() % self.cc) + 1 
+
+        cx_ = cx_[:cc]
+        self.init_children_for_node(tn,cx_)
+        return True 
+
+    def init_children_for_node(self,tn,cx_idn): 
+        q = deepcopy(tn.xclist)
+
+        # exclusion list for every child
+        df = len(q) + 1 - self.excl_mem_depth
+        if df < 0: 
+            df = -df 
+            q = q[df:]
+        q.append({tn.idn} | cx_idn)
+
+        cxs = []
+        E = [] 
+        for cx in cx_idn: 
+            q2 = deepcopy(q) 
+            tn2 = TNode(cx,rdistance=tn.rdistance+1)
+            tn2.add_xclusion(q2)
+            cxs.append(tn2)
+            E.append((tn.idn,cx))
+            
+        tn.add_children(cxs)
+        delete_graph_edges(self.d_,E,is_directed=True)
+
+    def is_possible_child(self,idn): 
+        df = self.cdeg_map[idn] - self.cdeg_map2[idn]
+        return df < self.pc 
+
+    def next_node(self):
+        if len(self.decomp_queue) == 0: 
+            return False 
+
+        tn = self.decomp_queue.pop(0) 
+        tn2 = next(tn) 
+        if type(tn2) == type(None): 
+            return False 
+
+        self.decomp_queue.insert(0,tn)
+
+        if not tn2.children_set: 
+            self.set_children_for_node(tn2)
+
+        self.decomp_queue.insert(0,tn2)
+        return
 
     #--------------------- conditional methods for next 
 
