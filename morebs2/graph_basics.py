@@ -94,6 +94,24 @@ def flatten_setseq(s):
 class GraphComponentDecomposition:
 
     def __init__(self,d): 
+        """
+        Calculates the components of a graph `d`. If `d` is a directed graph, 
+        output (see class variable `components`) is a list of directed components. 
+        Each directed component is a list of nodesets. The nodesets are ordered 
+        in ascending order based on its depth rank. Additionally, the class variable 
+        `cyclic_keys` maps each node to the nodeset that is its cyclic children. A cyclic 
+        child is a parent of a node `n` but a child of another node `n2` connected to `n`. 
+        The `cyclic_keys` map is used to determine if a directed component is of a 
+        cyclic ordering, as opposed to static order. A directed component of cyclic 
+        ordering means that all nodes are reachable starting from any node in the 
+        directed component. This then implies that all nodes of the directed component 
+        are of the same depth rank. If `d` is an undirected graph, every element of 
+        `components` is a nodeset. 
+
+        :param d: map representation of a graph 
+        :type d: defaultdict(<set>)
+        """
+
         assert type(d) == defaultdict
         assert d.default_factory == set 
 
@@ -113,6 +131,13 @@ class GraphComponentDecomposition:
     def finstat_(self): 
         self.finstat = len(self.key_cache) == len(self.d) 
         return self.finstat
+
+    '''
+    main method 
+    '''
+    def decompose(self): 
+        while not self.finstat:
+            self.next_key()
 
     def next_key(self): 
         if self.finstat_(): 
@@ -144,27 +169,29 @@ class GraphComponentDecomposition:
         rem = self.d[q] - self.key_cache 
         self.key_queue.extend(list(rem)) 
         return 
+
+    def cyclic_component_indices(self): 
+        if not self.is_directed: 
+            return [] 
+
+        j = [] 
+        for i in range(len(self.components)): 
+            if self.is_dcomponent_cyclic(i):
+                j.append(i)
+        return j 
+
+    def is_dcomponent_cyclic(self,ci): 
+        if not self.is_directed: 
+            return False 
+
+        q = flatten_setseq(self.components[ci])
+
+        for q_ in q: 
+            ck = self.cyclic_keys[q_] 
+            if ck.intersection(q): 
+                return True 
+        return False 
     
-    def init_decomp(self,k): 
-
-        partition = directed_edge_partition(self.d_,k,list(self.d_[k]))
-
-        if len(partition[0]) + len(partition[1]) == 0: 
-            self.components.append([{k}])
-            return 
-
-
-        nc = self.doubly_connected_subsets(partition[1])
-        if len(nc) == 0: 
-            self.components.append([{k} | partition[0]]) 
-        else: 
-            nc = [[{k} | partition[0],nc_] for nc_ in nc] 
-            self.components.extend(nc) 
-
-        self.key_cache |= {k}
-        self.queue_update(partition)
-        self.graph_edge_update(k,partition)
-
     #---------------- undirected case 
 
     def merge_by_edges(self,k): 
@@ -177,33 +204,27 @@ class GraphComponentDecomposition:
         self.components[i] |= kx 
 
 
-    #---------------- indexing and travel memory
 
-    def index_of(self,k): 
-        if not self.is_directed: 
-            return index_of_element_in_setseq(self.components,k)
+    #------------------------------ directed update methods 
 
-        for (i,d_) in enumerate(self.components): 
-            i2 = index_of_element_in_setseq(d_,k) 
-            if type(i2) != type(None): 
-                return (i,i2) 
-        return None 
+    def init_decomp(self,k): 
 
-    def graph_edge_update(self,k,partition): 
-        px0 = set([(k,p) for p in partition[0]])
-        px1 = set([(k,p) for p in partition[1]])
+        partition = directed_edge_partition(self.d_,k,list(self.d_[k]))
 
-        delete_graph_edges(self.d_,px0,is_directed=False)
-        delete_graph_edges(self.d_,px1,is_directed=True)
+        if len(partition[0]) + len(partition[1]) == 0: 
+            self.components.append([{k}])
+            return 
+            
+        nc = self.doubly_connected_subsets(partition[1])
+        if len(nc) == 0: 
+            self.components.append([{k} | partition[0]]) 
+        else: 
+            nc = [[{k} | partition[0],nc_] for nc_ in nc] 
+            self.components.extend(nc) 
 
-    def queue_update(self,partition): 
-        q = partition[0] | partition[1]
-
-        for q_ in q: 
-            if q_ not in self.key_cache: 
-                self.key_queue.append(q_)
-
-    #------------------------------ 
+        self.key_cache |= {k}
+        self.queue_update(partition)
+        self.graph_edge_update(k,partition)
 
     def update_dircomp_by_kv_pair(self,k): 
         V = [k] + list(self.d_[k]) 
@@ -327,3 +348,30 @@ class GraphComponentDecomposition:
                     to_remove.append(q2) 
             
         return list(s)
+
+
+    #---------------- indexing and travel memory
+
+    def index_of(self,k): 
+        if not self.is_directed: 
+            return index_of_element_in_setseq(self.components,k)
+
+        for (i,d_) in enumerate(self.components): 
+            i2 = index_of_element_in_setseq(d_,k) 
+            if type(i2) != type(None): 
+                return (i,i2) 
+        return None 
+
+    def graph_edge_update(self,k,partition): 
+        px0 = set([(k,p) for p in partition[0]])
+        px1 = set([(k,p) for p in partition[1]])
+
+        delete_graph_edges(self.d_,px0,is_directed=False)
+        delete_graph_edges(self.d_,px1,is_directed=True)
+
+    def queue_update(self,partition): 
+        q = partition[0] | partition[1]
+
+        for q_ in q: 
+            if q_ not in self.key_cache: 
+                self.key_queue.append(q_)

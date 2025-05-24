@@ -131,6 +131,7 @@ class TestGraphBasicsClass(unittest.TestCase):
             [{0}, {2}, {6}], \
             [{0}, {1}, {8, 9, 3, 7}, {10}]]
         assert gd.cyclic_keys == defaultdict(set,{7: {0}})
+        assert gd.cyclic_component_indices() == [3]
         return
 
     def test__GraphComponentDecomposition__next_key_case5(self):
@@ -156,7 +157,6 @@ class TestGraphBasicsClass(unittest.TestCase):
             [{3, 7, 8, 9, 10}, {0}, {2}, {5}], \
             [{3, 7, 8, 9, 10}, {0}, {2}, {6}]]
 
-
         return 
 
     def test__GraphComponentDecomposition__next_key_case6(self):
@@ -176,6 +176,16 @@ class TestGraphBasicsClass(unittest.TestCase):
             gd.next_key()
 
         assert gd.components == [{0, 1, 2, 3, 4}, {7, 8, 9}, {10, 111}]
+
+    def test__GraphComponentDecomposition__next_key_case8(self):
+        D = graph_case_11() 
+        gd = graph_basics.GraphComponentDecomposition(D) 
+        gd.decompose()
+        assert gd.components == [\
+            [{0, 1, 2, 3, 4}, {5}], [{0, 1, 2, 3, 4}, {6}], \
+            [{7}, {12}, {41}], [{7}, {20}, {64}], \
+            [{7}, {20}, {15}], [{7}, {12}, {38}, {11}, {3}]]
+
 
 
 if __name__ == '__main__':

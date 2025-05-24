@@ -110,3 +110,23 @@ def graph_case_10():
     D[10] = set([111]) 
     D[111] = set([10])
     return D 
+
+
+def graph_case_11(): 
+    D = defaultdict(set) 
+    D[0] = set([1,2,3,4]) 
+    D[1] = set([0,5,6])
+    D[2] = set([0])
+    D[3] = set([0])
+    D[4] = set([0])
+    D[5] = set([0])
+
+    D2 = defaultdict(set) 
+    D[7] = set([12,20])
+    D[12] = set([38,41])
+    D[20] = set([15,64])
+    D[38] = set([11])
+    D[11] = set([7,3])
+
+    D.update(D2)
+    return D 
