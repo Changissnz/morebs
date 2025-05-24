@@ -106,7 +106,9 @@ class GraphComponentDecomposition:
         ordering means that all nodes are reachable starting from any node in the 
         directed component. This then implies that all nodes of the directed component 
         are of the same depth rank. If `d` is an undirected graph, every element of 
-        `components` is a nodeset. 
+        `components` is a nodeset. If a directed component is of static ordering, 
+        the depth rank of a node `n` in it is the index of the nodeset that `n` is 
+        present in. 
 
         :param d: map representation of a graph 
         :type d: defaultdict(<set>)
@@ -170,6 +172,21 @@ class GraphComponentDecomposition:
         self.key_queue.extend(list(rem)) 
         return 
 
+    def depth_rank_map(self): 
+        if not self.is_directed: return None 
+
+        D = defaultdict(int) 
+        ci = self.cyclic_component_indices() 
+
+        for (i,c) in enumerate(self.components): 
+            if i in ci: continue 
+
+            q = flatten_setseq(c) 
+            for q_ in q: 
+                j = index_of_element_in_setseq(c,q_) 
+                D[q_] += j 
+        return D
+
     def cyclic_component_indices(self): 
         if not self.is_directed: 
             return [] 
@@ -208,13 +225,14 @@ class GraphComponentDecomposition:
     #------------------------------ directed update methods 
 
     def init_decomp(self,k): 
+        self.key_cache |= {k}
 
         partition = directed_edge_partition(self.d_,k,list(self.d_[k]))
 
         if len(partition[0]) + len(partition[1]) == 0: 
             self.components.append([{k}])
             return 
-            
+
         nc = self.doubly_connected_subsets(partition[1])
         if len(nc) == 0: 
             self.components.append([{k} | partition[0]]) 
@@ -222,7 +240,6 @@ class GraphComponentDecomposition:
             nc = [[{k} | partition[0],nc_] for nc_ in nc] 
             self.components.extend(nc) 
 
-        self.key_cache |= {k}
         self.queue_update(partition)
         self.graph_edge_update(k,partition)
 
