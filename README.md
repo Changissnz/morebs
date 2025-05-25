@@ -17,6 +17,11 @@ is required to be installed.
 
 # Updates For Project On and Off 
 
+# Update: 5/25/25 #3 
+Deleted the project DER from Github. The project was the original work I did 
+before I refactored it into `morebs`, and has been sitting dead on Github for 
+a while. 
+
 # Update: 5/25/25 #2 
 So the new version is up on Github (0.1.1). I also took the step to delete the 
 `s*.txt` files that were present from a few commits back. The files were relatively 
