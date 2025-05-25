@@ -83,6 +83,7 @@ class TestNSDataInstructionClass(unittest.TestCase):
     '''
     '''
     def test__sample_nsdi_11(self):
+        print("Test 1 for: NS Data Instruction")
         q = sample_nsdi_1("relevance zoom",filePath="tests/s11.txt")
         q.make_rssi()
 
@@ -95,6 +96,7 @@ class TestNSDataInstructionClass(unittest.TestCase):
         q.batch_summary()
 
     def test__sample_nsdi_12(self):
+        print("Test 2 for: NS Data Instruction")
         q = sample_nsdi_1('prg',"tests/s12.txt")
         q.make_rssi()
 
@@ -111,6 +113,7 @@ class TestNSDataInstructionClass(unittest.TestCase):
         q.batch_summary()
 
     def test__sample_nsdi_13(self):
+        print("Test 3 for: NS Data Instruction")
         b1 = np.array([[0.9,1.2],[1.2,1.7],[-1.0,-0.5],[0.7,1.1]])
         bx = np.array([b1])
 
@@ -124,6 +127,7 @@ class TestNSDataInstructionClass(unittest.TestCase):
         q.batch_summary()
 
     def test__sample_nsdi_14(self):
+        print("Test 4 for: NS Data Instruction")
         nr = np.array([[0.01,0.07]])
         q = sample_nsdi_1('relevance zoom',"tests/s14.txt",nr)
         q.make_rssi()
@@ -138,6 +142,7 @@ class TestNSDataInstructionClass(unittest.TestCase):
         q.batch_summary()
 
     def test__sample_nsdi_21(self):
+        print("Test 5 for: NS Data Instruction")
         q = sample_nsdi_2("relevance zoom",filePath="tests/s21.txt")
         q.make_rssi()
         while q.fp:
