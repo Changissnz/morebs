@@ -8,9 +8,19 @@ vector data. Important classes include:
 For the source code to this project's latest version, go to 
 `https://github.com/changissz/morebs`.
 
-Documentation for project can be found at `_build/html`. 
+For a mathematics paper on the `BallComp` algorithm, see the link  
+`https://github.com/changissnz/ballcomp`. 
+
+Documentation for project can be found at `_build/html`. Documentation 
+first needs to be built. The library Sphinx for generating the documentation
+is required to be installed. 
 
 # Updates For Project On and Off 
+
+# Update: 5/25/25 #2 
+So the new version is up on Github (0.1.1). I also took the step to delete the 
+`s*.txt` files that were present from a few commits back. The files were relatively 
+large, and I must have forgotten to exclude the files from being committed to Github. 
 
 # Update: 5/25/25 
 
