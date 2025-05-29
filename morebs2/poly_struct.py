@@ -449,25 +449,4 @@ class RandomPolyGenerator:
                     x = self.rsf.randrange(self.coefficientRange[0],self.coefficientRange[1])
                     p[j] = x
         return SPoly(p)
-
-
-
-"""
-def std_random_seed_object():
-    '''
-    integer function
-    '''
-    random.seed()
-    return random
-"""
-
-class StdRandomSeedObject:
-
-    def __init__(self):
-        return
-
-    def random(self):
-        return random.random()
-
-    def randrange(self,minumum,maximum):
-        return random.randrange(minumum,maximum)
+        

@@ -131,6 +131,52 @@ class TestNumericalGeneratorClass(unittest.TestCase):
             (22, 'bingo'), (22, 'rauchu'), (23, 'ROGUE'), (23, 'NOBODIES'), \
             (24, 'rauchu'), (24, '12,55')]
 
+    def test__prg_partition_for_sz(self): 
+        import random 
+        random.seed(100)
+
+        lc = numerical_generator.LCG(32,3901)
+        def prg1_(): 
+            def f(): 
+                return next(lc) 
+            return f 
+
+        prg1 = prg1_() 
+        S = 100
+        num_sets = 100 
+        p1 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.0)
+        assert p1 == [1] * 100 
+
+        num_sets = 50 
+        p2 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.0)
+        assert p2 == [2] * 50
+
+        prg1 = prg1_() 
+        num_sets = 50 
+        p3 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.5)
+        assert p3 == [33, 11, 8, 2, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+
+        num_sets = 50 
+        p4 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.1)
+        assert p4 == [9, 2, 7, 1, 6, 1, 4, 2, 1, 2, 6, 4, \
+            2, 4, 4, 2, 2, 2, 1, 2, 1, 1, 2, 1, 2, 2, 1, \
+            1, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1, 1, 1, 1, 1, 1]
+
+        num_sets = 15 
+        p5 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.1)
+        assert p5 == [2, 2, 8, 14, 5, 6, 2, 2, 2, 9, 4, \
+            7, 5, 3, 29]
+
+        num_sets = 4
+        p6 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.1)
+        assert p6 == [32, 16, 12, 40]
+
+
 
 
 if __name__ == '__main__':

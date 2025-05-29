@@ -7,6 +7,10 @@ from .matrix_methods import *
 from .variance_works import *
 from collections import OrderedDict
 
+def modulo_in_range(i,r): 
+    assert r[0] < r[1] 
+    return i % (r[1] - r[0]) + r[0] 
+
 class LCG:
     '''
     linear congruential generator
@@ -393,3 +397,43 @@ def prg_seqsort_ties(l,prg,vf):
         q2 = prg_seqsort(q2,prg)
         Q.extend(q2) 
     return Q 
+
+def prg_partition_for_sz(S,num_sets,prg,variance):  
+    """
+    outputs a partition P (list) with positive integers 
+    of length `num_sets` that sums to S. Uses the argument 
+    `prg` that acts as a pseudo-random number generator 
+    to output values with respect to `variance`. 
+    """
+    
+    assert variance >= 0.0 and variance <= 1.0 
+    assert S >= num_sets 
+
+    P = [1 for _ in range(num_sets)] 
+    S -= sum(P)
+
+    i = 0 
+    stat = S > 0 and i < num_sets 
+    while stat:
+        if i + 1 == num_sets: 
+            P[-1] += S 
+            break
+
+        x = ceil(S / num_sets) 
+        rem = ceil((S - x) * variance) 
+        rng = [x - rem, x + rem]
+        if rng[0] < 0: 
+            rng = [0,abs(rng[0]) + rng[1]]
+
+        if rng[0] == rng[1]: 
+            P[i] += rng[0] 
+            S -= rng[0] 
+        else: 
+            q = modulo_in_range(prg(),rng)
+            P[i] += q
+            S -= q
+
+        i += 1 
+
+    return P 
+

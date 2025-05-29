@@ -2,6 +2,7 @@ import os
 import glob
 import csv
 from collections import defaultdict
+from operator import add,sub,mul,truediv,floordiv
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
@@ -45,7 +46,8 @@ def is_valid_color(c):
     assert type(c) is tuple, "invalid color type"
     for c_ in c: assert type(c_) in [float,int], "invalid type for colores de la vegasvalueorios"
 
-# TODO: test these 
+##################### methods for dictionaries 
+
 def std_invert_map(m):
     assert type(m) in {dict,defaultdict}
 
@@ -65,3 +67,20 @@ def invert_map__seqvalue(m):
         for v_ in v: 
             q[v_].append(k) 
     return q 
+
+def numberdict_op(d1,d2,f=sub):
+    K = set(d1.keys()) | set(d2.keys()) 
+    
+    d3 = defaultdict(int) 
+    for k in K:
+        x1 = d1[k] if k in d1 else 0 
+        x2 = d2[k] if k in d2 else 0 
+        d3[k] = f(x1,x2) 
+    return d3 
+
+def equal_intdicts(d1,d2): 
+    K = set(d1.keys()) | set(d2.keys()) 
+
+    for k in K: 
+        if d1[k] != d2[k]: return False 
+    return True 

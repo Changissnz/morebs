@@ -26,7 +26,7 @@ def modify_candidate_exponent(p1,modDirection):
             break
     assert index != -1, "invalid exponent for modification"
     v[index,1] += modDirection[1]
-    return CEPoly()
+    return 
 
 def remainder_to_target(p1,p2,P,targetPIndex):
     '''
