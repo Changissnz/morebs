@@ -9,7 +9,7 @@
 project = 'morebs'
 copyright = '2023, Richard Pham'
 author = 'Richard Pham'
-release = '0.1.6'
+release = '0.1.7'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

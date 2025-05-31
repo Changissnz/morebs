@@ -180,6 +180,12 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         assert p6 == [86, 2, 9, 3], "got {}".format(p6) 
         assert sum(p6) == 100 
 
+        prng = numerical_generator.prg__LCG(-4,5,2,29)
+        S = 100
+        num_sets = 20
+        prt = numerical_generator.prg_partition_for_sz(S,num_sets,prng,0.0)
+        assert prt == [5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 26]
+        assert sum(prt) == 100 
 
 
 
