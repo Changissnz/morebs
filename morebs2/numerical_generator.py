@@ -185,7 +185,8 @@ def prg__n_ary_alternator(s0=0,s1=2,start=0):
 
 def prg__LCG(start,multiplier,increment,modulo):
 
-    lcg = LCG(start,modulo) 
+    lcg = LCG(start,129) 
+    lcg.modulo = modulo
     lcg.multiplier = multiplier
     lcg.increment = increment 
     return lcg.__next__ 
