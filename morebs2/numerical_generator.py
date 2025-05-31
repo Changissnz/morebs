@@ -8,7 +8,7 @@ from .variance_works import *
 from collections import OrderedDict
 
 def modulo_in_range(i,r): 
-    assert r[0] < r[1] 
+    assert r[0] < r[1], "invalid range {}".format(r) 
     return i % (r[1] - r[0]) + r[0] 
 
 class LCG:
@@ -405,6 +405,7 @@ def prg_seqsort_ties(l,prg,vf):
         Q.extend(q2) 
     return Q 
 
+
 def prg_partition_for_sz(S,num_sets,prg,variance):  
     """
     outputs a partition P (list) with positive integers 
@@ -425,21 +426,21 @@ def prg_partition_for_sz(S,num_sets,prg,variance):
         if i + 1 == num_sets: 
             P[-1] += S 
             break
+        if S < 0: break  
 
         x = ceil(S / num_sets) 
-        rem = ceil((S - x) * variance) 
+        rem = ceil((S - x) * variance)
+
         rng = [x - rem, x + rem]
-        if rng[0] < 0: 
-            rng = [0,abs(rng[0]) + rng[1]]
 
         if rng[0] == rng[1]: 
             P[i] += rng[0] 
             S -= rng[0] 
         else: 
             q = modulo_in_range(prg(),rng)
+            q = modulo_in_range(prg(),[1,S+1]) 
             P[i] += q
             S -= q
-
         i += 1 
 
     return P 

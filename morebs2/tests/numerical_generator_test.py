@@ -154,27 +154,31 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         prg1 = prg1_() 
         num_sets = 50 
         p3 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.5)
-        assert p3 == [33, 11, 8, 2, 1, 1, 1, 1, 1, 1, 1, \
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-            1, 1, 1, 1, 1, 1, 1, 1, 1]
+        assert p3 == [30, 18, 4, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1],"got {}".format(p3)
+        assert sum(p3) == 100 
 
 
         num_sets = 50 
         p4 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.1)
-        assert p4 == [9, 2, 7, 1, 6, 1, 4, 2, 1, 2, 6, 4, \
-            2, 4, 4, 2, 2, 2, 1, 2, 1, 1, 2, 1, 2, 2, 1, \
-            1, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
-            1, 1, 1, 1, 1, 1, 1, 1]
+        assert p4 == [31, 3, 8, 12, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, \
+            1, 1, 1],"got {}".format(p4) 
+        assert sum(p4) == 100 
 
         num_sets = 15 
         p5 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.1)
-        assert p5 == [2, 2, 8, 14, 5, 6, 2, 2, 2, 9, 4, \
-            7, 5, 3, 29]
+        assert p5 == [56, 27, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], \
+            "got {}".format(p5) 
+        assert sum(p5) == 100 
 
         num_sets = 4
         p6 = numerical_generator.prg_partition_for_sz(S,num_sets,prg1,0.1)
-        assert p6 == [32, 16, 12, 40]
+        assert p6 == [86, 2, 9, 3], "got {}".format(p6) 
+        assert sum(p6) == 100 
 
 
 
