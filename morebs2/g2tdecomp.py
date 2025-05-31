@@ -23,7 +23,7 @@ class TNode:
     @staticmethod
     def dfs(tn,display:bool=True,collect:bool=True,reset_index:bool=True):
         if not display and not collect: return 
-        assert type(tn) == TNode 
+        #assert type(tn) == TNode 
         if reset_index: tn.cindex = 0 
         cache = [tn] 
         d = defaultdict(set)

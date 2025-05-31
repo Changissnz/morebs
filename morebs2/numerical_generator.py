@@ -183,6 +183,12 @@ def prg__n_ary_alternator(s0=0,s1=2,start=0):
     ma = ModuloAlternator(s0,s1,start) 
     return ma.__next__ 
 
+def prg__LCG(start,multiplier,increment,modulo):
+
+    lcg = LCG(start,modulo) 
+    lcg.multiplier = multiplier
+    lcg.increment = increment 
+    return lcg.__next__ 
 
 ####---------------------------------------------------------------------
 #### uniform dist. numerical generators
