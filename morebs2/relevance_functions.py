@@ -109,6 +109,7 @@ def m(v,addOn,iov,outputType):
     x = []
     for t in enumerate(v):
         qi = t[iov] if iov != 2 else t
+        print("QI: ",qi)
         if addOn(qi):
             if outputType == 1: q = t[1]
             else: q = t
@@ -309,16 +310,16 @@ class RCInst:
             # for output type bool|float
             if self.path_type() == "ref":
                 # calculates distance from .reference
-                self.f = lambda v: self.cf(self.dm(self.rf,v),self.dt)#*self.ct,self.dt)
+                self.f = lambda v: self.cf(self.dm(self.rf,v),self.dt)
             else:
-                self.f = lambda v: self.cf(v, self.dt)#*self.ct,self.dt) # *self.ct
+                self.f = lambda v: self.cf(v, self.dt)
         # non-deciding path
         else:
             if self.path_type() == "ref":
                 # calculates distance from .reference
-                self.f = lambda v: self.cf(self.dm(self.rf,v))#,*self.ct)
+                self.f = lambda v: self.cf(self.dm(self.rf,v))
             else:
-                self.f = lambda v: self.cf(v)#,*self.ct)
+                self.f = lambda v: self.cf(v)
         return deepcopy(self.f)
 
 class RChainHead:

@@ -47,6 +47,15 @@ class LCG:
         self.vInt = self.calculate(q)
         return q
 
+
+def prg__LCG(start,multiplier,increment,modulo):
+
+    lcg = LCG(start,129) 
+    lcg.modulo = modulo
+    lcg.multiplier = multiplier
+    lcg.increment = increment 
+    return lcg.__next__ 
+
 #############------------------------------------------------------------
 
 # NOTE: __next__ not working. 
@@ -182,14 +191,6 @@ class ModuloAlternator:
 def prg__n_ary_alternator(s0=0,s1=2,start=0): 
     ma = ModuloAlternator(s0,s1,start) 
     return ma.__next__ 
-
-def prg__LCG(start,multiplier,increment,modulo):
-
-    lcg = LCG(start,129) 
-    lcg.modulo = modulo
-    lcg.multiplier = multiplier
-    lcg.increment = increment 
-    return lcg.__next__ 
 
 ####---------------------------------------------------------------------
 #### uniform dist. numerical generators
@@ -445,3 +446,12 @@ def prg_partition_for_sz(S,num_sets,prg,variance):
 
     return P 
 
+def prg_choose_n(Q,n,prg):
+    l = len(Q)
+    assert l > 0 
+    q = []
+    while n > 0:  
+        i = prg() % l
+        q.append(Q[i])
+        n -= 1
+    return q 
