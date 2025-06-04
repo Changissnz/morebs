@@ -446,12 +446,20 @@ def prg_partition_for_sz(S,num_sets,prg,variance):
 
     return P 
 
-def prg_choose_n(Q,n,prg):
+def prg_choose_n(Q,n,prg,is_unique_picker:bool=False):
     l = len(Q)
     assert l > 0 
+
+    if is_unique_picker: 
+        assert l >= n 
+
     q = []
     while n > 0:  
         i = prg() % l
         q.append(Q[i])
+
+        if is_unique_picker:
+            Q.pop(i)
+            l -= 1 
         n -= 1
     return q 

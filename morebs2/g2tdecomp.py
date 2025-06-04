@@ -20,8 +20,22 @@ class TNode:
         self.xclist = [] 
         return
 
+    """
+    setattr is None|(varname,g); g a function called by g() 
+    """
     @staticmethod
-    def dfs(tn,display:bool=True,collect:bool=True,reset_index:bool=True):
+    def dfs(tn,display:bool=True,collect:bool=True,reset_index:bool=True,\
+        set_attr=None):
+
+        def settr(tn_): 
+            if type(set_attr) == type(None):
+                return
+
+            attrname = set_attr[0] 
+            vx = set_attr[1]() 
+            setattr(tn_,attrname,vx)
+            return 
+
         if not display and not collect: return 
         #assert type(tn) == TNode 
         if reset_index: tn.cindex = 0 
@@ -30,6 +44,8 @@ class TNode:
         mdepth = 0  
         while len(cache) > 0: 
             t_ = cache.pop(0)
+            settr(t_)
+            
             if display: 
                 print(t_)
             cx = set([c.idn for c in t_.children])
