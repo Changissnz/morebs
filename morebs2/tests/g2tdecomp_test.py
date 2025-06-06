@@ -63,7 +63,7 @@ class G2TDecompClass(unittest.TestCase):
 
         ks = set()
         for x in gd.decompositions: 
-            dx, md = g2tdecomp.TNode.dfs(x,display=False)
+            dx, md,_ = g2tdecomp.TNode.dfs(x,display=False)
             q = sol0[x.idn] 
             ec = g2tdecomp.edge_count(dx)
             ncm = g2tdecomp.nc_degree_map(dx) 
@@ -93,7 +93,7 @@ class G2TDecompClass(unittest.TestCase):
         gd.decompose()
 
         for x in gd.decompositions: 
-            dx, md = g2tdecomp.TNode.dfs(x,display=False)
+            dx, md,_ = g2tdecomp.TNode.dfs(x,display=False)
 
             if x.idn == 0: 
                 q1 = g2tdecomp.edge_count(dx) 
@@ -154,7 +154,7 @@ class G2TDecompClass(unittest.TestCase):
         for i in range(4): 
             x = gd.decompositions[i]
             sz = g2tdecomp.TNode.size_count(x) 
-            dx, md = g2tdecomp.TNode.dfs(x,display=False)
+            dx, md,_ = g2tdecomp.TNode.dfs(x,display=False)
             assert sols[i][0] == sz, "wrong at {}".format(i)
             assert sols[i][1] == dx 
         return  

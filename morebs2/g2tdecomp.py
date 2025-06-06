@@ -25,7 +25,7 @@ class TNode:
     """
     @staticmethod
     def dfs(tn,display:bool=True,collect:bool=True,reset_index:bool=True,\
-        set_attr=None):
+        set_attr=None,fetch_set={}):
 
         def settr(tn_): 
             if type(set_attr) == type(None):
@@ -41,10 +41,14 @@ class TNode:
         if reset_index: tn.cindex = 0 
         cache = [tn] 
         d = defaultdict(set)
-        mdepth = 0  
+        mdepth = 0 
+        fset = []  
         while len(cache) > 0: 
             t_ = cache.pop(0)
             settr(t_)
+
+            if t_.idn in fetch_set:
+                fset.append(t_)
             
             if display: 
                 print(t_)
@@ -62,7 +66,7 @@ class TNode:
             else: 
                 if reset_index:
                     t_.cindex = 0 
-        return d,mdepth 
+        return d,mdepth,fset 
 
     # TODO: more thorough testing required. 
     @staticmethod
