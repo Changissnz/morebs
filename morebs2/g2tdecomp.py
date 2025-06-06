@@ -25,7 +25,7 @@ class TNode:
     """
     @staticmethod
     def dfs(tn,display:bool=True,collect:bool=True,reset_index:bool=True,\
-        set_attr=None,fetch_set={}):
+        set_attr=None,fetch_set=set()):
 
         def settr(tn_): 
             if type(set_attr) == type(None):
@@ -36,8 +36,6 @@ class TNode:
             setattr(tn_,attrname,vx)
             return 
 
-        if not display and not collect: return 
-        #assert type(tn) == TNode 
         if reset_index: tn.cindex = 0 
         cache = [tn] 
         d = defaultdict(set)
