@@ -413,6 +413,15 @@ def prg_partition_for_sz(S,num_sets,prg,variance):
     of length `num_sets` that sums to S. Uses the argument 
     `prg` that acts as a pseudo-random number generator 
     to output values with respect to `variance`. 
+
+    NOTE: output may appear wrong according to `variance`. 
+          The partitioning scheme assigns 1 to every set  
+          in the beginning. Then it iterates through the 
+          sets, P, and draws a number using the `prg` that is 
+          at most the remaining number left, S - sum(P). This 
+          drawing is what the `variance` measure relates to. 
+          The range of possible numbers decreases the further 
+          down the iteration. 
     """
     
     assert variance >= 0.0 and variance <= 1.0 

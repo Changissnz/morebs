@@ -220,8 +220,11 @@ class APRNGGauge:
     """
     def __init__(self,aprng,frange,pradius:float):
         assert len(frange) == 2
+        assert frange[0] <= frange[1] 
+
         self.aprng = aprng
         self.frange = frange
+        self.frange_default = frange 
         self.pradius = pradius
         # n * 2 array; 
         ## two columns
@@ -235,13 +238,18 @@ class APRNGGauge:
         self.cycle = cycle
 
     def measure_cycle(self,max_size=100000,\
-        term_func=lambda l,l2: type(l) == type(None)):
+        term_func=lambda l,l2: type(l) == type(None),\
+        auto_frange:bool=False):
 
         if type(self.cycle) == type(None):
             self.cycle = self.cycle_one(max_size,term_func)
         assert self.cycle.ndim == 1
 
         # get the coverage
+        if auto_frange:
+            m1,m2 = min(self.cycle),max(self.cycle)
+            self.frange = [m1,m2] 
+
         cov = coverage_of_sequence(self.cycle,self.frange,self.pradius)
 
         # get the normed uwpd

@@ -61,6 +61,20 @@ def is_valid_point(point):
     if not type(point[1]) in [int, float, np.int64, np.float64]: return False
     return True
 
+def is_valid_range(r,is_int:bool=True,inclusive:bool=True):
+    if not (type(r) in [list,tuple]): return False
+    if not (len(r) == 2): return False
+
+    if is_int: 
+        if not (type(r[0]) == type(r[1])): return False
+        if not (type(r[0]) == int): return False
+
+    if inclusive:
+        if not (r[0] <= r[1]): return False
+    else: 
+        if not (r[0] < r[1]): return False
+    return True 
+
 def np_array_to_string(a):
     assert type(a) is np.ndarray, "not np.ndarray"
     s = str(a).replace("\n", "\t")
@@ -76,10 +90,9 @@ def frequency_count_over_2dmatrix(a, floatValue, rowOrColumn = None):
 
 # TODO: test
 def range_intersection(range1,range2):
-    assert type(range1) is tuple and type(range2) is tuple, "invalid arg. tuple"
-    assert len(range1) == 2 and len(range2) == 2, "invalid tuple size"
-    assert range1[0] <= range1[1] and range2[0] <= range2[1], "invalid ranges, [min,max]"
-
+    assert is_valid_range(range1,is_int=False,inclusive=True)
+    assert is_valid_range(range2,is_int=False,inclusive=True)
+    
     # check range 1
     if range1[0] >= range2[0] and range1[0] <= range2[1]: return True
     if range1[1] >= range2[0] and range1[1] <= range2[1]: return True
