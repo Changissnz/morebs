@@ -50,7 +50,7 @@ class LCG:
 
 def prg__LCG(start,multiplier,increment,modulo):
 
-    lcg = LCG(start,129) 
+    lcg = LCG(start,np.iinfo(np.int32).max) 
     lcg.modulo = modulo
     lcg.multiplier = multiplier
     lcg.increment = increment 
