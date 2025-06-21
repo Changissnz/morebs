@@ -39,8 +39,9 @@ class LCG:
         return int(c)
 
     def calculate(self, v):
-        assert type(v) is int, "invalid value v"
-        return int((self.multiplier * v + self.increment) % self.modulo)
+        assert type(v) in {int,float,np.int32,np.int64,\
+            np.float32,np.float64}, "invalid value v,type {}".format(type(v))
+        return (self.multiplier * v + self.increment) % self.modulo
 
     def __next__(self):
         q = self.vInt
