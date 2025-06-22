@@ -92,7 +92,7 @@ def frequency_count_over_2dmatrix(a, floatValue, rowOrColumn = None):
 def range_intersection(range1,range2):
     assert is_valid_range(range1,is_int=False,inclusive=True)
     assert is_valid_range(range2,is_int=False,inclusive=True)
-    
+
     # check range 1
     if range1[0] >= range2[0] and range1[0] <= range2[1]: return True
     if range1[1] >= range2[0] and range1[1] <= range2[1]: return True
@@ -690,6 +690,20 @@ def string_to_vector(s, castFunc = int):
         q.append(v)
         s = s2
     return np.array(q)
+
+def float_to_string(f,exclude_int:bool=False,exclude_exp:bool=False):
+    sf = str(f)
+
+    if exclude_int:
+        q = sf.find(".")
+        if q != -1:
+            sf = sf[q+1:] 
+    
+    if exclude_exp:
+        q = sf.find("E")
+        if q != -1:
+            sf = sf[:q] 
+    return sf  
 
 def write_vector_sequence_to_file(f,s,mode='w'):
     with open(f,mode) as fo:
