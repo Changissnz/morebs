@@ -75,6 +75,10 @@ def is_valid_range(r,is_int:bool=True,inclusive:bool=True):
         if not (r[0] < r[1]): return False
     return True 
 
+def is_number(n,exclude_types): 
+    q = NUMERICAL_TYPES - set(exclude_types)
+    return type(n) in q 
+
 def np_array_to_string(a):
     assert type(a) is np.ndarray, "not np.ndarray"
     s = str(a).replace("\n", "\t")

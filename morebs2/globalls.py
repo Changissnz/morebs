@@ -13,6 +13,12 @@ DEFAULT_TRAVELLING_HOP = 0.05
 DEFAULT_SCREEN_DIM = (1300,750)
 DEFAULT_POINT_CACHE_SIZE = 10
 
+
+NUMERICAL_TYPES = {int,float,\
+    np.int8,np.int16,np.int32,np.int64,\
+    np.float16,np.float32,np.float64,\
+    complex,np.complex64,np.complex128}
+
 # TODO:
 def clear_and_make_directory(dirPath):
     """
