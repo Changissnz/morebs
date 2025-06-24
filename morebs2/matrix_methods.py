@@ -980,3 +980,22 @@ def area_of_bounds(bounds):
     return np.product(pd)
 
 ######## end: some methods on bounds
+
+def submatrix__2d(M,p,plabel): 
+    assert plabel in {"L+U","L+L","R+U","R+L"}
+
+    span_c = None
+    span_r = None 
+    if plabel[-1] == "U":
+        span_c = [0,p[1]+1] 
+    else: 
+        span_c = [p[1],M.shape[1]+1] 
+    
+    if plabel[0] == "L":
+        span_r = [p[0],M.shape[0] + 1]
+    else: 
+        span_r = [0,p[0] + 1] 
+
+    q = np.zeros((M.shape[0],M.shape[1]),dtype=M.dtype) 
+    q = M[span_r[0]:span_r[1],span_c[0]:span_c[1]]
+    return q 

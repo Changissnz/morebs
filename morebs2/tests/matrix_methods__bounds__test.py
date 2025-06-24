@@ -124,5 +124,31 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         p1 = matrix_methods.point_on_improper_bounds_by_ratio_vector(pb,bp1,rv)
         assert matrix_methods.equal_iterables(p1,[0.525,0.275,0.92,0.027])
 
+    def test__submatrix__2d(self): 
+
+        x = np.arange(1,21)
+        x = x.reshape((4,5))
+        q0 = matrix_methods.submatrix__2d(x,(1,2),"L+U")
+        assert np.all(q0 == np.array(\
+        [[ 6,  7,  8],\
+        [11, 12, 13],\
+        [16, 17, 18]]))
+
+        q1 = matrix_methods.submatrix__2d(x,(1,2),"L+L")
+        assert np.all(q1 == np.array([\
+        [ 8,  9, 10],\
+        [13, 14, 15],\
+        [18, 19, 20]]))
+
+        q2 = matrix_methods.submatrix__2d(x,(1,2),"R+L")
+        assert np.all(q2 == np.array([\
+        [ 3,  4,  5],\
+        [ 8,  9, 10]])) 
+
+        q3 = matrix_methods.submatrix__2d(x,(1,2),"R+U")
+        assert np.all(q3 == np.array([\
+        [1, 2, 3],\
+        [6, 7, 8]])) 
+
 if __name__ == '__main__':
     unittest.main()
