@@ -589,7 +589,7 @@ class LagrangePolySolver:
                 e = self.maximum
 
             elif not forward and e < self.minumum:
-                e = self.minimum
+                e = self.minumum
 
             yMin, yMax = self.y_extremes_in_xrange(s,e)
 
