@@ -3,6 +3,7 @@ import glob
 import csv
 from collections import defaultdict
 from operator import add,sub,mul,truediv,floordiv
+import numpy as np 
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)

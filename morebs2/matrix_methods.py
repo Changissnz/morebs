@@ -1,5 +1,4 @@
 from .globalls import *
-import numpy as np
 import math
 
 def equal_iterables(i1, i2, roundPlaces = 5):
