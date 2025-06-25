@@ -5,6 +5,7 @@
 '''
 from .distributions import *
 from .line import *
+from .matrix_methods import is_2dmatrix
 from copy import deepcopy
 
 class Fit22:
@@ -128,7 +129,6 @@ function_to_2dplot(generate_2d_data_from_function,\
 '''
 #########
 
-
 class DCurve:
 
     def __init__(self,fitstruct,activationDirection):
@@ -230,3 +230,80 @@ class DCurve:
             xys.append((i,y))
             i += pointHop
         return xys
+
+
+class ChainedDCurves: 
+
+    def __init__(self,ps,fittype_vec,axis=0): 
+        assert is_2dmatrix(ps) 
+        assert len(ps) > 1
+        assert len(ps) == len(fittype_vec) + 1 
+        assert set(fittype_vec).issubset({0,1}) 
+        assert axis in {0,1} 
+
+        self.ps = ps[np.argsort(ps[:,axis])] 
+        self.fvec = fittype_vec 
+        self.axis = axis 
+        self.axis_extremum() 
+
+        self.dcurve_seq = [] 
+
+    def axis_extremum(self):
+
+        self.amin = np.min(self.ps[:,self.axis])
+        self.amax = np.max(self.ps[:,self.axis])
+        return self.amin,self.amax 
+
+    def modulate_fit(self,bvec):
+        assert len(bvec) == len(self.fvec)
+
+        for (i,b) in enumerate(bvec):
+            if b:
+                self.dcurve_seq[i].modulate_fit()
+                self.fvec[i] = (self.fvec[i] + 1) % 2 
+
+    """
+    main method; draws Fit22 instances b/t every contiguous 
+    point in 
+    """
+    def draw(self):
+        self.dcurve_seq.clear() 
+
+        adir = "l" if self.axis == 1 else "t"
+        for i in range(1,len(self.ps)):
+            p0,p1 = self.ps[i - 1], self.ps[i]
+            d = [0,1]
+            px = np.array([p0,p1])
+            d = [0,1] if px[0,1] < px[1,1] else [1,0]
+
+            #px = np.array([px[d[0]],px[d[1]]])
+
+            if self.fvec[i-1]: 
+                fs = LogFit22(px,d)
+            else: 
+                fs = Exp2Fit22(px,d) 
+            dc = DCurve(fs,adir)
+            self.dcurve_seq.append(dc)
+        return 
+
+    def point_to_dcurve(self,p):
+        if p < self.amin or p > self.amax: 
+            return -1 
+        for (i,dc_) in enumerate(self.dcurve_seq):
+            pr = dc_.point_range()[self.axis] 
+
+            if p >= pr[0] and p <= pr[1]:
+                return i 
+        return -1 
+
+    def fit(self,p):
+        index = self.point_to_dcurve(p)
+
+        if index == -1: 
+            return None
+
+        dc = self.dcurve_seq[index]
+        
+        if self.axis == 0: 
+            return dc.y_given_x(p) 
+        return dc.x_given_y(p) 
