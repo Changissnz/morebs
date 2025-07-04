@@ -458,6 +458,49 @@ def prg_partition_for_sz(S,num_sets,prg,variance):
 
     return P 
 
+def prg_partition_for_sz__n_rounds(l,num_sets,px,var,n): 
+
+    if num_sets == 1:
+        return [l] 
+
+    q = prg_partition_for_sz(l,num_sets,px,var)
+
+    def mod_q(q_):
+        # choose a random index 
+        ix = [i for i in range(len(q_))] 
+
+        qi = None
+        while len(ix) > 0:
+            qi_ = px() % len(ix)
+            qi_ = ix.pop(qi_) 
+
+            if q_[qi_] <= 1: 
+                continue
+            qi = qi_ 
+            break  
+        
+        if type(qi) == type(None):
+            return False 
+
+            # determine a 
+        ix = [i for i in range(len(q_)) if i != qi] 
+        dx = modulo_in_range(px(),[1,q_[qi]]) 
+
+        while dx > 0:
+            ix2 = px() % len(ix) 
+            ix2 = ix[ix2]
+            dx2 = modulo_in_range(px(),[1,dx+1])
+            q_[ix2] += dx2 
+            q_[qi] -= dx2 
+            dx -= dx2
+        return q_ 
+
+    for _ in range(n-1):
+        q = mod_q(q)
+        q = prg_seqsort(q,px)
+    return q 
+
+
 def prg_choose_n(Q,n,prg,is_unique_picker:bool=False):
     l = len(Q)
     assert l > 0 
