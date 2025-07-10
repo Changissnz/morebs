@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
     name='morebs2',
-    version='0.1.24',
+    version='0.1.26',
     description='data structures to aid in numerical data generation and clustering',
     long_description=readme,
     author='Richard Pham',

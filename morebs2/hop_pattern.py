@@ -80,8 +80,9 @@ class HopPattern:
             if self.cycleLogActive:
                 self.cycleLog = [self.value]
             return self.value
-
-        return self.hop_one()
+        q = self.hop_one() 
+        self.cycled = self.did_cycle() 
+        return q 
 
     def rev__next__(self):
         if not self.initialized:

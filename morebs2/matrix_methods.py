@@ -74,7 +74,7 @@ def is_valid_range(r,is_int:bool=True,inclusive:bool=True):
         if not (r[0] < r[1]): return False
     return True 
 
-def is_number(n,exclude_types): 
+def is_number(n,exclude_types=set()): 
     q = NUMERICAL_TYPES - set(exclude_types)
     return type(n) in q 
 
