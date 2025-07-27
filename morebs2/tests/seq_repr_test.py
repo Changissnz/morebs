@@ -5,7 +5,7 @@ import unittest
 #########################################################
 
 '''
-python -m morebs2.tests.set_repr_test  
+python -m morebs2.tests.seq_repr_test  
 '''
 class TestSeqReprMethods(unittest.TestCase):
 
