@@ -77,19 +77,6 @@ class BatchIncrStruct:
         ssi_hop = self.l
         cycle_on = False
         cycle_is = 0
-        ##
-        """
-        print("initializing with")
-        print(bounds)
-        print() 
-        print(self.at_i)
-        print()
-        print(column_order)
-        print()
-        print(ssi_hop)
-        """
-        ##
-
         self.ssi = SearchSpaceIterator(bounds,self.at_i,\
             column_order,ssi_hop,cycle_on,cycle_is)
 
@@ -97,15 +84,21 @@ class BatchIncrStruct:
     end value is `None` instance. 
     """
     def __next__(self):
+        stat = False
+        while not stat: 
+            q,stat = self.next_() 
+        return q 
+
+    def next_(self): 
         if self.ssi.reached_end():
-            return None
+            return None,True 
 
         v = next(self.ssi)
         v,stat = self.pass_next(v) 
+        if type(v) != type(None): 
+            v = np.asarray(v,dtype=int)
 
-        if not stat: 
-            return self.__next__() 
-        return np.asarray(v,dtype=int)
+        return v,stat 
 
     def pass_next(self,v):
 
