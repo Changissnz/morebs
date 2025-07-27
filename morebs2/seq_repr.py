@@ -27,4 +27,12 @@ def contiguous_repr__sequence(S):
             ref_ = [S[i],1]
             q.append(ref_) 
             ref = ref_
+<<<<<<< HEAD
     return q 
+=======
+    return q 
+
+def contiguous_repr_size():
+
+    return -1 
+>>>>>>> c6d633648d6afb9fa0162f344923388967ab5440

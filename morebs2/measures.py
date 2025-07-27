@@ -254,3 +254,18 @@ def euclidean_point_distance_of_bounds(parentBounds,bounds):
         z = np.zeros((bounds.shape[0],))
         ed = euclidean_point_distance(z,pd)
     return ed
+
+#------------------------------------ frequency methods for maps 
+
+def vec_to_frequency_map(V):
+    assert is_vector(V)
+    dx = defaultdict(int)
+    for v_ in V: dx[v_] += 1
+    return dx 
+
+def setseq_to_frequency_map(S): 
+    dx = defaultdict(int)
+    for s in S: 
+        assert type(s) == set 
+        for s_ in s: dx[s_] += 1 
+    return dx 
