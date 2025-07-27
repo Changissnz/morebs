@@ -13,7 +13,7 @@ EX:
 S = <0,0,1,2,1,2,3,3,4,4,4>
 S' = <(0,2),(1,1),(2,1),(1,1),(2,1),(3,2),(4,2)> 
 """
-def continuous_repr__sequence(S):
+def contiguous_repr__sequence(S):
     assert is_vector(S) or type(S) == list
     assert len(S) > 0
 
@@ -28,5 +28,3 @@ def continuous_repr__sequence(S):
             q.append(ref_) 
             ref = ref_
     return q 
-
-
