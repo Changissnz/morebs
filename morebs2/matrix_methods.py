@@ -999,3 +999,19 @@ def submatrix__2d(M,p,plabel):
     q = np.zeros((M.shape[0],M.shape[1]),dtype=M.dtype) 
     q = M[span_r[0]:span_r[1],span_c[0]:span_c[1]]
     return q 
+
+#------------------------- subvector operations 
+
+def subvec(l,start_index,length):
+    assert is_vector(l) or type(l) == list 
+    assert 0 <= start_index < len(l)
+    assert 0 < length <= len(l) 
+
+    q = list(l[start_index:start_index+length])
+
+    l1 = len(q) 
+    excess = length - l1
+    q2 = [] 
+    if excess > 0: 
+        q2 = list(l[:excess]) 
+    return q + q2
