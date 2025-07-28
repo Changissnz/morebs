@@ -44,5 +44,19 @@ class TestSeqReprMethods(unittest.TestCase):
             q = R[i] 
             assert ms.mcs_nth(i) == q 
 
+    def test__MCSSearch__default_kcomplexity__case1(self): 
+        L = [1,2,3,4,1,2,3,4,1,2,3,4,1,3,4,2,3,4] 
+        ms = seq_repr.MCSSearch(L,cast_type=int,is_bfs=True)  
+        ms.search() 
+        kq = ms.kcomplexity(diff_type="bool")
+
+        kxdd = {4:86,3:15,2:6,1:3,0:2} 
+        for j in range(0,5): 
+            kc_ = ms.kcomplexity_at_nth_set(j,diff_type="bool")
+            assert len(kc_) == kxdd[j] 
+
+        qdd = ms.default_kcomplexity()
+        assert qdd == 11.5 
+
 if __name__ == '__main__':
     unittest.main()

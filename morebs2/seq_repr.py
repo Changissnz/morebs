@@ -2,6 +2,7 @@ from .matrix_methods import *
 from .measures import zero_div
 from copy import deepcopy
 
+#------------------------------------------- methods for contiguous representation 
 """
 given: a sequence S, either an np.array or a list 
 output: sequence S' corresponding to `S`. Every 
@@ -31,7 +32,7 @@ def contiguous_repr__sequence(S):
             ref = ref_
     return q
 
-def contiguous_repr_size_measure(S,measure=np.mean): 
+def contiguous_repr_size_measure(S,measure=np.var): 
     q = [s[1] for s in S] 
     return measure(q)
 
@@ -41,6 +42,44 @@ def contiguous_repr_size_ratio(S):
     qs = sum([s[1] for s in S])
     q = contiguous_repr_size_measure(S,np.mean) 
     return zero_div(q,qs,0)  
+
+
+def repeat_cycle_for_length(c,l,ci=0):
+    q = np.zeros((l,))
+
+    # go forward 
+    for i in range(ci,l,len(c)): 
+        x = i 
+        x2 = min([i+len(c),l])
+        q[x:x2] = c[:x2-x]  
+
+    # go backward
+    cx = len(c) - 1 
+    for i in range(ci-1,-1,-1):
+        q[i] = c[cx] 
+        cx = (cx - 1) % len(c) 
+    
+    return q 
+
+
+def contiguous_cyclical_difference(V,sv,diff_type="bool"):
+    assert diff_type in {"abs","bool"}
+    assert len(V) >= len(sv)
+
+    # find the first occurrence of sv in V 
+    ir = index_range_of_subvec(V,sv,is_contiguous=True)
+    
+    if type(ir) == type(None): 
+        return float('inf')
+    
+    vc = repeat_cycle_for_length(sv,len(V),ir[0])
+    
+    l = np.where(V != vc)[0]
+
+    if diff_type == "bool": return len(l) 
+    return np.sum(np.abs(V[l]))
+
+#------------------------------------------ methods for processing (value,freq) vectors 
 
 """
 V is a vector of (value,frequency) pairs 
@@ -85,6 +124,8 @@ def valuefreq_pair_vector_to_tie_partition(V):
         else: 
             seq.append(V[i_][0]) 
     return seqs 
+
+#--------------------------------------------------------------------
 
 """
 most common contiguous subsequence search 
@@ -214,37 +255,27 @@ class MCSSearch:
             stat = self.__next__()
         return 
     
-def repeat_cycle_for_length(c,l,ci=0):
-    q = np.zeros((l,))
-
-    # go forward 
-    for i in range(ci,l,len(c)): 
-        x = i 
-        x2 = min([i+len(c),l])
-        q[x:x2] = c[:x2-x]  
-
-    # go backward
-    cx = len(c) - 1 
-    for i in range(ci-1,-1,-1):
-        q[i] = c[cx] 
-        cx = (cx - 1) % len(c) 
+    def kcomplexity(self,keys=None,diff_type="bool"):
+        assert diff_type in {"bool","abs"}
+        #dx = float('inf')
+        #rep_set = set()  
+        rep_vec = [] 
+        if type(keys) == type(None): 
+            keys = list(self.subseq_occurrences.keys()) 
+        
+        for k in keys:
+            v = string_to_vector(k,castFunc=self.cast_type) 
+            d = contiguous_cyclical_difference(self.l,v,diff_type=diff_type)
+            rep_vec.append((k,d))
+        rep_vec = sorted(rep_vec,key=lambda x:x[1])
+        return rep_vec 
     
-    return q 
+    def kcomplexity_at_nth_set(self,i,diff_type="bool"):
+        assert diff_type in {"bool","abs"}
+        qs = self.mcs_nth(i) 
+        return self.kcomplexity(keys=qs,diff_type=diff_type)
 
-
-def contiguous_cyclical_difference(V,sv,diff_type="bool"):
-    assert diff_type in {"abs","bool"}
-    assert len(V) >= len(sv)
-
-    # find the first occurrence of sv in V 
-    ir = index_range_of_subvec(V,sv,is_contiguous=True)
-    
-    if type(ir) == type(None): 
-        return float('inf')
-    
-    vc = repeat_cycle_for_length(sv,len(V),ir[0])
-    
-    l = np.where(V != vc)[0]
-
-    if diff_type == "bool": return len(l) 
-    return np.sum(np.abs(V[l]))
+    def default_kcomplexity(self,diff_type="bool"): 
+        qx = self.kcomplexity_at_nth_set(0,diff_type)
+        qx = [qx_[1] for qx_ in qx] 
+        return np.mean(qx)
