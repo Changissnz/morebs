@@ -318,4 +318,9 @@ class MCSSearch:
         q = [res_[1] for res_ in res] 
         return np.mean(q) 
 
+def MCS_kcomplexity(L,cast_type,diff_type="bool",\
+    diff_type2="contiguous",basis="most frequent"):
+    mcs = MCSSearch(L,cast_type=cast_type,is_bfs=True)
+    return mcs.default_kcomplexity(diff_type,diff_type2,\
+        basis) 
 
