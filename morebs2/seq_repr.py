@@ -1,6 +1,7 @@
 from .matrix_methods import * 
 from .measures import zero_div
 from copy import deepcopy
+from math import floor 
 
 #------------------------------------------- methods for contiguous representation 
 """
@@ -255,30 +256,46 @@ class MCSSearch:
             stat = self.__next__()
         return 
     
-    def kcomplexity(self,keys=None,diff_type="bool"):
+    def kcomplexity(self,keys=None,diff_type="bool",diff_type2="contiguous"):
         assert diff_type in {"bool","abs"}
+        assert diff_type2 in {"contiguous","best"}
+
         #dx = float('inf')
         #rep_set = set()  
         rep_vec = [] 
         if type(keys) == type(None): 
             keys = list(self.subseq_occurrences.keys()) 
-        
-        for k in keys:
+
+        def diff_func(k): 
             v = string_to_vector(k,castFunc=self.cast_type) 
-            d = contiguous_cyclical_difference(self.l,v,diff_type=diff_type)
+            if diff_type2 == "contiguous": 
+                d = contiguous_cyclical_difference(self.l,v,diff_type=diff_type)
+                return d 
+            ql = len(self.subseq_occurrences[k])
+            return len(self.l) - len(v) * ql   
+            
+        for k in keys:
+            d = diff_func(k) 
             rep_vec.append((k,d))
         rep_vec = sorted(rep_vec,key=lambda x:x[1])
         return rep_vec 
     
-    def kcomplexity_at_nth_set(self,i,diff_type="bool"):
+    def kcomplexity_at_nth_set(self,i,diff_type="bool",diff_type2="contiguous"):
         assert diff_type in {"bool","abs"}
-        qs = self.mcs_nth(i) 
-        return self.kcomplexity(keys=qs,diff_type=diff_type)
+        assert diff_type2 in {"contiguous","best"}
 
-    def default_kcomplexity(self,diff_type="bool",basis="most frequent"):
+        qs = self.mcs_nth(i) 
+        return self.kcomplexity(keys=qs,diff_type=diff_type,diff_type2=diff_type2)
+
+    def default_kcomplexity(self,diff_type="bool",diff_type2="contiguous",\
+        basis="most frequent"):
+
+        assert diff_type in {"bool","abs"}
+        assert diff_type2 in {"contiguous","best"}
         assert basis in {"most frequent","median"} 
+
         if basis == "most frequent": 
-            qx = self.kcomplexity_at_nth_set(0,diff_type)
+            qx = self.kcomplexity_at_nth_set(0,diff_type,diff_type2) 
             qx = [qx_[1] for qx_ in qx] 
             return np.mean(qx)
 
