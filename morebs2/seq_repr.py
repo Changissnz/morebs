@@ -275,7 +275,30 @@ class MCSSearch:
         qs = self.mcs_nth(i) 
         return self.kcomplexity(keys=qs,diff_type=diff_type)
 
-    def default_kcomplexity(self,diff_type="bool"): 
-        qx = self.kcomplexity_at_nth_set(0,diff_type)
-        qx = [qx_[1] for qx_ in qx] 
-        return np.mean(qx)
+    def default_kcomplexity(self,diff_type="bool",basis="most frequent"):
+        assert basis in {"most frequent","median"} 
+        if basis == "most frequent": 
+            qx = self.kcomplexity_at_nth_set(0,diff_type)
+            qx = [qx_[1] for qx_ in qx] 
+            return np.mean(qx)
+
+        x = [(k,len(v)) for k,v in self.subseq_occurrences.items()] 
+        x = sorted(x,key=lambda x:x[1])
+
+        stat = len(x) % 2
+        q = [] 
+        # odd
+        if stat:
+            q_ = x[int(len(x) / 2)] 
+            q.append(q_[0]) 
+        # even
+        else: 
+            q_ = x[int(len(x) / 2) - 1] 
+            q1_ = x[int(len(x) / 2)] 
+            q = [q_[0],q1_[0]] 
+
+        res = self.kcomplexity(keys=q,diff_type=diff_type)
+        q = [res_[1] for res_ in res] 
+        return np.mean(q) 
+
+

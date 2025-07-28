@@ -58,5 +58,8 @@ class TestSeqReprMethods(unittest.TestCase):
         qdd = ms.default_kcomplexity()
         assert qdd == 11.5 
 
+        qdd2 = ms.default_kcomplexity(diff_type="bool",basis="median")
+        assert qdd2 == 5.0 
+
 if __name__ == '__main__':
     unittest.main()
