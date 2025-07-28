@@ -28,3 +28,7 @@ def contiguous_repr__sequence(S):
             q.append(ref_) 
             ref = ref_
     return q 
+
+def contiguous_repr_size():
+
+    return -1 
