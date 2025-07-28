@@ -1,4 +1,5 @@
 from .matrix_methods import * 
+from .measures import zero_div
 from copy import deepcopy
 
 """
@@ -12,7 +13,7 @@ output: sequence S' corresponding to `S`. Every
 
 EX: 
 S = <0,0,1,2,1,2,3,3,4,4,4>
-S' = <(0,2),(1,1),(2,1),(1,1),(2,1),(3,2),(4,2)> 
+S' = <(0,2),(1,1),(2,1),(1,1),(2,1),(3,2),(4,3)> 
 """
 def contiguous_repr__sequence(S):
     assert is_vector(S) or type(S) == list
@@ -30,8 +31,16 @@ def contiguous_repr__sequence(S):
             ref = ref_
     return q
 
-def contiguous_repr_size(S,size_type):
-    return -1 
+def contiguous_repr_size_measure(S,measure=np.mean): 
+    q = [s[1] for s in S] 
+    return measure(q)
+
+def contiguous_repr_size_ratio(S): 
+    if len(S) == 0: return 0.0 
+
+    qs = sum([s[1] for s in S])
+    q = contiguous_repr_size_measure(S,np.mean) 
+    return zero_div(q,qs,0)  
 
 """
 V is a vector of (value,frequency) pairs 
@@ -204,3 +213,38 @@ class MCSSearch:
         while stat: 
             stat = self.__next__()
         return 
+    
+def repeat_cycle_for_length(c,l,ci=0):
+    q = np.zeros((l,))
+
+    # go forward 
+    for i in range(ci,l,len(c)): 
+        x = i 
+        x2 = min([i+len(c),l])
+        q[x:x2] = c[:x2-x]  
+
+    # go backward
+    cx = len(c) - 1 
+    for i in range(ci-1,-1,-1):
+        q[i] = c[cx] 
+        cx = (cx - 1) % len(c) 
+    
+    return q 
+
+
+def contiguous_cyclical_difference(V,sv,diff_type="bool"):
+    assert diff_type in {"abs","bool"}
+    assert len(V) >= len(sv)
+
+    # find the first occurrence of sv in V 
+    ir = index_range_of_subvec(V,sv,is_contiguous=True)
+    
+    if type(ir) == type(None): 
+        return float('inf')
+    
+    vc = repeat_cycle_for_length(sv,len(V),ir[0])
+    
+    l = np.where(V != vc)[0]
+
+    if diff_type == "bool": return len(l) 
+    return np.sum(np.abs(V[l]))

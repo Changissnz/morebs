@@ -1015,3 +1015,53 @@ def subvec(l,start_index,length):
     if excess > 0: 
         q2 = list(l[:excess]) 
     return q + q2
+
+"""
+calculates the minimal index range of subvector `sv` in `v`
+"""
+def index_range_of_subvec(v,sv,is_contiguous=True): 
+    v,sv = np.array(v),np.array(sv) 
+    if is_contiguous:
+        q = contiguous_subvec_search(v,sv)
+        return (q,q+len(sv)) 
+    return noncontiguous_subvec_search(v,sv) 
+
+def contiguous_subvec_search(v,sv):
+    indices = list(np.where(v == sv[0])[0]) 
+    for i in indices:
+        q = v[i:i+len(sv)] 
+        if np.all(q == sv):
+            return i 
+    return -1 
+
+def noncontiguous_subvec_search(v,sv): 
+    indices = list(np.where(v == sv[0])[0]) 
+
+    def stat_at_index(sv_index,index):
+        q = sv[sv_index] 
+        return v[index] == q
+    
+    def next_element(sv_,sv_index,start_index): 
+        for x in range(start_index,len(v)):
+            stat = stat_at_index(sv_index,x)
+            if stat: 
+                sv_.append(sv[sv_index])
+                return x 
+        return -1 
+
+    def subvec_at_index(sv_,j): 
+        qi = j 
+        for i in range(1,len(sv)): 
+            qi = next_element(sv_,i,j)
+            if qi == -1: 
+                return False,None
+            j = qi + 1 
+        return True, qi 
+
+    while len(indices) > 0:
+        ix = indices.pop(0) 
+        sx = [sv[0]] 
+        stat,end_index = subvec_at_index(sx,ix+1)
+        if stat:
+            return (ix,end_index)  
+    return None

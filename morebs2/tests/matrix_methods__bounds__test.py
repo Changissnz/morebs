@@ -150,5 +150,25 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         [1, 2, 3],\
         [6, 7, 8]])) 
 
+    def test__index_range_of_subvec__case1(self):
+
+        v = [0,10,13,14,17,19,20,21,21,21,0,20,21,10,14,17] 
+        sv = [17,19,20,21] 
+        ir1 = matrix_methods.index_range_of_subvec(v,sv,is_contiguous=True)
+        assert v[ir1[0]:ir1[1]] == sv 
+
+        sv1 = [0,10,17,21]
+        ir1 = matrix_methods.index_range_of_subvec(v,sv1,is_contiguous=False)
+        assert ir1 == (0,7)
+
+        sv2 = [10,14,19,14,17] 
+        ir2 = matrix_methods.index_range_of_subvec(v,sv2,is_contiguous=False)
+        assert ir2 == (1,15)
+
+        sv3 = [10,14,19,14,17100]  
+        ir3 = matrix_methods.index_range_of_subvec(v,sv3,is_contiguous=False)
+        assert type(ir3) == type(None)
+
+
 if __name__ == '__main__':
     unittest.main()
