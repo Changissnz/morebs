@@ -144,6 +144,39 @@ def to_noncontiguous_ranges(rangez,is_sorted=False):
             i += 1
     return rangez
 
+"""
+extension of the method<matrix_methods.complement_of_range_in_range> 
+"""
+def complement_of_noncontiguous_ranges(rangez,rv): 
+    assert is_valid_range(rv) 
+    
+    q = rv[0]
+    res = []
+    for r in rangez:
+        if r[0] > q:
+            rx = (q,r[0]) 
+            res.append(rx)
+        q = r[1] 
+    if q < rv[1]:
+        rx = (q,rv[1]) 
+        res.append(rx) 
+
+    return res 
+
+"""
+maps every element v_ in vector `v` to the index of the 
+range in `ncr`, an ordered sequence of non-contiguous ranges, 
+that contains v_. 
+"""
+def vector_to_noncontiguous_range_indices(v,ncr):
+    def index_of(v_):
+        for (i,ncr_) in enumerate(ncr):
+            if ncr_[0] <= v_ <= ncr_[1]:
+                return i
+        return -1 
+    
+    return np.array([index_of(v_) for v_ in v],dtype=int) 
+
 def floatseq_to_rangeseq(vf,rv,max_radius:float):
     assert len(rv) == 2 and rv[0] <= rv[1]
     assert max_radius > 0
@@ -189,7 +222,7 @@ def uwpd(v,pairwise_op=lambda x1,x2: np.abs(x2 - x1),accum_op=None):
         except: 
             stat = not stat
             continue 
-        
+
         stat = not (type(index) == type(None))
 
         if not stat: 

@@ -579,8 +579,6 @@ def largest_subrange_of_coincidence_between_ranges(r1,r2, roundDepth = 5):
     assert len(r1) == 2 and len(r2) == 2, "invalid ranges {} and {}".format(r1,r2)
     r1,r2 = sorted(r1), sorted(r2)
 
-    ##if r2[0] < r1[0]: r1,r2 = r2,r1
-
     # use r2 as reference
 
     # case: r2[0] in r1

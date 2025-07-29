@@ -92,6 +92,24 @@ class TestAPRNGGaugeMethods(unittest.TestCase):
         tnr = aprng_gauge.to_noncontiguous_ranges(ranges)
         assert tnr == [[0, 1.5], [1.6, 2.3]]
 
+    def test__complement_of_noncontiguous_ranges(self): 
+        rangez = [(0,20),(30,42),(45,65),(75,91)]
+        rv1 = (0,100)
+        q = aprng_gauge.complement_of_noncontiguous_ranges(rangez,rv1)
+
+        rv2 = (-30,120)
+        q2 = aprng_gauge.complement_of_noncontiguous_ranges(rangez,rv2)
+
+        assert q == [(20, 30), (42, 45), (65, 75), (91, 100)]
+        assert q2 == [(-30, 0), (20, 30), (42, 45), (65, 75), (91, 120)]
+
+    def test__vector_to_noncontiguous_range_indices(self): 
+        rangez = [(0,20),(30,42),(45,65),(75,91)]
+        v = [1,2,3,25,44,41,70,112]
+        ncri = aprng_gauge.vector_to_noncontiguous_range_indices(v,rangez)
+        ncri_sol = np.array([ 0,  0,  0, -1, -1,  1, -1, -1])
+        assert np.all(ncri == ncri_sol)
+
     def test_APRNGGauge__measure_cycle(self):
 
         bounds = np.array([[0,5],\
