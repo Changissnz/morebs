@@ -1,4 +1,5 @@
 from .search_space_iterator import *
+from itertools import combinations 
 
 def range_op(rangez,default_value=0.,f_inner=np.subtract,f_outer=np.add):
     rangez_ = to_noncontiguous_ranges(rangez)
@@ -177,12 +178,18 @@ def uwpd(v,pairwise_op=lambda x1,x2: np.abs(x2 - x1),accum_op=None):
     assert v.ndim == 1
 
     # using the 
-    bis = BatchIncrStruct(len(v),False,False,2)
+    ##bis = BatchIncrStruct(len(v),False,False,2)
+    bis = combinations([i for i in range(len(v))],2) 
     stat = True 
     stat2 = type(accum_op) == type(None)
     result = [] if stat2 else 0.0
     while stat:
-        index = next(bis)
+        try: 
+            index = next(bis)
+        except: 
+            stat = not stat
+            continue 
+        
         stat = not (type(index) == type(None))
 
         if not stat: 
