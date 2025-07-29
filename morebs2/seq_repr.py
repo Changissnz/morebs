@@ -62,7 +62,6 @@ def repeat_cycle_for_length(c,l,ci=0):
     
     return q 
 
-
 def contiguous_cyclical_difference(V,sv,diff_type="bool"):
     assert diff_type in {"abs","bool"}
     assert len(V) >= len(sv)
@@ -321,6 +320,7 @@ class MCSSearch:
 def MCS_kcomplexity(L,cast_type,diff_type="bool",\
     diff_type2="contiguous",basis="most frequent"):
     mcs = MCSSearch(L,cast_type=cast_type,is_bfs=True)
+    mcs.search() 
     return mcs.default_kcomplexity(diff_type,diff_type2,\
         basis) 
 
