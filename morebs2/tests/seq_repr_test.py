@@ -67,5 +67,27 @@ class TestSeqReprMethods(unittest.TestCase):
         qdd3 = ms.default_kcomplexity(diff_type="bool",diff_type2="best",basis="median")
         assert qdd3 == 5.0 
 
+    def test__MCSSearch__default_kcomplexity__case2(self): 
+
+        L = [1,2,3,4,1,2,3,4,1,2,3,4,1,3,4,2,3,4] 
+
+        ms = seq_repr.MCSSearch(L,cast_type=int,is_bfs=True)  
+        ms.search() 
+
+        kcxx = ms.kcomplexity(keys=["1,2,3,4"],diff_type="bool",diff_type2="contiguous")
+        kcxx2 = ms.kcomplexity(keys=["1,2,3,4"],diff_type="bool",diff_type2="best")
+        assert kcxx == [('1,2,3,4', 5)]
+        assert kcxx2 == [('1,2,3,4', 6)]
+
+        L2 = [2,3,4,1,2,3,4,1,2,3,4,1,2,3,4,1,3,4] 
+        ms2 = seq_repr.MCSSearch(L2,cast_type=int,is_bfs=True)  
+        ms2.search() 
+
+        kcxx3 = ms2.kcomplexity(keys=["1,2,3,4"],diff_type="bool",diff_type2="contiguous")
+        kcxx4 = ms2.kcomplexity(keys=["1,2,3,4"],diff_type="bool",diff_type2="best")
+        assert kcxx3 == [('1,2,3,4', 2)]
+        assert kcxx4 == [('1,2,3,4', 6)]
+
+
 if __name__ == '__main__':
     unittest.main()
