@@ -208,6 +208,41 @@ def neighbors_of_ncrange(ncrange,ncrange_comp,i):
 
     return cache
 
+def qualifying_ranges_for_coverage_expansion(ncrange,ncrange_comp,changean,\
+    output_type="index"):
+    assert output_type in {"index","literal"} 
+
+    # get qualifying ranges 
+    qrs = []
+    for (i,r) in enumerate(ncrange):
+        neighbors = neighbors_of_ncrange(ncrange,ncrange_comp,i)
+        if type(neighbors[0]) != type(None):
+            stat1 = abs(changean) <= neighbors[0][1] - neighbors[0][0] 
+        else: 
+            stat1 = False
+
+        if type(neighbors[1]) != type(None): 
+            stat2 = abs(changean) <= neighbors[1][1] - neighbors[1][0] 
+        else: 
+            stat2 = False
+
+        if stat1 or stat2: 
+            qrs.append(i) 
+
+    if output_type == "index": 
+        return qrs 
+    return [ncrange[q] for q in qrs]
+
+def qualifying_ranges_for_coverage_shrinkage(ncrange,changean,output_type="index"):
+    assert output_type in {"index","literal"} 
+
+    qrs = []
+    for (i,r) in enumerate(ncrange):
+        if r[1] - r[0] >= abs(changean): 
+            qrs.append(i) 
+    if output_type == "index":
+        return qrs 
+    return [ncrange[q] for q in qrs] 
 
 """
 maps every element v_ in vector `v` to the index of the 
