@@ -164,6 +164,62 @@ def complement_of_noncontiguous_ranges(rangez,rv):
     return res 
 
 """
+NOTE: 
+assumes `ncrange` and `ncrange_comp` are of proper form as
+sequences of non-contiguous ranges. 
+"""
+def neighbors_of_ncrange(ncrange,ncrange_comp,i):
+    j = i
+    x = 0
+    ref = ncrange[i] 
+    stat = True 
+    cache = [None,None] 
+
+    greater_left_stat = ref[0] < ncrange_comp[0][0]
+    greater_right_stat = ref[1] > ncrange_comp[-1][1] 
+    print("STAT OF: ",ref,greater_left_stat,greater_right_stat)
+    while stat:
+        jx = list(set([x,x*-1])) 
+        print("INDICES: ",jx)
+        for jx_ in jx:  
+            j2 = j + jx_ 
+            if not (0 <= j2 < len(ncrange_comp)): 
+                continue
+            
+            ref2 = ncrange_comp[j2]
+            print("\tcmp w/: ",ref2) 
+            # case: left  
+            if ref[0] == ref2[1]: 
+                cache[0] = ref2
+                continue
+
+            # case: right 
+            if ref[1] == ref2[0]: 
+                cache[1] = ref2 
+                continue
+        x += 1 
+        print("CAHCEEEH")
+        print(cache)
+        #stat = not (type(cache[0]) != None and type(cache[1]) != None)
+        print("STAT")
+        # no left
+        if greater_left_stat: 
+            if type(cache[1]) != type(None): return cache 
+
+        if greater_right_stat: 
+            if type(cache[0]) != type(None): return cache 
+    
+        #if not greater_left_stat and not greater_right_stat: 
+            
+        done = type(cache[0]) != type(None) and type(cache[1]) != type(None)
+        stat = not done 
+        print("STAT: ",stat) 
+        print("DONE: ",done)
+
+    return cache
+
+
+"""
 maps every element v_ in vector `v` to the index of the 
 range in `ncr`, an ordered sequence of non-contiguous ranges, 
 that contains v_. 

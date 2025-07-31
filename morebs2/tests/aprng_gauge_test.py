@@ -110,6 +110,34 @@ class TestAPRNGGaugeMethods(unittest.TestCase):
         ncri_sol = np.array([ 0,  0,  0, -1, -1,  1, -1, -1])
         assert np.all(ncri == ncri_sol)
 
+    def test__neighbors_of_ncrange(self): 
+        rangez = [(0,20),(30,42),(45,65),(75,91)]
+        rv1 = (0,100)
+        q = aprng_gauge.complement_of_noncontiguous_ranges(rangez,rv1)
+
+        rv2 = (-30,120)
+        q2 = aprng_gauge.complement_of_noncontiguous_ranges(rangez,rv2)
+
+        nxx = aprng_gauge.neighbors_of_ncrange(rangez,q2,0)
+        nxx1 = aprng_gauge.neighbors_of_ncrange(rangez,q2,1)
+        nxx2 = aprng_gauge.neighbors_of_ncrange(rangez,q2,2)
+
+        assert nxx == [(-30, 0), (20, 30)]
+        assert nxx1 == [(20, 30), (42, 45)]
+        assert nxx2 == [(42, 45), (65, 75)]
+
+        nxx3 = aprng_gauge.neighbors_of_ncrange(q2,rangez,0)
+        nxx4 = aprng_gauge.neighbors_of_ncrange(q2,rangez,1)
+        nxx5 = aprng_gauge.neighbors_of_ncrange(q2,rangez,2)
+        nxx6 = aprng_gauge.neighbors_of_ncrange(q2,rangez,3)
+        nxx7 = aprng_gauge.neighbors_of_ncrange(q2,rangez,4)
+
+        assert nxx3 == [None, (0, 20)]
+        assert nxx4 == [(0, 20), (30, 42)]
+        assert nxx5 == [(30, 42), (45, 65)]
+        assert nxx6 == [(45, 65), (75, 91)]
+        assert nxx7 == [(75, 91), None]
+
     def test_APRNGGauge__measure_cycle(self):
 
         bounds = np.array([[0,5],\
