@@ -187,6 +187,31 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         assert prt == [5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 26]
         assert sum(prt) == 100 
 
+    def test__prg_partition_for_float(self):
+        F = 50. 
+        df = 60
+        prg = numerical_generator.prg__LCG(144,544,-32,4012) 
+        var = 0.25 
+        P = numerical_generator.prg_partition_for_float(F,df,prg,var,n=1000,rounding_depth=5)
+        P_sol = np.array([0.2, 0.4, 1. , 0.5, 0.7, \
+            0.2, 0.6, 0.1, 0.1, 1.2, 0.6, 0.3, 0.5,\
+            1.7, 2.2, 0.1, 1.8, 0.1, 0.8, 0.2, 0.7, \
+            1.5, 0.3, 0.4, 0.4, 1.5, 0.1, 0.1, 0.7, \
+            1.6, 2.1, 1.5, 0.3, 0.5, 1.4, 1.5, 0.8, \
+            2.7, 2.2, 0.2, 0.3, 1.8, 0.8, 0.2, 0.6, \
+            0.7, 0.4, 0.7, 1.1, 0.6, 0.6, 0.6, 1.8, \
+            1.5, 0.6, 0.5, 1.2, 1.3, 0.5, 0.4])
+
+        assert np.sum(P) == F
+        assert np.all(P == P_sol) 
+
+        df2 = 20
+        P2 = numerical_generator.prg_partition_for_float(F,df2,prg,var,n=1000,rounding_depth=5)
+        assert np.sum(P2) == F
+
+        df3 = 600 
+        P3 = numerical_generator.prg_partition_for_float(F,df3,prg,var,n=1000,rounding_depth=5)
+        assert np.sum(P3) == F
 
 
 if __name__ == '__main__':

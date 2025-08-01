@@ -518,3 +518,21 @@ def prg_choose_n(Q,n,prg,is_unique_picker:bool=False):
             l -= 1 
         n -= 1
     return q 
+
+def prg_partition_for_float(F,df,px,var,n=1000,rounding_depth=5):
+
+    # scale the dividor integer px` from px so that 
+    # px` is less than F 
+    scale = 0 
+    stat = True
+    while stat: 
+        df_ = df / (10. ** scale) 
+        if F >= df_: 
+            stat = False 
+            continue 
+        scale += 1
+
+    F_ = F * (10. ** scale) 
+    q = prg_partition_for_sz__n_rounds(F_,df,px,var,n)
+    q2 = [round(q_ / (10. ** scale),rounding_depth) for q_ in q]
+    return np.array(q2)
