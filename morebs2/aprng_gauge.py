@@ -148,7 +148,7 @@ def to_noncontiguous_ranges(rangez,is_sorted=False):
 extension of the method<matrix_methods.complement_of_range_in_range> 
 """
 def complement_of_noncontiguous_ranges(rangez,rv): 
-    assert is_valid_range(rv) 
+    assert is_valid_range(rv,False,True) 
     
     q = rv[0]
     res = []
