@@ -167,6 +167,10 @@ def complement_of_noncontiguous_ranges(rangez,rv):
 NOTE: 
 assumes `ncrange` and `ncrange_comp` are of proper form as
 sequences of non-contiguous ranges. 
+
+Outputs the complementary neighbors of the i'th 
+subrange in `ncrange`, alongside its complement 
+`ncrange_comp`. 
 """
 def neighbors_of_ncrange(ncrange,ncrange_comp,i):
     j = i
