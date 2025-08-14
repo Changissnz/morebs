@@ -183,10 +183,15 @@ def neighbors_of_ncrange(ncrange,ncrange_comp,i):
     greater_right_stat = ref[1] > ncrange_comp[-1][1] 
     while stat:
         jx = list(set([x,x*-1])) 
+
+        ##?
+        #active = set() 
         for jx_ in jx:  
             j2 = j + jx_ 
             if not (0 <= j2 < len(ncrange_comp)): 
                 continue
+            ##?
+            #active |= {j2} 
             
             ref2 = ncrange_comp[j2]
             # case: left  
@@ -198,6 +203,9 @@ def neighbors_of_ncrange(ncrange,ncrange_comp,i):
             if ref[1] == ref2[0]: 
                 cache[1] = ref2 
                 continue
+
+        ##?
+        #if len(active) == 0: break 
         x += 1 
 
         # no left
