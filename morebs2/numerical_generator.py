@@ -496,8 +496,12 @@ def prg_partition_for_sz__n_rounds(l,num_sets,px,var,n):
         return q_ 
 
     for _ in range(n-1):
-        q = mod_q(q)
-        q = prg_seqsort(q,px)
+        q_ = mod_q(q)
+
+        # case: sequence was not modified 
+        if type(q_) == bool:
+            continue  
+        q = prg_seqsort(q_,px)
     return q 
 
 
