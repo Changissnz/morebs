@@ -353,6 +353,22 @@ def generate_gaussian_sequence_in_bounds(mean, var):
     rng.normal()
     return -1
 
+def default_std_Python_prng(integer_seed=None,output_range=[-10**6,10**6],rounding_depth=0): 
+    if type(integer_seed) == int:
+        random.seed(integer_seed)
+
+    assert output_range[0] <= output_range[1]
+    assert rounding_depth >= 0 and type(rounding_depth) == int 
+
+    def fx():
+        v = random.uniform(output_range[0],output_range[1]) 
+        v = round(v,rounding_depth) 
+
+        if rounding_depth == 0: 
+            return int(v) 
+        return v  
+    return fx
+
 #-------------------------- sequence sorters using prgs
 
 def prg_seqsort(l,prg): 
@@ -366,7 +382,7 @@ def prg_seqsort(l,prg):
     """
     l_ = [] 
     while len(l) > 0: 
-        i = prg() % len(l) 
+        i = int(prg()) % len(l) 
         l_.append(l.pop(i))
     return l_ 
 
