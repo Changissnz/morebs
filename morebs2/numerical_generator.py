@@ -556,3 +556,9 @@ def prg_partition_for_float(F,df,px,var,n=1000,rounding_depth=5):
     q = prg_partition_for_sz__n_rounds(F_,df,px,var,n)
     q2 = [round(q_ / (10. ** scale),rounding_depth) for q_ in q]
     return np.array(q2)
+
+def prg_decimal(prg,output_range): 
+    r0,r1 = abs(prg()),abs(prg())
+    rx = sorted([r0,r1]) 
+    rx = zero_div(rx[0],rx[1],0.5) 
+    return modulo_in_range(rx,output_range)
