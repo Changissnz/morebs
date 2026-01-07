@@ -5,6 +5,7 @@ import random
 from math import ceil
 from .matrix_methods import *
 from .variance_works import *
+from .measures import zero_div 
 from collections import OrderedDict
 
 def modulo_in_range(i,r): 
@@ -425,6 +426,7 @@ def prg_seqsort_ties(l,prg,vf):
         Q.extend(q2) 
     return Q 
 
+#----------------------------------- partitioning of integers into sets using PRNGs 
 
 def prg_partition_for_sz(S,num_sets,prg,variance):  
     """
@@ -557,8 +559,23 @@ def prg_partition_for_float(F,df,px,var,n=1000,rounding_depth=5):
     q2 = [round(q_ / (10. ** scale),rounding_depth) for q_ in q]
     return np.array(q2)
 
+#---------------------------------------- conversions using PRNGs: outputting decimals, generating new PRNGs, etc. 
+
 def prg_decimal(prg,output_range): 
     r0,r1 = abs(prg()),abs(prg())
     rx = sorted([r0,r1]) 
     rx = zero_div(rx[0],rx[1],0.5) 
     return modulo_in_range(rx,output_range)
+
+def prg_to_prg__LCG_sequence(prg,n,moduli_scale=3): 
+    l = [] 
+    for i in range(n): 
+        l_ = [] 
+        for j in range(4): 
+            m = int(prg()) % 2 
+            if m == 0: m = -1 
+            l_.append(prg() * moduli_scale) 
+
+        l_[3] = l_[3] * 3 
+        l.append(prg__LCG(l_[0],l_[1],l_[2],l_[3]))
+    return l 
