@@ -33,7 +33,7 @@ class ViolationHandler1:
     - (bool::terminate,float::(delta value))
     """
     def check_violation_2(self, numberOfBalls, ballCompMaxBalls):
-        print("CV {} {} {}".format(numberOfBalls,ballCompMaxBalls, self.maxBalls))
+        ##print("CV {} {} {}".format(numberOfBalls,ballCompMaxBalls, self.maxBalls))
 
         # case: terminate
         if numberOfBalls > self.maxBalls:
@@ -43,7 +43,7 @@ class ViolationHandler1:
             return (False,None)
 
         d = numberOfBalls - ballCompMaxBalls
-        print("CV2 {} {}".format(numberOfBalls,d))
+        ##print("CV2 {} {}".format(numberOfBalls,d))
 
         # case: spare balls from .`maxBalls`, add 2 extra
         if numberOfBalls + 2 <= self.maxBalls:

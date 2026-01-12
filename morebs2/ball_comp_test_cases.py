@@ -36,6 +36,15 @@ def ballcomp_sample_data_3():
     x8 = np.ones((5,)) * 4.0
     return np.array([x1,x2,x3,x4,x5,x6,x7,x8])
 
+def ballcomp_sample_data_LCG_1(): 
+    prg = prg__LCG(144,544,-32,4012) 
+    prg_ = prg__single_to_nvec(prg,7)
+
+    V = [] 
+    for i in range(2000): 
+        V.append(prg_())
+    return V 
+
 ###########
 
 def ballcomp_sample_data_4__rch():

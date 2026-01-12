@@ -179,7 +179,7 @@ class BallOperator:
 
             self.cache2 = np.copy(sb.data.newData)
 
-            print("\t\t\tnumber of subballs: {} | added points {}".format(len(self.subballs), sb.data.newData.shape[0]))
+            ###print("\t\t\tnumber of subballs: {} | added points {}".format(len(self.subballs), sb.data.newData.shape[0]))
 
             self.add_cache_points_to_subball(sb,q)
             self.cache = np.vstack((self.cache,self.cache2))
@@ -253,6 +253,9 @@ class BallOperator:
         self.targetPoint = self.ball.data.newData[index]
 
     def add_ball_points_to_subball(self,subball, subballRadius):
+        # update new subball with non-zero radius
+        subball.radius = subballRadius 
+        # transfer from original ball to new 
         BallOperator.ball_points_to_another(self.ball,subball,subballRadius,True)
 
     @staticmethod

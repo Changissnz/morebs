@@ -579,3 +579,21 @@ def prg_to_prg__LCG_sequence(prg,n,moduli_scale=3):
         l_[3] = l_[3] * 3 
         l.append(prg__LCG(l_[0],l_[1],l_[2],l_[3]))
     return l 
+
+    #------------------------------ copied from project<seqbuild> 
+
+def prg__single_to_nvec(prg,n):
+
+    def f():
+        q = np.zeros((n,))
+        for i in range(n): 
+            q[i] = prg()
+        return q 
+    return f 
+
+def prg__single_to_int(prg):
+
+    def f(): 
+        return int(round(prg())) 
+
+    return f  

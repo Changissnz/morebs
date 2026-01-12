@@ -10,10 +10,10 @@ def dec1(u,t,p):
 def dec2(b1,b2):
     return b1/b2 * 1/2
 
-
-# do violation recommendation
-# verbose
-# arg. history (max balls, max radius)
+"""
+if verbose is set to 2, includes computation of disjunction scores, as well 
+as display from verbose==1. 
+"""
 class BallComp:
 
     MIN_LENGTH_RATIO = 0.01
@@ -22,6 +22,7 @@ class BallComp:
         assert maxRadius > 0.0 and maxBalls > 0, "invalid args. for BallComp"
         self.maxBalls = maxBalls
         self.maxRadius = maxRadius
+
         self.balls = {} # int:idn -> Ball
         self.pointMem = None # (label of last point added, last point added)
         self.ballNeighborsUpdate = None
@@ -31,7 +32,11 @@ class BallComp:
         self.dve = DisjunctionVolumeEstimator()
         self.ballCounter = 0
 
-        self.vh = vh1
+        if type(vh1) == type(None): 
+            self.vh = ViolationHandler1(maxBalls,maxRadius) 
+        else: 
+            self.vh = vh1
+
         self.terminateDelta = False
 
         self.ts = 0 # timestamp
@@ -41,14 +46,13 @@ class BallComp:
         self.bah = []
         self.rah = []
 
-    #### start: main function --------------------------------------------------
+    ###################################### start: main function 
 
     """
+    main method #1: add point to solution
     """
     def conduct_decision(self,p):
-
         if self.terminateDelta:
-            print("NO MORE ADD")
             return -1
 
         self.dve.clear_cache()
@@ -73,7 +77,7 @@ class BallComp:
             self.load_recommendation((2,p,b.idn))
             if self.verbose >= 1:
                 print("-------------------------------------------")
-            return
+            return 2 if not self.terminateDelta else -1 
 
         # case: add to present ball
         self.balls[d1[1]].add_element(p)
@@ -95,7 +99,7 @@ class BallComp:
         else:
                 # subcase: merge
                 ## merge balls into one
-            print("-- choose decision 1-merge")
+            if self.verbose >= 1: print("-- choose decision 1-merge")
                 ##bs = self.dataless_ball_copies(self.balls[d1[1]].neighbors | {d1[1]})
             x = self.balls[d1[1]].neighbors | {d1[1]}
             bs = [self.balls[x_] for x_ in x]
@@ -109,69 +113,14 @@ class BallComp:
             nbi = ball0.idn
 
         self.load_recommendation((1,self.balls[nbi].radius,nbi))
-        print("-------------------------------------------")
+        
+        if self.verbose >= 1:
+            print("-------------------------------------------")
+        return 1 if not self.terminateDelta else -1 
 
-    def summarize_volume_measures(self):
-        print(self.dve.ballVolumes)
-        print("---")
-        print(self.dve.d)
-        print("\t********")
-
-    #### end: main function --------------------------------------------------
-
-    #### start: method requirements for decision 1
-    ########### start: point add functions
-
-    def update_neighbors_of_ball(self,idn):
-        '''
-        calculates the new neighbor set N1 of the bl'th ball that used to have the neighbor
-        set N0. Then update the `neighbors` variable for all affected neighbors of the
-        bl'th ball.
-
-        :param idn:
-        :type idn: int
-        '''
-        q = self.balls[idn].neighbors
-        self.balls[idn].neighbors = self.neighbors_of_ball(idn)
-
-        self.ballNeighborsUpdate = (idn,q,deepcopy(self.balls[idn].neighbors))
-        self.update_ball_neighbors_var(self.ballNeighborsUpdate[0],\
-            self.ballNeighborsUpdate[1],self.ballNeighborsUpdate[2])
-
-    def update_ball_neighbors_var(self,idn,n0,n1):
-        '''
-        updates the neighbors of each ball after a ball has a radius change by the rule: 
-        - positive difference set N1 - N0: adds `idn` to these balls' neighbors.
-        - negative difference set N0 - N1: subtracts `idn` from .these balls' neighbors.
-        '''
-
-        pd = n1 - n0
-        nd = n0 - n1
-        for p in pd:
-            self.balls[p].neighbors = self.balls[p].neighbors | {idn}
-        for n in nd:
-            self.balls[n].neighbors = self.balls[n].neighbors - {idn}
-        return
-
-    def revert_update_neighbors_of_ball(self):
-        self.update_ball_neighbors_var(self.ballNeighborsUpdate[0],\
-            self.ballNeighborsUpdate[2],self.ballNeighborsUpdate[1])
-        self.ballNeighborsUpdate = None
-        return
-
-    #@
-    def neighbors_of_ball(self,idn):
-        b = self.balls[idn]
-        n = set()
-        for k,v in self.balls.items():
-            if idn == k: continue
-            if v.is_neighbor(b): n.add(k)
-        return n
-
-    def add_point_to_ball(self,p,idn):
-        self.balls[idn].add_element(p)
-        return
-
+    """
+    main method #2: point classification, nearest ball 
+    """
     def ball_label_for_point(self, p):
         '''
     determines the ball idn for point based on minumum
@@ -185,8 +134,9 @@ class BallComp:
         i = np.argmin(bc[:,0])
         return int(bc[i,1])
 
-            ###### special cases for adding point to ball
-
+    """
+    main method #3: point classification, nearest ball that captures point 
+    """
     def ball_label_for_point__qualify_radius(self,p):
         """
         Determines ball label for point based on balls' current radii, as they say,
@@ -210,10 +160,84 @@ class BallComp:
                 return self.balls[bc[o,1]].idn
         return -1
 
-    def restrict_add_point(self,p):
-        return -1
+    def summarize_volume_measures(self):
+        print("---- individual ball volumns")
+        for k,v in self.dve.ballVolumes.items(): 
+            print("ball {} volume {}".format(k,round(v,5))) 
 
-    ########### end: point add functions
+        print("---- intersectional volumes")
+        for k,v in self.dve.d.items(): 
+            print("intersection {} volume {}".format(k,round(v,5))) 
+        print("\t********")
+
+    def summarize_ball_info(self): 
+        L = [] 
+        for k,v in self.balls.items(): 
+            l = (k,v.radius,v.data.newData.shape) 
+            L.append(l) 
+        return L 
+
+    def point_size(self): 
+        return sum([v.data.newData.shape[0] for v in self.balls.values()]) 
+
+    ###################################### end: main function 
+
+    ###################################### start: method requirements for decision 1
+    ################################################## start: point add functions
+
+    def update_neighbors_of_ball(self,idn):
+        '''
+        calculates the new neighbor set N1 of the bl'th ball that used to have the neighbor
+        set N0. Then update the `neighbors` variable for all affected neighbors of the
+        bl'th ball.
+
+        :param idn:
+        :type idn: int
+        '''
+        q = self.balls[idn].neighbors
+        self.balls[idn].neighbors = self.neighbors_of_ball(idn)
+
+        self.ballNeighborsUpdate = (idn,q,deepcopy(self.balls[idn].neighbors))
+        self.update_ball_neighbors_var(self.ballNeighborsUpdate[0],\
+            self.ballNeighborsUpdate[1],self.ballNeighborsUpdate[2])
+
+    def update_ball_neighbors_var(self,idn,n0,n1):
+        '''
+        updates the neighbors of each ball after a ball has a radius change by the rule: 
+        - positive difference set N1 - N0: adds `idn` to these balls' neighbors.
+        - negative difference set N0 - N1: subtracts `idn` from .these balls' neighbors.
+        ''' 
+
+        pd = n1 - n0
+        nd = n0 - n1
+        for p in pd:
+            if p not in self.balls: continue 
+            self.balls[p].neighbors = self.balls[p].neighbors | {idn}
+        for n in nd:
+            if n not in self.balls: continue 
+            self.balls[n].neighbors = self.balls[n].neighbors - {idn}
+        return
+
+    def revert_update_neighbors_of_ball(self):
+        self.update_ball_neighbors_var(self.ballNeighborsUpdate[0],\
+            self.ballNeighborsUpdate[2],self.ballNeighborsUpdate[1])
+        self.ballNeighborsUpdate = None
+        return
+
+    #@
+    def neighbors_of_ball(self,idn):
+        b = self.balls[idn]
+        n = set()
+        for k,v in self.balls.items():
+            if idn == k: continue
+            if v.is_neighbor(b): n.add(k)
+        return n
+
+    def add_point_to_ball(self,p,idn):
+        self.balls[idn].add_element(p)
+        return
+
+    ################################################### end: point add functions
 
     def dataless_ball_copies(self,indices):
         '''
@@ -249,7 +273,7 @@ class BallComp:
 
     #### end: method requirements for decision 1
 
-    #### start: decision function 1
+    ##################################### start: decision function 1
 
     def pre_decision_1_(self,p,idn):
 
@@ -281,7 +305,6 @@ class BallComp:
         q = self.balls[idn].neighbors
         for q_ in q:
             b2 = self.balls[q_]
-            ###print("LOGGING 2INT")
             self.dve.log_ball_volume_2intersection(self.balls[idn],b2)
         return
 
@@ -316,8 +339,8 @@ class BallComp:
         vp = ball_area(self.maxRadius,p.shape[0]) * len(bs1)
         d1 = dec1(vu,vt,vp)
         if self.verbose >= 1:
-            print("\t\t no-merge volume measures: ",vu,vt,vp)
-            print("\t\t no-merge score: ", d1)
+            print("\t\t no-merge volume measures: ",np.round([vu,vt,vp],5))
+            print("\t\t no-merge score: ", round(d1,5)) 
 
         # simulate 2: merge target ball w/ its neighbors
         ballSet = self.dataless_ball_copies(bs1)
@@ -328,23 +351,23 @@ class BallComp:
         vp = ball_area(self.maxRadius,p.shape[0])
         d2 = dec1(vu,vt,vp)
         if self.verbose >= 1:
-            print("\t\t merge volume measures: ",vu,vt,vp)
-            print("\t\t merge score: ", d2)
+            print("\t\t merge volume measures: ",np.round([vu,vt,vp],5))
+            print("\t\t merge score: ", round(d2,5))
 
         # choose the better option
         option = (1,bl,d1) if d1 <= d2 else (2,bl,d2)
 
         if self.verbose >= 1:
-            print("\t\t decision 1 option: ",option)
+            print("\t\t decision 1 option: ",option[0],option[1],round(option[2],5)) 
 
         # revert changes
         self.post_decision_1_(bl)
 
         return option
 
-    #### end: decision function 1
+    ############################################## end: decision function 1
 
-    #### start: decision function 2
+    ############################################# start: decision function 2
 
     def decision_2_score(self):
         score = dec2(len(self.balls) + 1, self.maxBalls)
@@ -389,7 +412,6 @@ class BallComp:
     def add_ball(self,b):
         if self.verbose >= 1:
             print("\t * adding ball ", b.idn)
-
         self.balls[b.idn] = b
         self.update_ball_info(b.idn)
         return
@@ -509,8 +531,6 @@ class BallComp:
             # delete new ball
             ## new ball will not have any neighbors
             self.remove_ballset({newBallInfo[0]})
-                ##del self.balls[newBallInfo[0]]
-                ##self.dve.delete_keyset({newBallInfo[0]})
 
             # find a ball label for point
             l = self.ball_label_for_point__qualify_radius(newBallInfo[1])
@@ -518,6 +538,14 @@ class BallComp:
             if l != -1:
                 if self.verbose: print("found alternative ball @ {}".format(l))
                 self.pre_decision_1_(newBallInfo[1],l)
+            else: 
+                l2 = self.ball_label_for_point(newBallInfo[1]) 
+                b = self.balls[l2] 
+                distance = euclidean_point_distance(b.center,newBallInfo[1]) 
+                if distance <= self.maxRadius: 
+                    self.pre_decision_1_(newBallInfo[1],l2) 
+                else: 
+                    self.terminateDelta = True 
             return
         # case: update maxBalls
         elif not violation[0] and type(violation[1]) != type(None):
@@ -527,6 +555,8 @@ class BallComp:
             self.change_arg(('b',q))
             if self.verbose: print("new max number of balls: ",q)
             return
+
+    ##################################### extraneous methods for changing and logging main BallComp parameters
 
     def log_arg(self,arg):
         assert arg in {'b','r'}, "invalid argument"
