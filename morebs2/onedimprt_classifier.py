@@ -18,6 +18,12 @@ class OneDimClassifierFunction:
         self.mod2label_dict = mod2label_dict
         return 
 
+    def __str__(self):
+        s = "modulo {} index {} dim {}\n".format(self.modulo,self.index,self.dim) 
+        s += str([(int(k),float(v)) for k,v in self.mod2label_dict.items()])
+        s += "\n"
+        return s 
+
     def classify(self,V): 
         assert len(V) == self.dim 
         q = V[self.index] 
@@ -88,8 +94,13 @@ class OneDimClassifier:
         self.prt = [] 
         self.sort() 
         self.partition() 
-        self.clf = None 
+        self.clf = None
+
+        self.full_filter = True   
         return
+
+    def __str__(self): 
+        return str(self.clf) 
 
     def add_past_indices(self,indices): 
         self.past_indices = indices 
@@ -101,6 +112,11 @@ class OneDimClassifier:
         return
 
     def make_classifier(self): 
+        # case: empty partition, uniform dataset, select first (label,range) 
+        if len(self.prt) == 0: 
+            self.partition() 
+            self.prt = self.prt[:1] 
+
         modulo = self.prt[0,1]
         modulo_cat = {} 
         for p in self.prt: 
@@ -176,8 +192,19 @@ class OneDimClassifier:
         return min,max,ave 
 
     ######################## partitioning methods 
-
+    
     def adjust_partition(self): 
+        self.adjust_partition__() 
+
+        if len(self.prt) == 0: 
+            self.full_filter = False 
+        else: 
+            return 
+
+        self.partition() 
+        self.adjust_partition__() 
+
+    def adjust_partition__(self): 
         if self.partition_scheme == 0: 
             self.adjust_partition__scheme0() 
         elif self.partition_scheme == 1: 
@@ -190,26 +217,40 @@ class OneDimClassifier:
         p.append(self.prt[-1]) 
         self.prt = np.array(p) 
 
-        self.filter_partition()
+        self.filter_partition(self.full_filter)
         while not self.final_partition_adjustment(): continue  
-        self.filter_partition() 
+        self.filter_partition(self.full_filter) 
         
 
     def adjust_partition__scheme0(self): 
         self.adjust_partition_() 
         while not self.final_partition_adjustment(): continue 
-        self.filter_partition() 
+        self.filter_partition(self.full_filter) 
 
     def adjust_partition_(self): 
         for i in range(len(self.prt)-1): 
             self.adjust_partition_at_index(i)
-        self.filter_partition() 
+        self.filter_partition(self.full_filter)  
         return 
 
-    def filter_partition(self): 
+    def filter_partition(self,full_filter:bool):  
         prt = [] 
-        for p in self.prt: 
-            if p[1] >= p[2]: continue  
+
+        if full_filter: 
+            fx = lambda x,x2: x >= x2 
+        else: 
+            fx = lambda x,x2: x > x2 
+        
+        #fx = lambda x,x2: x >= x2 
+
+        for (i,p) in enumerate(self.prt): 
+                
+            if fx(p[1],p[2]): continue  
+
+            #if i < len(self.prt) -1: 
+            #    p2 = self.prt[i+1] 
+            #    if self.
+
             prt.append((p[0],p[1],p[2]))
         self.prt = np.array(prt) 
 
@@ -329,6 +370,11 @@ class ODCNode:
         self.nextnode_dict= nextnode_dict 
         self.previous_indices = previous_indices
 
+    def __str__(self): 
+        s = str(self.odc) + "\n" 
+        s += "next labels:\n\t{}\n".format(sorted(self.nextnode_dict)) 
+        return s 
+
     def add_nextnode(self,node,label): 
         assert type(node) == ODCNode 
         self.nextnode_dict[label] = node 
@@ -350,7 +396,7 @@ Uses the classifier <OneDimClassifier> as a unit node.
 """
 class RecursiveOneDimClassifier: 
 
-    def __init__(self,D,L,prg=None,pscheme=0): 
+    def __init__(self,D,L,prg=None,pscheme=0,verbose:bool=False): 
         assert is_2dmatrix(D) 
         assert is_vector(L) 
         self.D = D 
@@ -361,7 +407,11 @@ class RecursiveOneDimClassifier:
             self.prg = default_std_Python_prng()
         else: 
             self.prg = prg 
+        assert pscheme in {0,1} or type(pscheme) in {MethodType,FunctionType}
         self.pscheme = pscheme 
+
+        assert type(verbose) == bool 
+        self.verbose = verbose 
         self.root = None 
         self.node_cache = [] 
         self.current = None 
@@ -436,6 +486,9 @@ class RecursiveOneDimClassifier:
 
         # case: perfect labeling 
         if len(rem_keys) == 0: 
+            if self.verbose: 
+                print("\t\t** one node")
+                print(self.current[0]) 
             self.current = None 
             return 
 
@@ -463,7 +516,7 @@ class RecursiveOneDimClassifier:
         all_cols = set([i for i in range(D.shape[1])]) 
         candidates = sorted(all_cols - previous_indices) 
         if len(candidates) == 0: 
-            print("? no more indices")
+            if self.verbose: print("? no more indices")
             return None,None,None 
 
         i = prg__single_to_int(self.prg)() % len(candidates)  

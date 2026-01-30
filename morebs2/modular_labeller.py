@@ -81,3 +81,7 @@ def label_vector__type_uniform_partition_index(v,R,i,num_labels=5):
         c += 1 
         x += p 
     return c  
+
+def label_vector__type_prgANDindex_output(i,prg,f,num_labels=5):
+    assert is_number(i,{float,np.float32,np.float64}) 
+    return round(f(prg(),i)) % num_labels

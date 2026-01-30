@@ -123,7 +123,7 @@ class TestOneDimClassifierClass(unittest.TestCase):
             [1.,-1.11111,7.55144]])
 
         assert equal_iterables(qx,qx_ans) 
-        assert equal_iterables(qx2,qx2_ans) 
+        assert equal_iterables(qx2,qx2_ans), "got \n{} \nexpected \n{}".format(qx2,qx2_ans)
 
         # subcase 2 
         odc = OneDimClassifier(D,L2__,2,1)
@@ -142,6 +142,29 @@ class TestOneDimClassifierClass(unittest.TestCase):
 
         assert equal_iterables(qx,qx_ans) 
         assert equal_iterables(qx2,qx2_ans) 
+
+    def test__OneDimClassifier__adjust_partition__case_4(self): 
+
+
+        D2 = np.zeros((1000,4)) 
+        D2[:,0] += 10 
+        D2[:,1] -= 5
+        D2[:,2] += 10 
+        D2[:,3] -= 5 
+
+        D2[:500,0] /= 2 
+        D2[500:,1] *= 2 
+    
+        L2 = [0] * 500 + [1] * 500 
+        L2 = np.array(L2)
+
+        odc = OneDimClassifier(D2,L2,0,0) 
+        odc.make() 
+        c3 = 0 
+        for d,l in zip(D2,L2): 
+            l_ = odc.classify(d)
+            c3 += bool(l_ == l)
+        assert c3 == 1000, "got {}".format(c3) 
 
 class TestRecursiveOneDimClassifierClass(unittest.TestCase): 
 
@@ -192,8 +215,8 @@ class TestRecursiveOneDimClassifierClass(unittest.TestCase):
         rodc3.fit() 
         c3 = rodc3.score_accuracy(D,L2_)
 
-        assert c == 563
-        assert c2 == 760
+        assert c == 563, "got {}".format(c)
+        assert c2 == 760, "got {}".format(c2)
         assert c3 == 459, "got {}".format(c3)
 
     def test__RecursiveOneDimClassifier__fit_case_3(self): 
@@ -220,6 +243,57 @@ class TestRecursiveOneDimClassifierClass(unittest.TestCase):
         assert c == 1000
         assert c2 == 862
         assert c3 == 719, "got {}".format(c3)
+
+    def test__RecursiveOneDimClassifier__fit_case_4(self): 
+        D = np.zeros((1000,4)) 
+        D[:,0] += 10 
+        D[:,1] -= 5
+        D[:,2] += 10 
+        D[:,3] -= 5 
+
+        prg = prg__LCG(-56.7,122.3,-31.6,-3121.66) 
+        f = lambda x,x2: x - x2
+        L = np.array([label_vector__type_prgANDindex_output(i,prg,f,5) for i in range(len(D))]) 
+
+        rodc = RecursiveOneDimClassifier(D,L,prg,0)
+        rodc.fit() 
+        c = rodc.score_accuracy(D,L)
+        assert c == 199 
+
+    def test__RecursiveOneDimClassifier__fit_case_5(self): 
+        # subcase 1 
+        D2 = np.zeros((1000,4)) 
+        D2[:,0] += 10 
+        D2[:,1] -= 5
+        D2[:,2] += 10 
+        D2[:,3] -= 5 
+
+        D2[:500,0] /= 2 
+        D2[500:,1] *= 2 
+
+        L2 = [0] * 500 + [1] * 500 
+        L2 = np.array(L2)
+
+        prg = prg__LCG(-56.7,122.3,-31.6,-3121.66) 
+        
+        rodc = RecursiveOneDimClassifier(D2,L2,prg,0)
+        rodc.fit() 
+        c = rodc.score_accuracy(D2,L2)
+        assert c == 1000, "got {}".format(c) 
+
+        # subcase 2 
+        D3 = deepcopy(D2) 
+        D3[250:500,2] *= 2 
+        D3[250:500,3] /= 2 
+        L3 = [0] * 250 + [1] * 250 + [2] * 250 + [3] * 250
+        L3 = np.array(L3) 
+
+        rodc2 = RecursiveOneDimClassifier(D3,L3,prg,0)
+        rodc2.fit() 
+        c2 = rodc2.score_accuracy(D3,L3)
+        assert c2 == 750, "got {}".format(c2)  
+
+    
 
 if __name__ == "__main__":
     unittest.main()
