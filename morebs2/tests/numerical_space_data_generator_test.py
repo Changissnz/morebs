@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 '''
-python -m morebs2.tests.numerical_space_data_generator_test  
+py -m morebs2.tests.numerical_space_data_generator_test  
 '''
 
 def sample_nsdi_1(q, filePath = "tests/s.txt", nr = None):

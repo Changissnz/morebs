@@ -48,3 +48,36 @@ def rch_modular_labeller_1(ldp):
     kwargs = ['nr',qf]
     rch.add_node_at(kwargs)
     return rch 
+
+#---------------------------------------------------------------------------------------------------------------
+
+def label_vector__type_binary_alt_sum(v,num_labels=5):  
+    s = v[0] 
+    for i in range(1,len(v)): 
+        s2 = i % 2 
+        if s2 == 0: s2 = -1 
+        s += s2 * v[i] 
+    return round(s) % num_labels 
+
+def label_vector__type_uniform_partition_sum(v,R,num_labels=5): 
+    q = np.sum(v) 
+
+    p = (R[1] - R[0]) / num_labels
+
+    x = R[0] 
+    c = -1 
+    while x <= q: 
+        c += 1 
+        x += p 
+    return c  
+
+def label_vector__type_uniform_partition_index(v,R,i,num_labels=5): 
+    q = v[i] 
+
+    p = (R[1] - R[0]) / num_labels
+    x = R[0] 
+    c = -1 
+    while x <= q: 
+        c += 1 
+        x += p 
+    return c  

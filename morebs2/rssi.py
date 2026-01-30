@@ -52,7 +52,7 @@ class ResplattingSearchSpaceIterator:
     """
 
     def __init__(self,bounds, startPoint, columnOrder = None, SSIHop = 7,\
-        resplattingMode = ("relevance zoom",None), additionalUpdateArgs = (), ):
+        resplattingMode = ("relevance zoom",None), additionalUpdateArgs = (),verbose:bool=False):
         assert is_proper_bounds_vector(bounds), "bounds "
         assert is_vector(startPoint), "invalid start point"
         assert resplattingMode[0] in {"relevance zoom", "prg"}
@@ -76,6 +76,7 @@ class ResplattingSearchSpaceIterator:
         self.ri = None
         assert type(additionalUpdateArgs) == tuple, "invalid additionalUpdateArgs"
         self.aua = additionalUpdateArgs
+        self.verbose = verbose 
         self.update_resplatting_instructor()
         return
 
@@ -161,7 +162,7 @@ class ResplattingSearchSpaceIterator:
     def update_resplatting_instructor(self,nbs = None):
         """
         Updates :class:`ResplattingInstructor` `self.ri`. If `self.ri` is None,
-        then instantiates a new :class:`ResplattingInstructor` based on the mode `self.rm\[0\]`.
+        then instantiates a new :class:`ResplattingInstructor` based on the mode `self.rm\\[0\\]`.
 
         :param nbs: new bounds vector
         :return nbs: np.ndarray
@@ -183,8 +184,10 @@ class ResplattingSearchSpaceIterator:
             # draw from .cache
             if type(nbs) == type(None):
                 nb = self.save_rzoom_bounds_info()
-                print("NEXT RANGE:")
-                print(nb)
+
+                if self.verbose: 
+                    print("NEXT RANGE:")
+                    print(nb)
 
                 if type(nb) == type(None): return True
                 sp = np.copy(nb[:,0])
@@ -269,7 +272,7 @@ class ResplattingSearchSpaceIterator:
         
         :param ar: zero-size activation range
         :type ar: np.ndarray, proper bounds
-        :return: a range r with r\[0\] equal to ar\[0\] that is not a zero-sized range
+        :return: a range r with r\\[0\\] equal to ar\\[0\\] that is not a zero-sized range
         :rtype: np.ndarray, proper bounds
         '''
 
