@@ -1,5 +1,4 @@
-from .numerical_generator import * 
-from types import MethodType,FunctionType
+from .xclassif_aux import * 
 
 def sort_matrix_by_index(M,index,axis=0): 
     assert 0 <= index < M.shape[(axis+1) % 2] 
@@ -78,18 +77,13 @@ corresponds to label l.
 In the case where v is greater than all threshold values, choose 
 t_h that is of minimum absolute distance to v. 
 """
-class OneDimClassifier: 
+class OneDimClassifier(XClassifier): 
 
     def __init__(self,D,L,index,partition_scheme=0): 
-        assert is_2dmatrix(D) 
-        assert is_vector(L) 
-        assert 0 <= index < D.shape[1] 
-        self.D = D 
-        self.L = L 
-        self.index = index 
+        super().__init__(D,L,index)
+
         self.partition_scheme = partition_scheme
 
-        self.label2index_map = dict() 
         # (label, min value,max value) [along `index`] 
         self.prt = [] 
         self.sort() 
@@ -166,30 +160,6 @@ class OneDimClassifier:
         indices = sort_matrix_by_index(l_,1,0)
         self.prt = l_[indices] 
         return
-
-    def partition_eval(self): 
-        l_info = dict() 
-        q = set(self.L) 
-
-        for q_ in q: 
-            l_info[q_] = list(self.index_info(q_))
-            
-        return l_info 
-
-    """
-    return: 
-    - (min value,max value, mean value) of label along `index`
-    """
-    def index_info(self,l,store_indices:bool=True): 
-        indices = self.indices_of_label(l)
-        assert len(indices) > 0 
-        if store_indices: 
-            self.label2index_map[l] = indices 
-
-        values = sorted([self.D_[i,self.index] for i in indices])
-        min,max = values[0],values[-1] 
-        ave = np.mean(values)
-        return min,max,ave 
 
     ######################## partitioning methods 
     
@@ -353,9 +323,6 @@ class OneDimClassifier:
                 c += 1 
         return c 
     
-    def indices_of_label(self,l): 
-        return np.where(self.L==l)[0] 
-
     ######################################## 
 
 """
