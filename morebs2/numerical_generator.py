@@ -597,3 +597,8 @@ def prg__single_to_int(prg):
         return int(round(prg())) 
 
     return f  
+
+def merge_two_prgs(prg1,prg2,op): 
+    def f(): 
+        return op(prg1(),prg2())
+    return f 

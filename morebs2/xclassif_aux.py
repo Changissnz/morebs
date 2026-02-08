@@ -1,4 +1,5 @@
 from .numerical_generator import * 
+from .search_space_iterator import * 
 from types import MethodType,FunctionType
 from copy import deepcopy
 
@@ -44,3 +45,70 @@ class XClassifier:
 
     def indices_of_label(self,l): 
         return np.where(self.L==l)[0] 
+
+#---------------------------------------------------------------------------------
+
+def cumulative_vector_difference(V): 
+    S = 0 
+    for i in range(len(V) - 1): 
+        q = V[i] 
+        for j in range(i+1,len(V)): 
+            S += abs(q-V[j]) 
+    return S 
+
+# NOTE: careful with large vector values 
+class OneTenLinearFunctionDifferenceMaximizer:
+
+    def __init__(self,samples,alter_pattern="linear"):
+        assert is_2dmatrix(samples) 
+        assert alter_pattern in {"linear","combinative"}  
+
+        self.samples = samples 
+        self.alter_pattern = alter_pattern 
+
+        self.W = np.ones((self.samples.shape[1],)) 
+        self.index = 0 
+
+        self.best_W = None 
+        self.best_score = -float('inf') 
+
+        q = np.zeros((self.samples.shape[1],2))
+        q[:,0],q[:,1] = 1,19 
+        self.ssi = SearchSpaceIterator(q,deepcopy(self.W),\
+            [i for i in range(self.samples.shape[1])],SSIHop = 2,\
+            cycleOn = False, cycleIs = 0) 
+        self.fin_stat = False 
+        return 
+
+    def search(self): 
+        while not self.fin_stat: 
+            next(self) 
+
+    def __next__(self): 
+        if self.fin_stat: return 
+
+        q = self.next_element() 
+        if type(q) == type(None): 
+            self.fin_stat = True 
+            return 
+        
+        V = np.dot(self.samples,q) 
+        diff = cumulative_vector_difference(V)
+
+        if diff > self.best_score: 
+            self.best_W = deepcopy(q) 
+            self.best_score = diff 
+
+    def next_element(self): 
+        if self.alter_pattern == "linear": 
+            if self.index >=len(self.W): 
+                return None
+            W_ = deepcopy(self.W) 
+            self.W[self.index] = 10 
+            self.index += 1 
+            return W_ 
+        else: 
+            if self.ssi.finished(): 
+                return None 
+            self.W = next(self.ssi) 
+            return self.W 
