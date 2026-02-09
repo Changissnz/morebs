@@ -65,7 +65,8 @@ class MultiDimModDivClassifierFunction:
 
 class MultiDimModDivClassifier(XClassifier):
 
-    def __init__(self,D,L,index_set,prg,attempts=20,l_info_=None,weighted=False):  
+    def __init__(self,D,L,index_set,prg,attempts=20,l_info_=None,weighted=False,\
+        verbose=False):  
         super().__init__(D,L,0) 
         assert type(prg) in {MethodType,FunctionType} 
         assert len(index_set) > 0 and type(index_set) == set 
@@ -84,6 +85,7 @@ class MultiDimModDivClassifier(XClassifier):
         self.l_info = dict() 
         self.preproc(l_info_)
         self.weighted = weighted  
+        self.verbose = verbose 
         self.init_candidates() 
 
         self.best_classifier = None 
@@ -146,10 +148,11 @@ class MultiDimModDivClassifier(XClassifier):
             otl = OneTenLinearFunctionDifferenceMaximizer(M,alter_pattern="linear")
             otl.search() 
             W = otl.best_W
+            if self.verbose: print("best weight: ",W) 
         else: 
             W = None 
         s = self.calculate_modulo(q,W) 
-
+        if self.verbose: print("modulo: ",s) 
         # calculate the labels 
         lx = dict() 
         for l in self.L_: 
@@ -281,7 +284,8 @@ class ModDivClassifier:
         
         q_linfo = {q_:self.l_info_[1][q_] for q_ in q} 
         q_linfo = (self.l_info_[0],q_linfo,self.l_info_[2])
-        mdc = MultiDimModDivClassifier(self.D,self.L,q,self.prg,attempts=self.attempts_per,l_info_=q_linfo,weighted=self.weighted) 
+        mdc = MultiDimModDivClassifier(self.D,self.L,q,self.prg,attempts=self.attempts_per,\
+            l_info_=q_linfo,weighted=self.weighted,verbose=self.verbose)  
         mdc.make() 
         self.log_new_solution(mdc) 
 

@@ -48,41 +48,57 @@ class XClassifier:
 
 #---------------------------------------------------------------------------------
 
-def cumulative_vector_difference(V): 
+def cumulative_vector_difference(V,add_log:bool=False): 
     S = 0 
     for i in range(len(V) - 1): 
         q = V[i] 
         for j in range(i+1,len(V)): 
-            S += abs(q-V[j]) 
+            q2 = abs(q-V[j]) 
+            if add_log: 
+                q2 = abs(safe_log(q2,0)) 
+            S += q2 
     return S 
 
 # NOTE: careful with large vector values 
 class OneTenLinearFunctionDifferenceMaximizer:
 
-    def __init__(self,samples,alter_pattern="linear"):
+    def __init__(self,samples,alter_pattern="linear",verbose=False):
         assert is_2dmatrix(samples) 
         assert alter_pattern in {"linear","combinative"}  
 
         self.samples = samples 
         self.alter_pattern = alter_pattern 
+        self.verbose = verbose 
 
-        self.W = np.ones((self.samples.shape[1],)) 
+        self.W = -np.ones((self.samples.shape[1],)) 
         self.index = 0 
 
         self.best_W = None 
         self.best_score = -float('inf') 
 
         q = np.zeros((self.samples.shape[1],2))
-        q[:,0],q[:,1] = 1,19 
+        #q[:,0],q[:,1] = 1,19 
+        q[:,0],q[:,1] = -1,3 
+
+        self.set_index_ordering()
         self.ssi = SearchSpaceIterator(q,deepcopy(self.W),\
-            [i for i in range(self.samples.shape[1])],SSIHop = 2,\
-            cycleOn = False, cycleIs = 0) 
+            self.ordering,SSIHop = 2,cycleOn = False, cycleIs = 0) 
         self.fin_stat = False 
+        return 
+
+    def set_index_ordering(self): 
+        diff_vec = [(i,cumulative_vector_difference(self.samples[:,i],True)) for i in range(self.samples.shape[1])]
+        diff_vec = sorted(diff_vec,key=lambda x:x[1]) 
+        self.ordering = [d[0] for d in diff_vec]
         return 
 
     def search(self): 
         while not self.fin_stat: 
             next(self) 
+        
+        for i in range(len(self.best_W)): 
+            if self.best_W[i] == 1:
+                self.best_W[i] = 10 
 
     def __next__(self): 
         if self.fin_stat: return 
@@ -93,7 +109,10 @@ class OneTenLinearFunctionDifferenceMaximizer:
             return 
         
         V = np.dot(self.samples,q) 
-        diff = cumulative_vector_difference(V)
+        diff = cumulative_vector_difference(V,True) 
+
+        if self.verbose: 
+            print("* V: {}\n* score: {}".format(q,diff /1000)) 
 
         if diff > self.best_score: 
             self.best_W = deepcopy(q) 
@@ -104,7 +123,8 @@ class OneTenLinearFunctionDifferenceMaximizer:
             if self.index >=len(self.W): 
                 return None
             W_ = deepcopy(self.W) 
-            self.W[self.index] = 10 
+            index = self.ordering[self.index] 
+            self.W[index] = 10 
             self.index += 1 
             return W_ 
         else: 

@@ -1,4 +1,5 @@
 from .matrix_methods import *
+from math import log 
 
 ########## START: stat measures
 
@@ -20,6 +21,7 @@ def opposing_deviation_on_sequence(npSeq):
 ########## START: point measures
 
 zero_div = lambda num, denum, default: default if denum == 0 else num / denum
+safe_log = lambda x,default: default if x <= 0. else log(x) 
 
 point_distance = lambda p1, p2: math.sqrt((p1[0] - p2[0]) **2 + (p1[1] - p2[1]) ** 2)
 '''
