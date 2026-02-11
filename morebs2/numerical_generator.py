@@ -598,6 +598,13 @@ def prg__single_to_int(prg):
 
     return f  
 
+def prg__single_to_decimal(prg,output_range=[0.,1.]): 
+
+    def f(): 
+        return prg_decimal(prg,output_range) 
+
+    return f 
+
 def merge_two_prgs(prg1,prg2,op): 
     def f(): 
         return op(prg1(),prg2())

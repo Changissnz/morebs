@@ -200,6 +200,34 @@ class MultiDimModDivClassifier(XClassifier):
 # NOTE: careful with high dimensional datasets 
 # NOTE: setting mode `weighted` to True does not seem to improve performance on some datasets.
 #               bug OR limit of algorithm?
+"""
+A classifier that uses a modulo-division formula F to find parameters m (modulo) and 
+d (dividor) for every unique label found in L. The formula is the method<moddiv_op_on_vector>. 
+
+It takes a vector V in distribution D, the non-zero float m, and the index subset I of V. Formula 
+calculates the cumulative sum, 
+    s =  SUM   V[i]  . 
+        i in I 
+Then F outputs the pair (s mod m, s / m). See the class<MultiDimModDivClassifier> for more details. 
+That class is the one that does the actual classification. That class takes the parameters, 
+    [0] modulo, 
+    [1] index_set
+    [2] label2moddiv_map
+    [3] W
+to initialize. Parameter [2] is a map M, 
+    label idn l -> (s_m,s_d), 
+s_m and s_d mean-like values for the vector samples D_l of label l that when given as input to 
+function F with parameter m produced that pair (s_m,s_d), on average. A vector V is classified by 
+a <MultiDimModDivclassifier> as being the label l_c with the least euclidean point distance to 
+to M[l_c]. 
+
+This class<ModDivClassifier> is an overhead class above class<MultiDimModDivClassifier>, and searches 
+for parameters [0],[1],[2], and [3] (in the `weighted` case) that output the best accuracy. The 
+direction of search is based on the index set size, parameter 0. It can be one of the following: 
+- min: starts with index sets of size 1, monotonically increasing in size. 
+- max: starts with index sets of size |D.columns|, monotonically decreasing in size. 
+- mean: selects the left-median index set size remaining in unsearched index set sizes.  
+"""
 class ModDivClassifier:
 
     def __init__(self,D,L,prg,index_size_search_direction="min",total_indexset_candidates=float('inf'),attempts_per=50,num_solutions=1,weighted=False,verbose=False):   
