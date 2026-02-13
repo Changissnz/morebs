@@ -576,7 +576,8 @@ def prg_to_prg__LCG_sequence(prg,n,moduli_scale=3):
             if m == 0: m = -1 
             l_.append(prg() * moduli_scale) 
 
-        l_[3] = l_[3] * 3 
+        l_[3] = l_[3] * 3
+        if l_[3] == 0: l_[3] = moduli_scale** 2
         l.append(prg__LCG(l_[0],l_[1],l_[2],l_[3]))
     return l 
 
