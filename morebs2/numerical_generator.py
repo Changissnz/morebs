@@ -5,7 +5,7 @@ import random
 from math import ceil
 from .matrix_methods import *
 from .variance_works import *
-from .measures import zero_div 
+from .measures import zero_div,zero_div_  
 from collections import OrderedDict
 
 def modulo_in_range(i,r): 
@@ -577,7 +577,9 @@ def prg_to_prg__LCG_sequence(prg,n,moduli_scale=3):
             l_.append(prg() * moduli_scale) 
 
         l_[3] = l_[3] * 3
-        if l_[3] == 0: l_[3] = moduli_scale** 2
+        if l_[3] == 0: 
+            l_[3] = 1 + moduli_scale** 2 
+            
         l.append(prg__LCG(l_[0],l_[1],l_[2],l_[3]))
     return l 
 
@@ -610,3 +612,14 @@ def merge_two_prgs(prg1,prg2,op):
     def f(): 
         return op(prg1(),prg2())
     return f 
+
+def merge_two_prgs_into_LCG_sequence(prg1,prg2,num_lcg,mod_mult_range=[1.333,5.999],\
+    operations = [add,mul,sub,zero_div_]): 
+    q1 = prg_to_prg__LCG_sequence(prg1,num_lcg,modulo_in_range(prg1(),mod_mult_range))  
+    q2 = prg_to_prg__LCG_sequence(prg2,num_lcg,modulo_in_range(prg2(),mod_mult_range))  
+
+    q = [] 
+    for i,(p0,p1) in enumerate(zip(q1,q2)): 
+        oper = operations[i % len(operations)] 
+        q.append(merge_two_prgs(p0,p1,oper)) 
+    return q 
