@@ -27,7 +27,7 @@ def edge_count(d):
 def index_of_element_in_setseq(s,n):
     for (i,s_) in enumerate(s): 
         if n in s_: return i 
-    return None 
+    return None  
 
 def directed_edge_partition(d,k,V): 
     partition = [set(),set()]
