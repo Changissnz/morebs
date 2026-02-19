@@ -34,6 +34,30 @@ def order_element_in_dependency_order(depANDcodep_map,ooc,index):
     ooc.insert(x,q) 
     return x,True   
 
+def calculate_codependency_order(depANDcodep_map): 
+    ooc = [] 
+    num_no_deps = 0 
+    # start with codependencies and verify
+    elements = sorted(depANDcodep_map.keys()) 
+    for elem in elements:
+        
+        ds = depANDcodep_map[elem][0] 
+        if len(ds) == 0: 
+            num_no_deps += 1 
+
+        cds = depANDcodep_map[elem][1]
+        cds = cds | {elem}  
+        qi = index_of_element_in_setseq(ooc,elem)  
+
+        if type(qi) == type(None): 
+            ooc.append(cds) 
+            continue 
+
+        if ooc[qi] != cds: 
+            return None,False,num_no_deps
+
+    return ooc,True,num_no_deps
+
 def calculate_dependency_order_(ooc,depANDcodep_map):  
     qx = deepcopy(ooc) 
     for i in range(len(ooc)):
@@ -55,27 +79,10 @@ codependencies of every <IsoRing> result in consistentn
 <IsoRingedChain>. 
 """
 def calculate_dependency_order(depANDcodep_map):  
-    ooc = [] 
 
-    num_no_deps = 0 
-    # start with codependencies and verify
-    elements = sorted(depANDcodep_map.keys()) 
-    for elem in elements:
-        
-        ds = depANDcodep_map[elem][0] 
-        if len(ds) == 0: 
-            num_no_deps += 1 
-
-        cds = depANDcodep_map[elem][1]
-        cds = cds | {elem}  
-        qi = index_of_element_in_setseq(ooc,elem)  
-
-        if type(qi) == type(None): 
-            ooc.append(cds) 
-            continue 
-
-        if ooc[qi] != cds: 
-            return None,False
+    ooc,stat,num_no_deps = calculate_codependency_order(depANDcodep_map) 
+    if not stat: 
+        return ooc,stat 
 
     # order elements in first scan
     for _ in range(num_no_deps): 
@@ -89,4 +96,62 @@ def calculate_dependency_order(depANDcodep_map):
         if index != -1: 
             return None,False 
 
-    return ooc, True 
+    return ooc,True 
+
+class DependencyGraph:
+
+    def __init__(self,depANDcodep_map): 
+        self.depANDcodep_map = depANDcodep_map
+        self.setseq = None
+        self.G = None 
+        self.heads = None  
+        self.ooc,self.stat,self.num_no_deps = None,None,None 
+        self.active_proc_finstat = False 
+        return 
+
+    def process_order(self,require_proper_order:bool=True): 
+        self.active_proc_finstat = True  
+        if require_proper_order: 
+            self.ooc,self.stat = calculate_dependency_order(self.depANDcodep_map)
+            self.active_proc_finstat = False  
+            return 
+
+        self.ooc,self.stat,self.num_no_deps = calculate_codependency_order(self.depANDcodep_map)
+        return
+
+    def next_order(self): 
+        if not self.active_proc_finstat: return False 
+
+        ooc,self.stat = calculate_dependency_order_(deepcopy(self.ooc),self.depANDcodep_map)
+        if not self.stat: 
+            self.active_proc_finstat = False 
+
+        if ooc == self.ooc: 
+            self.active_proc_finstat = False 
+        elif type(ooc) == type(None): 
+            self.active_proc_finstat = False 
+        else: 
+            self.ooc = ooc 
+
+    def to_graph(self): 
+        assert type(self.ooc) != type(None) 
+
+        self.G = defaultdict(set) 
+        for i in range(len(self.ooc)): 
+            self.next_nodeset(i)
+        return self.G 
+
+    def next_nodeset(self,index): 
+        if index == 0: self.heads = deepcopy(self.ooc[index]) 
+
+        for x in self.ooc[index]: 
+            self.G[x] = self.ooc[index] - {x} 
+
+        if index == 0: 
+            return 
+
+        q = self.ooc[index-1] 
+        for x in self.ooc[index]: 
+            for x2 in q: 
+                self.G[x2] |= {x} 
+        return
