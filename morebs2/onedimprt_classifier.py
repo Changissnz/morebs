@@ -343,7 +343,7 @@ class ODCNode:
         return s 
 
     def add_nextnode(self,node,label): 
-        assert type(node) == ODCNode 
+        assert issubclass(type(node),ODCNode) 
         self.nextnode_dict[label] = node 
         return
 
@@ -413,7 +413,7 @@ class RecursiveOneDimClassifier:
         self.sample_cls_path.clear() 
         while type(q) != type(None): 
             l,q = q.classify(v) 
-            self.sample_cls_path.append(l) 
+            self.sample_cls_path.append((l,q))  
         return l 
 
     #------------------------------------- used to find classification solution 
