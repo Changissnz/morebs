@@ -1,9 +1,7 @@
-#from morebs2.fit_2n2 import *
-#from morebs2.random_generators import *
-#from morebs2.deline_helpers import *
 from .fit_2n2 import *
 from .random_generators import *
 from .deline_helpers import *
+from .numerical_generator import * 
 from collections import defaultdict,Counter
 
 class Delineation:
@@ -137,6 +135,15 @@ class Delineation:
         return DCurve(c,ad) 
 
     def point_sequence_to_curve_set(self,ps,ad):
+        if len(ps) == 1: 
+            additive = 5 * 10 ** -6
+            if ad in {'t','b'}: 
+                two = [ps[0][0],ps[0][1] + additive] 
+            else: 
+                two = [ps[0][0] + additive,ps[0][1]] 
+
+            ps = np.array([ps[0],two]) 
+
         l = len(ps) - 1
         cs = []
         for i in range(0,l):
@@ -157,8 +164,7 @@ class Delineation:
         if sc != None:
             return self.label if sc else -1
 
-        x1,x2 = (x1,x2) if type(x1) != None else (x3,x4)
-
+        x1,x2 = (x1,x2) if type(x1) != type(None) else (x3,x4)
         sc = self.classify_point_by_complementary_curves(p,x1,x2)
         return self.label if sc else -1
 
@@ -197,8 +203,9 @@ class Delineation:
         that 
         '''
         l,r,t,b = None,None,None,None
-
+        ##print("DDDD: ",self.d_)
         for x in self.d_:
+            ##print("RRRR")
             if x.in_point_range(p):
                 if x.ad == 'l': l = x
                 elif x.ad == 'r': r = x
@@ -263,8 +270,7 @@ class Delineation:
         colors = {'l': [1.,0.,0.,1.],\
             'r': [0.,1.,0.,1.],\
             't': [0.,0.,1.,1.],\
-            'b': [0.,0.,0.,1.]
-        }
+            'b': [0.,0.,0.,1.]}
 
         cs = []
         for c in self.d_:
@@ -306,7 +312,8 @@ class Delineation:
 
 class DLineate22:
 
-    def __init__(self,xyl,clockwise=True,dmethod = "nocross",idn="0"):
+    def __init__(self,xyl,clockwise=True,dmethod = "nocross",idn="0",target_min_label:bool=True,\
+        max_points_per_edge=1000,prg=prg__LCG(45.5,67.5,-117.5,9191.7)):
         """
         Delineates a sequence of three-dimensional points using the :class:`Delineator`
         by one of the methods `nojag`,`nocross`, or `nodup`, each of which provides a
@@ -342,7 +349,8 @@ class DLineate22:
 
         assert xyl.shape[1] == 3, "invalid shape"
         assert dmethod in ["nodup","nojag","nocross"]
-        
+        assert type(target_min_label) == bool 
+        assert max_points_per_edge >= 2 
         self.xyl = np.round(xyl,5)
         self.xyl_sorted_x = None
         self.xyl_sorted_y = None 
@@ -354,6 +362,9 @@ class DLineate22:
         self.d = None
         self.dmethod = dmethod
         self.idn = idn
+        self.target_min_label = target_min_label
+        self.max_points_per_edge = max_points_per_edge
+        self.prg = prg 
         return
 
     ############# preprocessing methods
@@ -373,7 +384,10 @@ class DLineate22:
         # default: choose min label
         if l == None:
             x = np.array([(k,len(v)) for (k,v) in self.lc.items()])
-            a = np.argmin(x[:,1])
+            if self.target_min_label: 
+                a = np.argmin(x[:,1]) 
+            else: 
+                a = np.argmax(x[:,1])
             self.label = x[a,0]
         else:
             self.label = l
@@ -425,6 +439,7 @@ class DLineate22:
         self.d = Delineation(label=self.label,clockwise=self.clockwise,parentIds=pi,childIds=ci,idn =self.idn)
         for x in ds:
             edge = self.break_points_on_edge(x)
+            ##print("adding edge for {}".format(x)) 
             self.d.add_edge(x,edge)
 
         if self.dmethod == "nodup":
@@ -435,6 +450,7 @@ class DLineate22:
             self.d.no_cross()
 
         self.assign_circular_directionality()
+        ##print("drawing delination")
         self.d.draw_delineation()
         return
 
@@ -457,28 +473,32 @@ class DLineate22:
 
         stat = True
         i = None
-        rd = self.xyl_sorted_y if direction in\
-            {'l','r'} else self.xyl_sorted_x
+        rd = self.subset_of_data(direction)
 
         while stat:
-            i = self.next_break_point(i,direction)
+            i = self.next_break_point(i,rd,direction)
             if i == None: 
                 stat = not stat
                 continue
             edge.append(deepcopy(rd[i,:2]))
         return np.array(edge)
 
-    def next_break_point(self,refi,direction):
-        rd = None
-        axis = None
-        if direction in  {'l','r'}:
-            rd = self.xyl_sorted_y
-            axis = 1
-        else:
-            rd = self.xyl_sorted_x
-            axis = 0
+    def subset_of_data(self,direction): 
+        rd = self.xyl_sorted_y if direction in\
+            {'l','r'} else self.xyl_sorted_x
         
+        if len(rd) <= self.max_points_per_edge: 
+            return rd 
+        
+        q = list(rd[1:-1]) 
+        num_points = self.max_points_per_edge - 2 
+        q = prg_choose_n(q,num_points,prg__single_to_int(self.prg),is_unique_picker=True)
+        return np.array([rd[0]] + q + [rd[-1]])
+
+    def next_break_point(self,refi,rd,direction):
+        axis = 1 if direction in  {'l','r'} else 0 
         j = None
+
         if refi == None:
             j = 0
         else:
@@ -494,16 +514,11 @@ class DLineate22:
                         j = i
             if j == None:
                 return None
-        return self.break_point_tiebreakers(j,direction)
+        return self.break_point_tiebreakers(j,rd,direction)
 
-    def break_point_tiebreakers(self,refni,direction):
-        #a = 1 if direction in {'l','r'} else 0
-        if direction in {'l','r'}: 
-            rd = self.xyl_sorted_y
-            a = 1
-        else:
-            rd = self.xyl_sorted_x
-            a = 0 
+    def break_point_tiebreakers(self,refni,rd,direction):
+
+        a = 1 if direction in {'l','r'} else 0
 
         rp = rd[refni]
         indices = np.where(rd[:,a] == rp[a])
@@ -597,20 +612,6 @@ class DLineate22:
                 if int(p[2]) == self.label:
                     counter[-1] += 1
 
-
-
-
-            '''
-                if c == int(p[2]): q += 1
-            else:
-                if int(p[2]) == self.label:
-                    counter[-1] += 1
-                counter[int(p[2])] += 1
-            else:
-                if p[2] 
-                counter[c]
-            '''
-
         return indices,counter,q
 
     def full_process(self,preprocess = True):
@@ -626,6 +627,9 @@ class DLineate22:
         # remove those indices from xyl
         self.xyl = np.delete(self.xyl,indices,0)
         return indices,c,q
+
+    def classify_point(self,x): 
+        return self.d.classify_point(x)
 
 def test_dataset__Dlineate22_1():
     '''
@@ -748,4 +752,5 @@ def test_dataset__DLineateMC_1():
     d = np.vstack((d,d2))
     d = np.vstack((d,d3))
     d = np.vstack((d,d4))
+    print("generated {} points".format(d.shape[0]))
     return d

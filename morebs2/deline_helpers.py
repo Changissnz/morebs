@@ -151,12 +151,6 @@ def correct_rectangle_cross(l1,l2,axis):
         if closer_edge(l1[0],l2[0],l2[1],axis) != 2:
             p2 = False
             
-    '''
-    if q[0][1]:
-        p1 = False
-    if q[1][1]:
-        p2 = False
-    '''
     return p1,p2
 
 
@@ -193,6 +187,8 @@ def point_in_diag_area(p,d):
 ######################## approach: no jags
 def remove_jags_on_edges(edges,direction):
     je = jags_on_edges(edges,direction)
+    if len(je) == 0: 
+        return edges 
     je.pop(-1)
     indices = []
     for (i,j) in enumerate(je):

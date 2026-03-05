@@ -158,7 +158,7 @@ class OneDimClassifier(XClassifier):
         l_dict = self.partition_eval()
         l_ = np.array([[k] + list(v) for k,v in l_dict.items()]) 
         indices = sort_matrix_by_index(l_,1,0)
-        self.prt = l_[indices] 
+        self.prt = l_[indices]
         return
 
     ######################## partitioning methods 
@@ -357,6 +357,23 @@ class ODCNode:
             return l,None 
         return l,self.nextnode_dict[l] 
 
+    '''
+    collates all connected nodes starting from this one 
+    into a list, in BFS order. 
+    '''
+    def to_node_sequence(self): 
+        cache = [self] 
+        queue = [self] 
+
+        while len(queue) > 0: 
+            node = queue.pop(0) 
+            x = sorted(node.nextnode_dict.keys()) 
+            for x_ in x: 
+                n = node.nextnode_dict[x_]
+                queue.append(n) 
+                cache.append(n) 
+        return cache 
+
 """
 A dataset classifier, based on decision tree format. 
 Uses the classifier <OneDimClassifier> as a unit node. 
@@ -380,6 +397,13 @@ class RecursiveOneDimClassifier:
         assert type(verbose) == bool 
         self.verbose = verbose 
         self.root = None 
+
+        # every element is 
+        # [0] ODCNode,P,E,D,L)
+        # [1] P := dict, label -> {indices of label in sub-data}
+        # [2] E := dict, label -> number of positive classification errors in D  
+        # [3] D := 2-d matrix, sub-data 
+        # [4] L := vector, labels corresponding to sub-data 
         self.node_cache = [] 
         self.current = None 
 
@@ -478,6 +502,9 @@ class RecursiveOneDimClassifier:
         self.node_cache.append((odc,P,E,D,L)) 
         return odc,P,E 
 
+    """
+
+    """ 
     def one_classification_process_(self,D,L,previous_indices=set()):  
         # instantiate one classifier 
         all_cols = set([i for i in range(D.shape[1])]) 

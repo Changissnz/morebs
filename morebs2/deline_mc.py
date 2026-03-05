@@ -24,6 +24,7 @@ class DLineateMetric:
             - counter[label]
         self.negMiss = counter[-1]
 
+# NOTE: buggy and incomplete  
 class DLineateMC:
     '''
     NOTE: inefficiencies exist. 
@@ -68,13 +69,6 @@ class DLineateMC:
         '''
 
         i,c,q = self.d.full_process(False)
-        print("I")
-        print(i)
-        print("C")
-        print(c)
-        print("Q")
-        print(q)
-
         self.dds.append(self.d)
         # case: perfect delineation
         if c[self.d.label] == c[-1] + c[self.d.label]:

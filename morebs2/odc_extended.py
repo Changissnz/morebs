@@ -41,11 +41,11 @@ class ODCAdditiveAdjustmentNode:
         self.part_index = 0 
 
 """
-A data-intensive extension to classifier<RecursiveOneDimClassifier>. 
+A memory-intensive extension to classifier<RecursiveOneDimClassifier>. 
 Practically memorizes all (index,label) pairs for label vector L. 
 With this information, classifier uses its root node to add the appropriate 
-vector v_l to input v, before classifier<RecursiveOneDimClassifier> proceeds 
-with classifying (v_l + v). 
+vector v_l to every input v, before classifier<RecursiveOneDimClassifier> 
+proceeds with classifying (v_l + v). 
 """
 class AdditiveAdjustedRecursiveODC(RecursiveOneDimClassifier): 
 
@@ -106,3 +106,5 @@ class AdditiveAdjustedRecursiveODC(RecursiveOneDimClassifier):
             if l_ == l: 
                 c += 1 
         return c 
+
+#------------------------------------------------------------------------------------------------
