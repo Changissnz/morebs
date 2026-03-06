@@ -3,7 +3,8 @@ functions to aid in Delineation
 
 make-shift
 '''
-import numpy as np
+from .numerical_generator import * 
+
 
 def eliminate_duplicate_points(edges1,edges2,axis):
 
@@ -267,16 +268,42 @@ def critical_dpoints_by_partition(edges,direction,p):
 
 ###################################################
 
-def delineation_in_delineation(d1,d2):
+def label2indices_map(D,label_index): 
+    assert is_2dmatrix(D) 
 
-    # go curve by curve
+    x = defaultdict(set)  
+    for (i,d) in enumerate(D): 
+        l = d[label_index]
+        x[l] |= {i} 
+    return {k:sorted(v) for k,v in x.items()}
+
+def approximate_points_for_delineation(D,max_points_per_label,prg):  
     
+    def corners_and_points(d): 
+        if len(d) <= 4: 
+            return d 
 
+        x = sorted(d,key=lambda x:x[0]) 
+        q = x.pop(0) 
+        q1 = x.pop(-1) 
 
+        x = sorted(x,key=lambda x:x[1]) 
+        q2 = x.pop(0) 
+        q3 = x.pop(-1) 
+        
+        if len(x) == 0: 
+            return np.array([q,q1,q2,q3])
 
-    return -1
+        num_points = min([max_points_per_label-4,len(x)]) 
+        remainder = prg_choose_n(x,num_points,prg__single_to_int(prg),is_unique_picker=True)
+        return np.array([q,q1,q2,q3] + remainder)
 
-# given i1,i2 for e1,e2
-# 
-#
-# if 
+    lmap = label2indices_map(D,-1) 
+    keys = sorted(lmap.keys()) 
+    D2 = np.empty((0,3)) 
+    for k in keys: 
+        d = D[lmap[k]] 
+        if len(d) > max_points_per_label: 
+            d = corners_and_points(d) 
+        D2 = np.concatenate((D2,d))
+    return D2

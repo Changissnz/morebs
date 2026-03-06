@@ -226,7 +226,7 @@ class DelineClass(unittest.TestCase):
 
         dl = deline.DLineate22(xyl,dmethod="nocross",target_min_label=False)
         q = dl.full_process()
-        assert q == ([0, 1, 2, 3, 4], Counter({0: 4, 1: 1}), 4)
+        assert q[:3] == ([0, 1, 2, 3, 4], Counter({0: 4, 1: 1}), 4)
 
         X = xyl[:,:2]
         L = xyl[:,2]

@@ -1,12 +1,11 @@
 from .fit_2n2 import *
 from .random_generators import *
 from .deline_helpers import *
-from .numerical_generator import * 
 from collections import defaultdict,Counter
 
 class Delineation:
 
-    def __init__(self,label,clockwise,parentIds = [],childIds = [],idn = "0"):
+    def __init__(self,label,clockwise,parentId = None,childIds = [],idn = "0"):
         """
         data structure used to store and calculate points for delineation of a sequence
         of two-dimensional points
@@ -25,7 +24,7 @@ class Delineation:
         self.d_ = None
         self.label = label
         self.clockwise = clockwise
-        self.parentIds = parentIds
+        self.parentId = parentId
         self.childIds = childIds
         return
 
@@ -203,9 +202,7 @@ class Delineation:
         that 
         '''
         l,r,t,b = None,None,None,None
-        ##print("DDDD: ",self.d_)
         for x in self.d_:
-            ##print("RRRR")
             if x.in_point_range(p):
                 if x.ad == 'l': l = x
                 elif x.ad == 'r': r = x
@@ -310,6 +307,33 @@ class Delineation:
             if c.in_point_range(p): cs.append(c)
         return cs 
 
+# CAUTION: no parameter check! 
+class DLineate22Metric:
+    '''
+    :attribute label:
+    :attribute posMiss: points found inside delineation with a different label
+    :attribute negMiss: points found outside delineation with the same label 
+    '''
+
+    def __init__(self,d22idn,label,num_elements,contained_indices,false_pos_indices):
+        self.idn = d22idn 
+        self.label = label
+        self.num_elements = num_elements 
+        self.contained_indices = contained_indices
+        self.fpos_indices = false_pos_indices
+
+    def NOT_indices(self): 
+        return [i for i in range(self.num_elements) if i not in self.contained_indices]
+    
+    def __str__(self): 
+        s = "idn : {}\n".format(self.idn)
+        s += "label: {}\n".format(self.label) 
+        s += "# elements: {}\n".format(self.num_elements) 
+        s += "contained indices: {}\n".format(self.contained_indices) 
+        s += "fpos indices: {}\n".format(self.fpos_indices) 
+        return s 
+
+
 class DLineate22:
 
     def __init__(self,xyl,clockwise=True,dmethod = "nocross",idn="0",target_min_label:bool=True,\
@@ -350,7 +374,8 @@ class DLineate22:
         assert xyl.shape[1] == 3, "invalid shape"
         assert dmethod in ["nodup","nojag","nocross"]
         assert type(target_min_label) == bool 
-        assert max_points_per_edge >= 2 
+        assert max_points_per_edge >= 2
+
         self.xyl = np.round(xyl,5)
         self.xyl_sorted_x = None
         self.xyl_sorted_y = None 
@@ -366,6 +391,12 @@ class DLineate22:
         self.max_points_per_edge = max_points_per_edge
         self.prg = prg 
         return
+
+    def parent_idn(self): 
+        return self.d.parentId 
+
+    def children_idn(self): 
+        return self.d.childIds
 
     ############# preprocessing methods
 
@@ -429,17 +460,16 @@ class DLineate22:
 
     ################## initial delineation
 
-    def collect_break_points(self,pi=[],ci=[]):
+    def collect_break_points(self,pi=None,ci=[]):
         '''
         clockwise -> [l + t -> increasing order, others in decreasing order]
         counter-clockwise -> [r + b -> increasing order, others in decreasing order]
         '''
 
         ds = ['l','r','t','b']
-        self.d = Delineation(label=self.label,clockwise=self.clockwise,parentIds=pi,childIds=ci,idn =self.idn)
+        self.d = Delineation(label=self.label,clockwise=self.clockwise,parentId=pi,childIds=ci,idn =self.idn)
         for x in ds:
             edge = self.break_points_on_edge(x)
-            ##print("adding edge for {}".format(x)) 
             self.d.add_edge(x,edge)
 
         if self.dmethod == "nodup":
@@ -450,7 +480,6 @@ class DLineate22:
             self.d.no_cross()
 
         self.assign_circular_directionality()
-        ##print("drawing delination")
         self.d.draw_delineation()
         return
 
@@ -474,7 +503,6 @@ class DLineate22:
         stat = True
         i = None
         rd = self.subset_of_data(direction)
-
         while stat:
             i = self.next_break_point(i,rd,direction)
             if i == None: 
@@ -584,7 +612,7 @@ class DLineate22:
 
     ######### analyze delineation
 
-    def analyze_delineation(self):
+    def analyze_delineation(self,xyl=None,add_metric=True):
         '''
         method is called after `optimize_delineation`;
         delineation `d` is put into the cache, and
@@ -598,35 +626,47 @@ class DLineate22:
         # iterate through all points and collect those in
         # delineation
         indices = []
+        false_pos_indices = [] 
+
+        if type(xyl) == type(None): 
+            xyl = self.xyl 
+
         counter = Counter()
         q = 0 # number of correctly labelled points
-        for (i,p) in enumerate(self.xyl):
+        for (i,p) in enumerate(xyl):
             c = self.d.classify_point(p)
             if c != -1:
                 indices.append(i)
                 # case: classification equals label
                 if c == int(p[2]): 
                     q += 1
+                else: 
+                    false_pos_indices.append(i)
+
                 counter[int(p[2])] += 1
             else:
                 if int(p[2]) == self.label:
                     counter[-1] += 1
 
-        return indices,counter,q
+        met = None 
+        if add_metric: 
+            met = DLineate22Metric(self.idn,self.label,len(xyl),indices,false_pos_indices)
 
-    def full_process(self,preprocess = True):
+        return indices,counter,q,met 
+
+    def full_process(self,parent_index=None,xyl=None,preprocess = True,add_metric=True):
         '''
         main method
         '''
         if preprocess:
             self.preprocess()
-            print("finished preprocessing ")
-        self.collect_break_points()
+            ##print("finished preprocessing ")
+        self.collect_break_points(pi=parent_index) 
         self.optimize_delineation()
-        indices,c,q = self.analyze_delineation()
+        indices,c,q,met = self.analyze_delineation(xyl,add_metric)
         # remove those indices from xyl
-        self.xyl = np.delete(self.xyl,indices,0)
-        return indices,c,q
+        #self.xyl = np.delete(self.xyl,indices,0)
+        return indices,c,q,met
 
     def classify_point(self,x): 
         return self.d.classify_point(x)
