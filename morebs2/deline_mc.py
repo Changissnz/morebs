@@ -1,15 +1,5 @@
 from morebs2.deline import *
 
-class DPointAnalysis:
-    '''
-    provides a description of the complexity of the dataset
-    of two-dimensional labelled points that :class:`DLineateMC`
-    delineates. 
-    '''
-
-    def __init__(self):
-        return
-
 """
 Node container for <DLineate22> instance. Used to form trees, 
 and these trees are used by class<DLineateMC> for classification. 
@@ -67,7 +57,16 @@ class D22Node:
 
         return q
 
+    def to_node_sequence(self): 
+        nodes = [self]
+        fin_nodes = []
+        while len(nodes) > 0: 
+            node = nodes.pop(0)
+            nodes.extend(node.child_nodes)         
+            fin_nodes.append(node) 
+
     def node_count(self): 
+        '''
         c = 1 
         nodes = [self]
 
@@ -77,8 +76,20 @@ class D22Node:
             c += x 
             nodes.extend(node.child_nodes) 
         return c 
+        ''' 
+        return len(self.to_node_sequence())
+    
+    def curve_size(self): 
+        q = self.to_node_sequence() 
+        c = 0 
+        for q_ in q: 
+            c += len(q_.d22)
+        return c 
 
-
+# NOTE: redundant variable 
+"""
+V := list 
+"""
 def most_frequent_label(V):
     d = Counter() 
     for v_ in V: 
@@ -148,15 +159,7 @@ class DLineateMC:
 
         self.process_D22_remaining_NOTs(parent_d22,parent_met,clockwise)
         self.done_cache.append(parent_d22) 
-
-        '''
-        self.idn = d22idn 
-        self.label = label
-        self.num_elements = num_elements 
-        self.contained_indices = contained_indices
-        self.fpos_indices = false_pos_indices
-        ''' 
-        return -1 
+        return
 
     def process_D22_(self,parent_d22,parent_met,clockwise=True,process_type="fpos",not_indices=None): 
         assert process_type in {'fpos','not'}
@@ -254,6 +257,12 @@ class DLineateMC:
         self.cl = S 
         return
 
+    """
+    main method #4
+
+    outputs a classification map, 
+        DLineate22 idn -> {label sequence}
+    """
     def classify_(self,x): 
         cmap = {} 
         for q in self.cl: 
@@ -261,6 +270,12 @@ class DLineateMC:
             cmap[q.idn()] = c 
         return cmap 
 
+    """
+    main method #3 
+
+    outputs a sequence of most frequent label 
+    per <DLineate22>
+    """
     def classify(self,x): 
         cmap = self.classify_(x) 
         C = [] 
@@ -273,11 +288,20 @@ class DLineateMC:
         if len(C) == 0: return -1 
         return sorted(C) 
 
+    """
+    main method #2 
+    
+    classifies vector to 1 label, most frequent in 
+    vector from method<classify>. 
+    """
     def one_classification(self,x): 
         v = self.classify(x) 
         if v == -1: return -1 
         return most_frequent_label(v)
 
+    """
+    main method #1: calculate classifier 
+    """
     def full_run(self): 
         self.init_root() 
         stat = True 
@@ -294,7 +318,7 @@ class DLineateMC:
 DEFAULT_D22MC_MAX_POINTS_PER_LABEL = 20 
 
 """
-An approximation built on top of class<DLineateMC>. By default, takes at most 20 
+An approximator built on top of class<DLineateMC>. By default, takes at most 20 
 points per label of two-dimensional dataset. 
 """
 class DLineateMCApprox(DLineateMC): 
@@ -324,6 +348,9 @@ class DLineateMCApproximators:
         self.approximators = [] 
         self.fin_stat = False 
 
+    """
+    main method #1
+    """
     def full_run(self): 
         while not self.fin_stat: 
             next(self) 
@@ -357,6 +384,9 @@ class DLineateMCApproximators:
 
         self.rem_xyl = self.rem_xyl[indices]
 
+    """
+    main method #2 
+    """
     def one_classification(self,x): 
         l = [] 
         for a in self.approximators: 

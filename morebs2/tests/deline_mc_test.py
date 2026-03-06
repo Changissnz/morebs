@@ -35,6 +35,21 @@ def DLineateMCApproximators_sample_dataset():
 '''
 py -m morebs2.tests.deline_mc_test  
 '''
+class DLineateMCApproxClass(unittest.TestCase):
+
+    def test__DLineateMCApprox__one_classification__case_1(self): 
+        xyl = DLineateMCApproximators_sample_dataset() 
+        d1 = DLineateMCApprox(xyl,dmethod="nodup",prg=prg__LCG(-1615.4,-3454.66,-919.16,-9191.4545))
+        d1.full_run() 
+
+        c = 0 
+        for (i,x) in enumerate(xyl): 
+            x2 = x[:2]
+            rx = d1.one_classification(x2)
+            #print("i: ",i, " label: ",x[2], " got: ",rx)
+            c += int(x[2] == rx) 
+        assert c == 1396
+
 class DLineateMCApproximatorsClass(unittest.TestCase):
 
     """

@@ -28,6 +28,11 @@ class Delineation:
         self.childIds = childIds
         return
 
+    def __len__(self): 
+        if type(self.d_) == type(None): 
+            return 0 
+        return len(self.d_) 
+
     def add_edge(self,direction,edge):
         self.d[direction] = edge
 
@@ -398,6 +403,10 @@ class DLineate22:
     def children_idn(self): 
         return self.d.childIds
 
+    def __len__(self): 
+        if type(self.d) == type(None): return 0 
+        return len(self.d) 
+
     ############# preprocessing methods
 
     def preprocess(self):
@@ -521,7 +530,14 @@ class DLineate22:
         q = list(rd[1:-1]) 
         num_points = self.max_points_per_edge - 2 
         q = prg_choose_n(q,num_points,prg__single_to_int(self.prg),is_unique_picker=True)
-        return np.array([rd[0]] + q + [rd[-1]])
+        X = np.array([rd[0]] + q + [rd[-1]])
+
+        axis =  1 if direction in  {'l','r'} else 0 
+        indices = np.argsort(X[:,axis],axis=axis) 
+        X = X[indices] 
+
+        return X 
+
 
     def next_break_point(self,refi,rd,direction):
         axis = 1 if direction in  {'l','r'} else 0 
@@ -654,10 +670,11 @@ class DLineate22:
 
         return indices,counter,q,met 
 
+    '''
+    main method #1
+    '''
     def full_process(self,parent_index=None,xyl=None,preprocess = True,add_metric=True):
-        '''
-        main method
-        '''
+
         if preprocess:
             self.preprocess()
             ##print("finished preprocessing ")
@@ -668,6 +685,9 @@ class DLineate22:
         #self.xyl = np.delete(self.xyl,indices,0)
         return indices,c,q,met
 
+    """
+    main method #2
+    """
     def classify_point(self,x): 
         return self.d.classify_point(x)
 
