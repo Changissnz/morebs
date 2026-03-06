@@ -10,6 +10,10 @@ class DPointAnalysis:
     def __init__(self):
         return
 
+"""
+Node container for <DLineate22> instance. Used to form trees, 
+and these trees are used by class<DLineateMC> for classification. 
+"""
 class D22Node: 
 
     def __init__(self,d22,child_nodes):  
