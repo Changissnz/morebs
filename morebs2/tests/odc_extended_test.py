@@ -8,7 +8,7 @@ py -m morebs2.tests.odc_extended_test
 '''
 class AdditiveAdjustedRecursiveODCClass(unittest.TestCase):
 
-    def test__AdditiveAdjustedRecursiveODC__score_accuracy_case1(self):
+    def test__AdditiveAdjustedRecursiveODC__score_accuracy_case_1(self):
 
         D = OneDimClassifier_test_dataset_1() 
         L = np.array([label_vector__type_binary_alt_sum(v) for v in D]) 
@@ -20,7 +20,8 @@ class AdditiveAdjustedRecursiveODCClass(unittest.TestCase):
 
         c = rodc.score_accuracy(D,L)
         c2 = rodc.score_accuracy(D,L)
-        assert c == c2 == 1000, "got {}".format(c)
+        c3 = rodc.score_accuracy(D,L)
+        assert c == c2 == c3 == 1000, "got {},{}".format(c,c2)
 
         # subcase 2 
         rodc = AdditiveAdjustedRecursiveODC(D,L,prg,1)
@@ -29,9 +30,33 @@ class AdditiveAdjustedRecursiveODCClass(unittest.TestCase):
         c = rodc.score_accuracy(D,L)
         c2 = rodc.score_accuracy(D,L)
         assert c == c2 == 904, "got {}".format(c)
-
-
         return
+
+    """
+    tests <ODCAdditiveAdjustmentNode> with half of its contiguous information 
+    missing. 
+
+    Diminished accuracy from 1000 to 559 
+    """ 
+    def test__AdditiveAdjustedRecursiveODC__score_accuracy_case_2(self):
+        D = OneDimClassifier_test_dataset_1() 
+        L = np.array([label_vector__type_binary_alt_sum(v) for v in D]) 
+
+        # subcase 1
+        prg = prg__LCG(-56.7,122.3,-31.6,-3121.66) 
+        rodc = AdditiveAdjustedRecursiveODC(D,L,prg,0)
+        rodc.fit() 
+
+        # try removing some of the indices
+        node = rodc.root_ 
+        cs = node.contiguous_sequence
+        cs_ = [cs.pop(0),cs.pop(-1)]
+        qx = prg_choose_n(cs,len(cs) // 2,prg__single_to_int(prg),is_unique_picker=True)
+        qx = sorted(qx + cs_,key=lambda x: x[2]) 
+        node.contiguous_sequence = qx 
+
+        c = rodc.score_accuracy(D,L)
+        assert c == 559 
 
 if __name__ == '__main__':
     unittest.main()

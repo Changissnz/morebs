@@ -25,7 +25,8 @@ class AdditiveAdjustedRecursiveODC(RecursiveOneDimClassifier):
         return D2 
 
     def make_adjustment(self,L): 
-        self.crepr = contiguous_repr__sequence(L)
+        self.crepr = indexed_contiguous_repr__sequence(L)
+
         
     def make_additive_map(self,D,L):
         labels = sorted(set(L)) 

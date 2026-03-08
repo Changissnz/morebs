@@ -33,6 +33,18 @@ def contiguous_repr__sequence(S):
             ref = ref_
     return q
 
+def indexed_contiguous_repr__sequence(S):
+    q = contiguous_repr__sequence(S) 
+    i = 0 
+    q_ = [] 
+    while len(q) > 0: 
+        q2 = q.pop(0) 
+        q2_ = (q2[0],q2[1],i) 
+        i = i + q2[1] 
+
+        q_.append(q2_) 
+    return q_ 
+
 def contiguous_repr_size_measure(S,measure=np.var): 
     q = [s[1] for s in S] 
     return measure(q)

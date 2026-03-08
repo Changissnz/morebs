@@ -1,5 +1,5 @@
 from .xclassif_aux import * 
-from .seq_repr import contiguous_repr__sequence
+from .seq_repr import indexed_contiguous_repr__sequence
 
 def sort_matrix_by_index(M,index,axis=0): 
     assert 0 <= index < M.shape[(axis+1) % 2] 
@@ -395,14 +395,17 @@ class ODCAdditiveAdjustmentNode:
         self.index_counter = 0 
         self.part_index = 0 
 
-    def map(self,v): 
+        self.is_active = True
+
+    def map(self,v):
+        # original 
+        """
+        q = self.contiguous_sequence[self.part_index] 
         self.c += 1 
         self.index_counter += 1 
 
-        q = self.contiguous_sequence[self.part_index] 
         # case: move to next 
         if self.index_counter > q[1]: 
-           #print("NEXT PART FROM ",q) 
             self.index_counter = 1 
             self.part_index += 1 
             if self.part_index >= len(self.contiguous_sequence): 
@@ -412,6 +415,37 @@ class ODCAdditiveAdjustmentNode:
         l = q[0] 
         v2 = self.additive_map[l] 
         return v + v2
+        """
+        ##############################
+        # revised 
+
+        q = self.contiguous_sequence[self.part_index] 
+        c = self.c 
+        self.c += 1 
+
+        if c < q[2]: 
+            self.is_active = False 
+            self.index_counter = 0 
+            return v 
+
+        if self.c >= q[2]: 
+            self.is_active = True 
+        
+        if not q[2] <= self.c <= q[2] + q[1]:
+            self.part_index = self.part_index + 1
+            if self.part_index >= len(self.contiguous_sequence): 
+                self.part_index = 0 
+                self.c = 1
+            
+        q = self.contiguous_sequence[self.part_index] 
+        l = q[0] 
+
+        if self.c < q[2]: 
+            self.is_active = False 
+            return v 
+
+        v2 = self.additive_map[l] 
+        return v + v2        
 
     def reset(self): 
         self.c = 0 
