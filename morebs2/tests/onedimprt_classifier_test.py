@@ -3,7 +3,9 @@ from morebs2.modular_labeller import *
 from morebs2.onedimprt_classifier import * 
 import unittest
 
-
+'''
+py -m morebs2.tests.onedimprt_classifier_test  
+'''
 class TestOneDimClassifierClass(unittest.TestCase):
 
     '''

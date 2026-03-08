@@ -1,44 +1,4 @@
 from .onedimprt_classifier import * 
-from .seq_repr import contiguous_repr__sequence
-
-"""
-First node (root) for classifier<AdditiveAdjustedRecursiveODC>. 
-Adds a vector v_l to input x, according to current index i that maps 
-to vector v_l corresponding to a label l. 
-"""
-class ODCAdditiveAdjustmentNode: 
-
-    def __init__(self,contiguous_sequence,additive_map):  
-        self.contiguous_sequence = contiguous_sequence
-        self.additive_map = additive_map 
-
-        # counter variable
-        self.c = 0
-        self.index_counter = 0 
-        self.part_index = 0 
-
-    def map(self,v): 
-        self.c += 1 
-        self.index_counter += 1 
-
-        q = self.contiguous_sequence[self.part_index] 
-        # case: move to next 
-        if self.index_counter > q[1]: 
-           #print("NEXT PART FROM ",q) 
-            self.index_counter = 1 
-            self.part_index += 1 
-            if self.part_index >= len(self.contiguous_sequence): 
-                self.part_index = 0
-
-        q = self.contiguous_sequence[self.part_index] 
-        l = q[0] 
-        v2 = self.additive_map[l] 
-        return v + v2
-
-    def reset(self): 
-        self.c = 0 
-        self.index_counter = 0 
-        self.part_index = 0 
 
 """
 A memory-intensive extension to classifier<RecursiveOneDimClassifier>. 

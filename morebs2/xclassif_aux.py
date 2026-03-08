@@ -60,6 +60,10 @@ def cumulative_vector_difference(V,add_log:bool=False):
     return S 
 
 # NOTE: careful with large vector values 
+"""
+used by class<ModDivClassifier>. Finds weight vector `best_W`, comprised 
+of {-1,10} that maximizes differences between samples `s_i x best_W`. 
+"""
 class OneTenLinearFunctionDifferenceMaximizer:
 
     def __init__(self,samples,alter_pattern="linear",verbose=False):
