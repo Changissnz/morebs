@@ -110,5 +110,34 @@ class MBAAARecursiveODCClass(unittest.TestCase):
         CX = [c2,c3,c4,c5,c6,c7,c8,c9] 
         assert [987, 622, 473, 431, 501, 401, 675, 963]
 
+
+    """
+    tests demonstrate varying accuracy, based on PRNG decisions, 
+    for classifier with `max_mem_sz`=400,mem_ratio_per_node=0.6. 
+    """
+    def test__MBAAARecursiveODC__score_accuracy_case_2(self):
+
+        D = OneDimClassifier_test_dataset_1() 
+        L2 = np.array([label_vector__type_binary_alt_sum(v) for v in D]) 
+                
+        prg = prg__LCG(56.7,122.3,-31.6,2121.66) 
+        rodc = MBAAARecursiveODC(D,L2,prg,1,max_mem_sz=400,mem_ratio_per_node=0.6) 
+        rodc.fit() 
+        c10 = rodc.score_accuracy(D,L2)
+
+        rodc2 = MBAAARecursiveODC(D,L2,prg,1,max_mem_sz=400,mem_ratio_per_node=0.6) 
+        rodc2.fit() 
+        c11 = rodc2.score_accuracy(D,L2)
+
+        rodc3 = MBAAARecursiveODC(D,L2,prg,1,max_mem_sz=400,mem_ratio_per_node=0.6) 
+        rodc3.fit() 
+        c12 = rodc3.score_accuracy(D,L2)
+
+        rodc4 = MBAAARecursiveODC(D,L2,prg,1,max_mem_sz=400,mem_ratio_per_node=0.6) 
+        rodc4.fit() 
+        c13 = rodc4.score_accuracy(D,L2)
+
+        assert [c10,c11,c12,c13] == [372,312,359,365]
+
 if __name__ == '__main__':
     unittest.main()
