@@ -94,6 +94,25 @@ class OneDimClassifier(XClassifier):
         self.full_filter = True   
         return
 
+    """
+    return: 
+    [0] OneDimClassifier
+    [1] int, index 
+    """
+    @staticmethod 
+    def one_OneDimClassifier(D,L,previous_indices,prg,pscheme): 
+        # instantiate one classifier 
+        all_cols = set([i for i in range(D.shape[1])]) 
+        candidates = sorted(all_cols - previous_indices) 
+        if len(candidates) == 0: 
+            return None,None 
+
+        i = prg__single_to_int(prg)() % len(candidates)  
+        index = candidates[i] 
+        odc = OneDimClassifier(D,L,index,pscheme)
+        odc.make() 
+        return odc,index 
+
     def __str__(self): 
         return str(self.clf) 
 
@@ -332,8 +351,9 @@ unit for decision-tree classifier <RecursiveOneDimClassifier>.
 class ODCNode: 
 
     def __init__(self,odc,nextnode_dict=dict(),previous_indices=set()):
-        assert type(odc) == OneDimClassifierFunction
+        assert type(odc) in {OneDimClassifierFunction,type(None)} 
         assert type(previous_indices) == set 
+
         self.odc = odc 
         self.nextnode_dict= nextnode_dict 
         self.previous_indices = previous_indices
@@ -352,7 +372,8 @@ class ODCNode:
         assert type(indices) == set 
         self.previous_indices = indices 
 
-    def classify(self,v): 
+    def classify(self,v):
+        assert type(self.odc) != type(None)  
         l = self.odc.classify(v)
         if l not in self.nextnode_dict: 
             return l,None 
@@ -374,6 +395,32 @@ class ODCNode:
                 queue.append(n) 
                 cache.append(n) 
         return cache 
+
+"""
+return: 
+- dict, label -> additive vector. 
+"""
+# NOTE: used for class<ODCAdditiveAdjustmentNode>,class<ODCAAPrefixedNode>. 
+def default_additive_map(D,L,multiplier=2): 
+    assert len(D) == len(L) 
+    labels = sorted(set(L)) 
+    num_cols = D.shape[1]
+    max_diff = max([max(D[:,i]) - min(D[:,i]) for i in range(num_cols)]) 
+    increment = max_diff * multiplier  
+
+    if increment == 0: 
+        increment = 10 
+
+    v = np.zeros((num_cols,)) 
+    add_map = dict() 
+
+    for (i,l) in enumerate(labels): 
+        v_ = np.copy(v) 
+        a = increment + increment * (i * -1 ** i)
+        a = (-1**i) * (increment + increment * i)
+        v_ +=  a
+        add_map[l] = v_ 
+    return add_map 
 
 """
 First node (root) for classifier<AdditiveAdjustedRecursiveODC>; 
@@ -443,7 +490,6 @@ class ODCAdditiveAdjustmentNode:
         if self.c < q[2]: 
             self.is_active = False 
             return v 
-
         v2 = self.additive_map[l] 
         return v + v2        
 
@@ -451,3 +497,106 @@ class ODCAdditiveAdjustmentNode:
         self.c = 0 
         self.index_counter = 0 
         self.part_index = 0 
+
+"""
+Unit node for classifier<MBAAARecursiveODC>. 
+"""
+class ODCAAPrefixedNode(ODCNode):
+
+    def __init__(self,D,L,previous_indices): 
+        assert is_2dmatrix(D) 
+        assert is_vector(L) 
+        self.D = D 
+        self.L = L 
+        super().__init__(None,nextnode_dict=dict(),previous_indices=previous_indices) 
+
+    def calculate_prefix(self,rem_sz,mem_ratio_per_node,prg):  
+            
+        # calculate the additive prefix first         
+            #       case: no more memory 
+        if rem_sz < 2: 
+            cranges = None
+            #       case: choose some number of ranges for labels to memorize  
+        else: 
+            cseq = indexed_contiguous_repr__sequence(self.L) 
+            if len(cseq) < 2: 
+                cranges = None 
+            else: 
+                cranges = [cseq.pop(0),cseq.pop(-1)] 
+                num_ranges = min([rem_sz - 2,ceil(len(cseq) * mem_ratio_per_node)])
+                if num_ranges > 0: 
+                    qx = prg_choose_n(cseq,num_ranges,prg__single_to_int(prg),is_unique_picker=True)
+                    cranges = cranges + qx 
+                    cranges = sorted(cranges,key=lambda x:x[2]) 
+        
+        if type(cranges) == type(None): 
+            self.prefix_node = None 
+            return 0 
+
+        # calculate additive map
+        amap = default_additive_map(self.D,self.L,2) 
+        self.prefix_node = ODCAdditiveAdjustmentNode(cranges,amap) 
+        return len(cranges) 
+
+    def init_children(self,prg,pscheme): 
+        D = self.adjusted_data()
+
+        # initialize classifier for self 
+        odc,index = OneDimClassifier.one_OneDimClassifier(D,self.L,self.previous_indices,prg,pscheme) 
+        self.odc = odc
+        self.previous_indices = self.previous_indices | {index}
+
+        # classify all samples of adjusted data
+        L_ = [self.odc.classify(v) for v in D] 
+
+        # case: no more indices remaining for splitting 
+        if self.previous_indices == set([i for i in range(D.shape[1])]): 
+            return [] 
+
+        # make the children
+            # get (data,label vector) for each label 
+        data_map = defaultdict(list) 
+        label_map = defaultdict(list) 
+        error_map = defaultdict(int) 
+        for i,(d,l) in enumerate(zip(D,L_)): 
+            l_ = self.L[i] 
+            data_map[l].append(d) 
+            label_map[l].append(l_)
+            error_map[l] += int(l_ != l) 
+
+            # make children only for labels with more than one error 
+        self.nextnode_dict = dict() 
+        for k,v in error_map.items(): 
+            if v == 0: 
+                continue 
+            d = np.array(data_map[k])
+            l = np.array(label_map[k]) 
+            opnode = ODCAAPrefixedNode(d,l,deepcopy(self.previous_indices))
+            self.nextnode_dict[k] = opnode
+        keys = sorted(self.nextnode_dict.keys())
+        return [self.nextnode_dict[k] for k in keys]
+
+    def adjusted_data(self): 
+        if type(self.prefix_node) == type(None): 
+            return self.D 
+
+        return np.array([self.prefix_node.map(d) for d in self.D])
+
+    """
+    main method #1 
+    """
+    def make(self,rem_sz,mem_ratio_per_node,prg,pscheme): 
+        sz = self.calculate_prefix(rem_sz,mem_ratio_per_node,prg) 
+        child_nodes = self.init_children(prg,pscheme) 
+        self.D,self.L = None,None 
+        return sz,child_nodes
+
+    """
+    main method #2 
+    """
+    def classify(self,v): 
+        if type(self.prefix_node) != type(None): 
+            v = self.prefix_node.map(v)
+        l = self.odc.classify(v) 
+        if l in self.nextnode_dict: return v,l,self.nextnode_dict[l]
+        return v,l,None 

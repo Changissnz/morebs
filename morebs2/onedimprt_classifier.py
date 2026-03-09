@@ -135,17 +135,10 @@ class RecursiveOneDimClassifier:
     [2] dict, label -> {mislabeled indices} 
     """ 
     def one_classification_process_(self,D,L,previous_indices=set()):  
-        # instantiate one classifier 
-        all_cols = set([i for i in range(D.shape[1])]) 
-        candidates = sorted(all_cols - previous_indices) 
-        if len(candidates) == 0: 
-            if self.verbose: print("? no more indices")
-            return None,None,None 
 
-        i = prg__single_to_int(self.prg)() % len(candidates)  
-        index = candidates[i] 
-        odc = OneDimClassifier(D,L,index,self.pscheme)
-        odc.make() 
+        odc,index = OneDimClassifier.one_OneDimClassifier(D,L,previous_indices,self.prg,self.pscheme)
+        if type(odc) == type(None): 
+            return None,None,None 
 
         # partition by classification 
         P = defaultdict(set) 
