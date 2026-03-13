@@ -70,7 +70,7 @@ Recursive One-Dimensional Classifier
 
 This classifier works on the same principle as classifier<AdditiveAdjustedRecursiveODC>. 
 However, it has additional parameters (`max_mem_sz`,`mem_ratio_per_node`) that limit the 
-number of index-to-label ranges it can remember. 
+number of index-to-label ranges it can recall. 
 
 Unlike classifier<AdditiveAdjustedRecursiveODC>, a structure that sets one node for additive adjustment
 as the root, and then proceeds to classify the offsetted input vectors according to 
@@ -81,7 +81,7 @@ to classify (v_il + v_i).
 
 For sub-data D_ of D, and its associate index-to-label ranges R_, class<ODCAAPrefixedNode> can 
 memorize at most 
-    [ceil(`mem_ratio_per_node` * |R|),`max_mem_sz` - Q]; Q the number of ranges memorized by previous 
+    min([ceil(`mem_ratio_per_node` * |R|),`max_mem_sz` - Q]); Q the number of ranges memorized by previous 
             nodes to the node instance. 
 """
 class MBAAARecursiveODC(RecursiveOneDimClassifier): 
