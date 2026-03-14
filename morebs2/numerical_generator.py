@@ -12,6 +12,14 @@ def modulo_in_range(i,r):
     assert r[0] < r[1], "invalid range {}".format(r) 
     return i % (r[1] - r[0]) + r[0] 
 
+"""
+outputs r[0] if r[0] == r[1] 
+"""
+def safe_modulo_in_range(i,r): 
+    if r[0] == r[1]: return r[0] 
+    return modulo_in_range(i,r) 
+
+
 class LCG:
     '''
     linear congruential generator
