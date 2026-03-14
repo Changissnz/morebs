@@ -77,6 +77,24 @@ def sorted_vector_value_search(vector, value, irange = None):
         return None,False
     return s[0],True
 
+def rank_sequence(S,vf=lambda x:x[1],element_output_function=lambda x:x,output_type=list): 
+    assert len(S) > 0
+    assert output_type in {list,dict}
+
+    S_ = sorted(S,key=vf) 
+    rank = 0
+    v = vf(S_[0]) 
+    S2 = [] 
+    while len(S_) > 0: 
+        x = S_.pop(0) 
+        if vf(x) != v:
+            rank += 1 
+        v = vf(x)  
+        S2.append((element_output_function(x),rank))
+    if output_type == list: 
+        return S2 
+    return {v[0]:v[1] for v in S2} 
+
 class PointSorter:
     """
     class can be used by one of these ways: 

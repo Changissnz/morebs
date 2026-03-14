@@ -132,5 +132,17 @@ class TestPointSorterClass(unittest.TestCase):
         assert point_sorter.equal_iterables(ps.extremumData[-1][0],np.array([5.0,5.0,5.0]))
         assert point_sorter.equal_iterables(ps.extremumData[1][0],[ 1., 15., 31.])
 
+    def test__rank_sequence__case_1(self): 
+        S = [(5,6),(1,0),(2,1),(7,6),(3,3),(8,6)] 
+        S2 = point_sorter.rank_sequence(S,vf=lambda x:x[1])
+
+        assert S2 == [((1, 0), 0), ((2, 1), 1), \
+        ((3, 3), 2), ((5, 6), 3), ((7, 6), 3), ((8, 6), 3)]
+
+        S3 = point_sorter.rank_sequence(S,vf=lambda x:x[1],\
+            element_output_function=lambda x:x[0],output_type=dict) 
+        assert S3 == {1: 0, 2: 1, 3: 2, 5: 3, 7: 3, 8: 3}, \
+            "got {}".format(S3) 
+
 if __name__ == "__main__":
     unittest.main()
