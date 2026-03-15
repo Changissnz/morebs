@@ -776,6 +776,13 @@ def n_partition_for_bound(b, partition):
         partition_.append(x0)
     return np.array(partition_)
 
+def n_partition_for_range(r,partition): 
+    assert is_valid_range(r,True,False) or is_valid_range(r,False,False) 
+    assert type(partition) == int and partition > 0 
+    
+    q = n_partition_for_bound(np.array([r]),partition)
+    return q.reshape((partition+1,)) 
+
 def invert_bounds(b):
     assert is_bounds_vector(b), "invalid bounds vector"
     b2 = np.empty((b.shape[0],2))
