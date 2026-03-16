@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 '''
-python -m morebs2.tests.point_sorter_test  
+py -m morebs2.tests.point_sorter_test  
 '''
 
 def sample_pointsort_vector_1():
@@ -143,6 +143,34 @@ class TestPointSorterClass(unittest.TestCase):
             element_output_function=lambda x:x[0],output_type=dict) 
         assert S3 == {1: 0, 2: 1, 3: 2, 5: 3, 7: 3, 8: 3}, \
             "got {}".format(S3) 
+
+    def test__median_swap__case_1(self):
+
+        S3 = [1,2,3,4,5,6] 
+        q = point_sorter.median_swap(S3,1.)
+        q2 = point_sorter.median_swap(S3,0.25) 
+        q3 = point_sorter.median_swap(S3,0.5) 
+
+        assert q == [6, 5, 4, 3, 2, 1]
+        assert q2 == [6, 2, 3, 4, 5, 1]
+        assert q3 == [6, 5, 3, 4, 2, 1]
+
+        S4 = [0]#[1,2,3,4,5,6,7] 
+        q4 = point_sorter.median_swap(S4,1.)
+        q5 = point_sorter.median_swap(S4,0.25) 
+        q6 = point_sorter.median_swap(S4,0.5) 
+        assert q4 == q5 == q6 == S4 
+
+        S5 = [1,2,3,4,5,6,7] 
+        q7 = point_sorter.median_swap(S5,1.)
+        q8 = point_sorter.median_swap(S5,0.25) 
+        q9 = point_sorter.median_swap(S5,0.5) 
+        q10 = point_sorter.median_swap(S5,0.75) 
+
+        assert q7 == [7, 6, 5, 4, 3, 2, 1]
+        assert q8 == [7, 2, 3, 4, 5, 6, 1]
+        assert q9 == [7, 6, 3, 4, 5, 2, 1]
+        assert q10 == [7, 6, 5, 4, 3, 2, 1]
 
 if __name__ == "__main__":
     unittest.main()

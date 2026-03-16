@@ -1,6 +1,7 @@
 from .line import *
 from collections import defaultdict
 from copy import deepcopy
+from math import ceil 
 
 ndim_point_distance = lambda p1, p2: np.sum([np.sqrt((p1 - p2)**2)])
 
@@ -94,6 +95,23 @@ def rank_sequence(S,vf=lambda x:x[1],element_output_function=lambda x:x,output_t
     if output_type == list: 
         return S2 
     return {v[0]:v[1] for v in S2} 
+
+"""
+Starting from the leftmost element, 0'th index, swaps elements 
+0 through x with their right half complement in |S-1| through 
+(|S-1|- x). 
+"""
+def median_swap(S,r):
+    assert type(S) == list
+    assert 0. <= r <= 1. 
+
+    m = len(S) // 2
+    num_swaps = ceil(m * r)
+    S = deepcopy(S) 
+    for i in range(0,num_swaps): 
+        i2 = (len(S) - 1) - i 
+        S[i],S[i2] = S[i2],S[i]
+    return S 
 
 class PointSorter:
     """
