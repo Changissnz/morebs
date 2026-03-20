@@ -213,6 +213,17 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         P3 = numerical_generator.prg_partition_for_float(F,df3,prg,var,n=1000,rounding_depth=5)
         assert np.sum(P3) == F
 
+    def test__prg_partition_for_float__type2(self):
+        F = 50. 
+        df = 5 
+        prg = numerical_generator.prg__LCG(-15.4,753.1,-87.5,-9011.5757)
+
+        q = numerical_generator.prg_partition_for_float__type2(F,df,prg,m=1)
+        assert np.sum(q) == F 
+
+        df2 = 35 
+        q2 = numerical_generator.prg_partition_for_float__type2(F,df2,prg,m=1.5)
+        assert np.sum(q) == F 
 
 if __name__ == '__main__':
     unittest.main()

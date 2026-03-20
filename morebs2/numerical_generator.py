@@ -575,6 +575,20 @@ def prg_decimal(prg,output_range):
     rx = zero_div(rx[0],rx[1],0.5) 
     return modulo_in_range(rx,output_range)
 
+def prg_partition_for_float__type2(F,df,px,m=1):  
+    assert F != 0. 
+    assert m >= 1. 
+    v = np.zeros((df,)) 
+
+    for i in range(df - 1): 
+        d = prg_decimal(px,[0.,1.]) 
+        p = 1 if d >= 0.5 else -1 
+        q = px() % (m * F) 
+        q = p * round(q,5) 
+        v[i] = q 
+    v[-1] = F - np.sum(v[:-1]) 
+    return v 
+
 def prg_to_prg__LCG_sequence(prg,n,moduli_scale=3): 
     l = [] 
     for i in range(n): 
