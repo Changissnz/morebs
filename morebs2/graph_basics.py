@@ -7,6 +7,7 @@ def is_undirected_graph(d):
     
     for k,v in d.items(): 
         for v_ in v: 
+            if v_ not in d: return False 
             if k not in d[v_]: return False 
     return True
 
