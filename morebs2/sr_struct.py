@@ -42,7 +42,8 @@ class SimulatedRecursionNode:
         assert type(parameter_seq) == list 
         self.parameters = parameter_seq 
         self.output_seq.clear() 
-        self.terminated = False 
+        self.terminated = False
+        self.c = 0  
         return
 
     def process_conditional(self,i): 
