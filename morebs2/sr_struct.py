@@ -35,7 +35,7 @@ class SimulatedRecursionNode:
         # output function 
         assert type(x[2]) in {MethodType,FunctionType,type(None)}
         # terminating condition 
-        assert type(x[3]) == bool 
+        assert type(x[3]) in {MethodType,FunctionType} 
         return
 
     def load_parameters(self,parameter_seq): 
@@ -57,15 +57,15 @@ class SimulatedRecursionNode:
         if q(*self.parameters): 
             q1 = x[1] 
             if type(q1) != type(None): 
-                self.parameters = q1(self.parameters) 
+                self.parameters = q1(*self.parameters) 
 
             q2 = x[2]  
             if type(q2) != type(None): 
-                output = q2(self.parameters) 
+                output = q2(*self.parameters) 
                 self.output_seq.append(output) 
             
             q3 = x[3] 
-            self.terminated = q3  
+            self.terminated = q3(*self.parameters)  
             return True 
         return False 
 
