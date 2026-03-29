@@ -616,10 +616,14 @@ def prg__single_to_nvec(prg,n):
         return q 
     return f 
 
-def prg__single_to_int(prg):
+def prg__single_to_int(prg,round_input:bool=True): 
 
-    def f(): 
-        return int(round(prg())) 
+    if round_input: 
+        def f(): 
+            return int(round(prg())) 
+    else: 
+        def f(): 
+            return int(prg())
 
     return f  
 
