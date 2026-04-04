@@ -5,7 +5,7 @@ file contains code for distributions
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from math import sqrt,pi,e,log
+from math import sqrt,pi,e,log,factorial 
 
 import random
 
@@ -72,8 +72,15 @@ def normal_distribution_function(x,mean,stddev):
 def holtzmann_distribution_function():
     return -1
 
-def poisson_distribution_function():
-    return -1
+def poisson_distribution_pr(mean_frequency,target_frequency): 
+    assert target_frequency >= 0 and type(target_frequency) in {int,np.int32,np.int64}
+    assert mean_frequency >= 0 
+
+    q1 = mean_frequency ** target_frequency 
+    q2 = e ** -mean_frequency 
+    q3 = factorial(target_frequency) 
+
+    return q1 * q2 / q3 
 
 def multiple_y_function_stdrand(x,yRange,multipleRange):
     """generates multiple y-values for the x-value based on python standard random. The x-value has no bearing on the y-values generated.
