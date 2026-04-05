@@ -100,6 +100,9 @@ def calculate_dependency_order(depANDcodep_map):
 
 class DependencyGraph:
 
+    """
+    depANDcodep_map := dict, element idn -> (dependency set, codependency set). 
+    """
     def __init__(self,depANDcodep_map): 
         self.depANDcodep_map = depANDcodep_map
         self.setseq = None

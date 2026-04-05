@@ -94,7 +94,7 @@ def contiguous_cyclical_difference(V,sv,diff_type="bool"):
 #------------------------------------------ methods for processing (value,freq) vectors 
 
 """
-V is a vector of (value,frequency) pairs 
+V is a vector of (value,frequency) pairs, 
 assumed to be sorted in ascending or descending 
 order. Function finds the sequence of all 
 (value,frequency) pairs that tie for a place 
@@ -137,7 +137,18 @@ def valuefreq_pair_vector_to_tie_partition(V):
             seq.append(V[i_][0]) 
     return seqs 
 
-#--------------------------------------------------------------------
+#-------------------------------------------- extraneous 
+
+def greatest_index_of_occurrence(l,v): 
+    assert type(l) == list 
+
+    i = None 
+    for (j,l_) in enumerate(l): 
+        if l_ == v: 
+            i = j 
+    return i 
+
+#--------------------------------------------------------- 
 
 """
 most common contiguous subsequence search 
