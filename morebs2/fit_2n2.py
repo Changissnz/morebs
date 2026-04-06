@@ -129,6 +129,13 @@ function_to_2dplot(generate_2d_data_from_function,\
 '''
 #########
 
+"""
+Container for a <Fit22> instance. Used by class<Delineation> to store critical 
+points for classification scheme using delineation. 
+
+fitstruct := Fit22 (Exp2Fit22|LogFit22)
+activationDirection := (l)eft|(r)ight|(t)op|(b)ottom
+"""
 class DCurve:
 
     def __init__(self,fitstruct,activationDirection):
@@ -231,7 +238,7 @@ class DCurve:
             i += pointHop
         return xys
 
-
+# NOTE: unused class that builds on top of class<DCurve>. 
 class ChainedDCurves: 
 
     def __init__(self,ps,fittype_vec,axis=0): 
