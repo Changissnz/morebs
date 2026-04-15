@@ -27,6 +27,19 @@ zero_div_ = lambda x,y: zero_div(x,y,1.)
 safe_log = lambda x,default: default if x <= 0. else log(x) 
 
 point_distance = lambda p1, p2: math.sqrt((p1[0] - p2[0]) **2 + (p1[1] - p2[1]) ** 2)
+
+def normalize_vector(V,rounding_depth=5): 
+    assert is_vector(V) 
+
+    s = np.sum(V) 
+    l = len(V) 
+    if s == 0: 
+        r = round(1 / l, rounding_depth)
+        return normalize_vector(np.ones((l,)) * r) 
+
+    q = np.round(V / s,rounding_depth) 
+    return q  
+
 '''
 standard point-distance formula
 
