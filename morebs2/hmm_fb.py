@@ -15,6 +15,7 @@ def check_HMM_tables(T,B):
     check_HMM_table_(B,K)
 
 # NOTE: caution. not fully verified to be correct. 
+# BUG: order-of-operations may be off. 
 class ForwardBackward: 
 
     def __init__(self,T,B): 
@@ -94,8 +95,7 @@ class ForwardBackward:
         for i in range(l-1,-1,-1): 
             p = self.backward_at(i) 
             self.pr_backward.insert(0,p) 
-        
-        return -1         
+        return     
 
     def backward_at(self,index): 
         assert 0 <= index < len(self.obs_seq)
@@ -107,7 +107,7 @@ class ForwardBackward:
         else: 
             P = self.pr_backward[0]  
 
-        q = np.dot(self.T_mat.T,O)
+        q = np.dot(self.T_mat,O)
         return normalize_vector(np.dot(q,P)) 
 
     def smoothing(self): 
