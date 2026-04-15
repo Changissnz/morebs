@@ -15,7 +15,7 @@ def check_HMM_tables(T,B):
     check_HMM_table_(B,K)
 
 # NOTE: caution. not fully verified to be correct. 
-# BUG: order-of-operations may be off. 
+# BUG (possible): order-of-operations may be off. 
 class ForwardBackward: 
 
     def __init__(self,T,B): 
@@ -83,11 +83,9 @@ class ForwardBackward:
 
         if index == 0: 
             P = self.starting_pr
+            #return normalize_vector(np.dot(O,P))
         else: 
             P = self.pr_forward[index-1] 
-
-        #q = np.dot(O,self.T_mat)
-        #return normalize_vector(np.dot(q,P.T)) 
 
         q = np.dot(self.T_mat.T,P) 
         return normalize_vector(np.dot(O,q)) 
@@ -109,9 +107,6 @@ class ForwardBackward:
             P = np.ones((len(self.hidden_states),))
         else: 
             P = self.pr_backward[0]  
-
-        #q = np.dot(self.T_mat,O)
-        #return normalize_vector(np.dot(q,P)) 
 
         q = np.dot(O,P) 
         return normalize_vector(np.dot(self.T_mat,q)) 
