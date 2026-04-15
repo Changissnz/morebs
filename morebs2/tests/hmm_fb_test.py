@@ -43,11 +43,11 @@ class TestForwardBackwardClass(unittest.TestCase):
 
         fb2.run(S2,np.array([0.35,0.25,0.4]))
 
-        X2 = [np.array([0.32722, 0.13553, 0.53725]),\
-            np.array([0.39289, 0.08627, 0.52084]),\
-            np.array([0.53637, 0.32939, 0.13424]),\
-            np.array([0.23099, 0.74413, 0.02488]),\
-            np.array([0.13207, 0.85279, 0.01514])]
+        X2 = [np.array([0.35938, 0.17825, 0.46238]),\
+        np.array([0.37151, 0.10754, 0.52095]),\
+        np.array([0.44296, 0.3891 , 0.16793]),\
+        np.array([0.21099, 0.75499, 0.03401]),\
+        np.array([0.17003, 0.80868, 0.02129])]
 
         assert equal_iterables(fb2.pr_smoothed,X2) 
 

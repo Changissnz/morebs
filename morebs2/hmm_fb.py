@@ -80,14 +80,17 @@ class ForwardBackward:
         o = self.obs_seq[index] 
         O = self.obsstate2mat_map[o] 
 
-        q = np.dot(O,self.T_mat)
 
         if index == 0: 
             P = self.starting_pr
         else: 
             P = self.pr_forward[index-1] 
-        
-        return normalize_vector(np.dot(q,P.T)) 
+
+        #q = np.dot(O,self.T_mat)
+        #return normalize_vector(np.dot(q,P.T)) 
+
+        q = np.dot(self.T_mat.T,P) 
+        return normalize_vector(np.dot(O,q)) 
 
     def backward(self):
         l = len(self.obs_seq) 
@@ -107,8 +110,11 @@ class ForwardBackward:
         else: 
             P = self.pr_backward[0]  
 
-        q = np.dot(self.T_mat,O)
-        return normalize_vector(np.dot(q,P)) 
+        #q = np.dot(self.T_mat,O)
+        #return normalize_vector(np.dot(q,P)) 
+
+        q = np.dot(O,P) 
+        return normalize_vector(np.dot(self.T_mat,q)) 
 
     def smoothing(self): 
         for i in range(len(self.obs_seq) + 1): 
