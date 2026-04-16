@@ -24,4 +24,3 @@ def one_random_sample_by_normaldist_values(MInfo):
     for (i,m) in enumerate(MInfo):
         s[i] = rng.normal(m[0], m[1])
     return s
-# violation_handler
