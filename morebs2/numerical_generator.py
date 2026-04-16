@@ -634,6 +634,29 @@ def prg__single_to_decimal(prg,output_range=[0.,1.]):
 
     return f 
 
+def prg__combine_two_vectors(v1,v2,prg): 
+    assert is_vector(v1) 
+    assert is_vector(v2) 
+
+    l1 = list(v1) 
+    l2 = list(v2) 
+    l = [] 
+    while len(l1) > 0 and len(l2) > 0: 
+        d = prg_decimal(prg,[0.,1.]) 
+
+        if d >= 0.5: 
+            x = l1.pop(0)
+        else: 
+            x = l2.pop(0) 
+        l.append(x) 
+    
+    if len(l1): 
+        l.extend(l1) 
+    else: 
+        l.extend(l2) 
+
+    return np.array(l)
+
 def merge_two_prgs(prg1,prg2,op): 
     def f(): 
         return op(prg1(),prg2())
