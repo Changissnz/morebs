@@ -549,6 +549,8 @@ def prg_choose_n(Q,n,prg,is_unique_picker:bool=False):
         n -= 1
     return q 
 
+# NOTE: F cannot be negative or 0. 
+#       Use function<prg_partition_for_float__type2> for negative F. 
 def prg_partition_for_float(F,df,px,var,n=1000,rounding_depth=5):
 
     # scale the dividor integer px` from px so that 

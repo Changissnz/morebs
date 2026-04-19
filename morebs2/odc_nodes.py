@@ -74,7 +74,7 @@ of l parts, |set(L)| = l.
 For a vector V, select value v = V[index]. Iterate through 
 partition P for the max threshold values, that is, index 2. 
 The threshold value t_l, of minimum distance to v, that v is less than 
-corresponds to label l. 
+or equal to corresponds to label l. 
 In the case where v is greater than all threshold values, choose 
 t_h that is of minimum absolute distance to v. 
 """

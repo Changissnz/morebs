@@ -5,6 +5,7 @@ from copy import deepcopy
 
 VECTOR_PIECEWISE_ADDITIVE_INFO_MODES = {"sign-1","sign-all","value-1","value-all"} 
 DEFAULT_MIDDLE_SEGMENT_DELTA_RATIO = [0.05,0.9] 
+DEFAULT_MAX_SINGLE_FLOAT_RATIO_RANGE = [1.,1.5] 
 
 # TODO: test this. 
 """
@@ -93,10 +94,8 @@ class VectorPiecewiseAdditiveDerivative:
             r = prg_decimal(self.prg,DEFAULT_MIDDLE_SEGMENT_DELTA_RATIO) 
             x = round(x * r ,5) 
 
-        prg_ = prg__single_to_int(self.prg)
-        variance = prg_decimal(self.prg,[0.,1.])
-        n = modulo_in_range(int(self.prg()),[500,1500]) 
-        P = prg_partition_for_float(x,self.length,prg_,variance,n=n,rounding_depth=10)
+        m = modulo_in_range(self.prg(),DEFAULT_MAX_SINGLE_FLOAT_RATIO_RANGE)
+        P = prg_partition_for_float__type2(x,self.length,self.prg,m=m) 
         return P 
 
     def process_vec(self,is_last:bool): 

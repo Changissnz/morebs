@@ -18,6 +18,7 @@ class TestVectorPiecewiseAdditiveDerivativeClass(unittest.TestCase):
         record_derivative_info = True  
         allow_sign_change = False 
 
+        # case 1: sum = 25 
         vd = VectorPiecewiseAdditiveDerivative(length,sum_info,prg,segment_size,record_derivative_info=True) 
 
         V = [] 
@@ -31,6 +32,7 @@ class TestVectorPiecewiseAdditiveDerivativeClass(unittest.TestCase):
             S += v 
         assert np.sum(S) == sum_info 
 
+        # case 2: sum = <10,5,-17,-35>
         sum_info2 = np.array([10,5,-17,-35])
         segment_size2 = 10 
         vd.reset(sum_info2,segment_size2)
@@ -46,6 +48,21 @@ class TestVectorPiecewiseAdditiveDerivativeClass(unittest.TestCase):
             S2 += v 
         assert equal_iterables(S2,sum_info2)
 
+        # case 3: sum = -50 
+        sum_info3 = -50 
+        segment_size3 = 10 
+        vd.reset(sum_info3,segment_size3)
+
+        V3 = [] 
+        for _ in range(segment_size3): 
+            x = next(vd) 
+            V3.append(x) 
+            ##print(vd.derivative_info("sign-all"))
+
+        S3 = np.zeros((length,))
+        for v in vd.record: 
+            S3 += v 
+        assert np.round(np.sum(S3),7) == sum_info3,"got {}".format(np.sum(S3))
 
 if __name__ == "__main__":
     unittest.main()
