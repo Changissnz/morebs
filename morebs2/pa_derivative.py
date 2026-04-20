@@ -35,9 +35,11 @@ class VectorPiecewiseAdditiveDerivative:
         self.set_record(record_derivative_info)
 
         self.c = 0 
-        self.cumulative_delta = np.zeros((self.length,),dtype=float)
+        self.cumulative_delta = None 
         self.prev = None 
-        self.now = deepcopy(self.cumulative_delta) 
+        self.now = None 
+        self.fin_stat = None 
+        self.set_partial_vars()
         return 
 
     def set_sum_info(self,sum_info): 
@@ -61,8 +63,21 @@ class VectorPiecewiseAdditiveDerivative:
         self.set_sum_info(sum_info)
         self.set_segment_size(seg_size) 
         self.c = 0 
-        self.cumulative_delta = np.zeros((self.length,),dtype=float)
+        self.set_partial_vars()
         self.record = [] 
+
+    def set_partial_vars(self): 
+        self.cumulative_delta = np.zeros((self.length,),dtype=float)
+        self.prev = None 
+        self.now = deepcopy(self.cumulative_delta) 
+        self.fin_stat = False 
+
+    def entire_vector_derivative(self): 
+        V = np.zeros((self.length,),dtype=float)
+
+        for r in self.record: 
+            V += r 
+        return V 
 
     def __next__(self): 
         if self.c >= self.seg_size: 
