@@ -5,7 +5,7 @@ from collections import OrderedDict
 import unittest
 
 '''
-python -m morebs2.tests.numerical_generator_test  
+py -m morebs2.tests.numerical_generator_test  
 '''
 class TestNumericalGeneratorClass(unittest.TestCase):
 
@@ -224,6 +224,13 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         df2 = 35 
         q2 = numerical_generator.prg_partition_for_float__type2(F,df2,prg,m=1.5)
         assert np.sum(q) == F 
+
+    def test__vector_modulo_in_bounds__case_1(self): 
+        v = np.array([100,-154,321,556]) 
+        b = np.array([[90,112],[100,254],[321,2000],[555,1000]]) 
+
+        q = numerical_generator.vector_modulo_in_bounds(v,b)
+        assert np.all(q == np.array([102, 100, 642, 666]))
 
 if __name__ == '__main__':
     unittest.main()

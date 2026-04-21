@@ -19,6 +19,22 @@ def safe_modulo_in_range(i,r):
     if r[0] == r[1]: return r[0] 
     return modulo_in_range(i,r) 
 
+"""
+given a bounds b of dim |v| x 2, outputs 
+v2, s.t. for every i'th value v_ of v, 
+    v2[i] = modulo_in_range(v_,b[i]) 
+"""
+def vector_modulo_in_bounds(v,b): 
+    assert is_vector(v) 
+    assert is_bounds_vector(b) 
+    assert len(v) == b.shape[0] 
+
+    v2 = [] 
+
+    for (i,v_) in enumerate(v): 
+        v2_ = modulo_in_range(v_,b[i]) 
+        v2.append(v2_) 
+    return np.array(v2)
 
 class LCG:
     '''
