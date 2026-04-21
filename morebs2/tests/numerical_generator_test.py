@@ -232,5 +232,19 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         q = numerical_generator.vector_modulo_in_bounds(v,b)
         assert np.all(q == np.array([102, 100, 642, 666]))
 
+    def test__prg_to_prg__LCG_sequence__v2__case_1(self): 
+        prg = numerical_generator.prg__LCG(45.6,-715.4,17.55,1000.55) 
+        num_lcgs = 10 
+        mod_scale_range = [1.,3+1/7] 
+        X = numerical_generator.prg_to_prg__LCG_sequence__v2(prg,num_lcgs,mod_scale_range) 
+
+        first_outputs = [625.7056,950.52743,1522.44792,2437.77862,\
+            38.05182,1628.68617,1096.39338,54.33255,902.97148,\
+            527.00874]
+
+        for (i,x) in enumerate(X):
+            y = round(x(),5) 
+            assert first_outputs[i] == y 
+
 if __name__ == '__main__':
     unittest.main()

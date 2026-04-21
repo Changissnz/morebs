@@ -546,7 +546,6 @@ def prg_partition_for_sz__n_rounds(l,num_sets,px,var,n):
         q = prg_seqsort(q_,px)
     return q 
 
-
 def prg_choose_n(Q,n,prg,is_unique_picker:bool=False):
     l = len(Q)
     assert l > 0 
@@ -622,6 +621,14 @@ def prg_to_prg__LCG_sequence(prg,n,moduli_scale=3):
             
         l.append(prg__LCG(l_[0],l_[1],l_[2],l_[3]))
     return l 
+
+def prg_to_prg__LCG_sequence__v2(prg,num_lcgs,mod_scale_range): 
+    lcg_seq = [] 
+    for _ in range(num_lcgs): 
+        mod_scale = modulo_in_range(prg(),mod_scale_range) 
+        p = prg_to_prg__LCG_sequence(prg,num_lcgs,moduli_scale=mod_scale)[0] 
+        lcg_seq.append(p) 
+    return lcg_seq 
 
     #------------------------------ copied from project<seqbuild> 
 
