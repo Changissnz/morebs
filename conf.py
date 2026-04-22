@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'morebs'
-copyright = '2023, Richard Pham'
+copyright = '2023-2026, Richard Pham'
 author = 'Richard Pham'
 release = '0.1.74'
 

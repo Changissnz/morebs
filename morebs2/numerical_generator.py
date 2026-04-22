@@ -623,6 +623,8 @@ def prg_to_prg__LCG_sequence(prg,n,moduli_scale=3):
     return l 
 
 def prg_to_prg__LCG_sequence__v2(prg,num_lcgs,mod_scale_range): 
+    assert is_valid_range(mod_scale_range,False,False) or is_valid_range(mod_scale_range,True,False) 
+    
     lcg_seq = [] 
     for _ in range(num_lcgs): 
         mod_scale = modulo_in_range(prg(),mod_scale_range) 
