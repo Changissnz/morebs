@@ -80,7 +80,11 @@ class VectorPiecewiseAdditiveDerivative:
         return V 
 
     def __next__(self): 
+        if self.fin_stat:
+            return 
+
         if self.c >= self.seg_size: 
+            self.fin_stat = True 
             return 
 
         # case: last segment 
