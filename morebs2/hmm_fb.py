@@ -56,6 +56,10 @@ class ForwardBackward:
         self.pr_backward = [] 
         self.pr_smoothed = [] 
 
+    def add_one_observation(self,o): 
+        assert o in self.B 
+        self.obs_seq.append(O)
+
     """
     main method 
     """
@@ -71,11 +75,10 @@ class ForwardBackward:
         l = len(self.obs_seq) 
 
         for i in range(l): 
-            p = self.forward_at(i)
-            self.pr_forward.append(p) 
+            self.forward_at(i,record_value=True)
         return
 
-    def forward_at(self,index): 
+    def forward_at(self,index,record_value:bool=False): 
         assert 0 <= index < len(self.obs_seq)
         o = self.obs_seq[index] 
         O = self.obsstate2mat_map[o] 
@@ -83,22 +86,24 @@ class ForwardBackward:
 
         if index == 0: 
             P = self.starting_pr
-            #return normalize_vector(np.dot(O,P))
         else: 
             P = self.pr_forward[index-1] 
 
         q = np.dot(self.T_mat.T,P) 
-        return normalize_vector(np.dot(O,q)) 
+        X = normalize_vector(np.dot(O,q)) 
+
+        if record_value:
+            self.pr_forward.append(X) 
+        return X 
 
     def backward(self):
         l = len(self.obs_seq) 
 
         for i in range(l-1,-1,-1): 
-            p = self.backward_at(i) 
-            self.pr_backward.insert(0,p) 
+            self.backward_at(i,record_value=True) 
         return     
 
-    def backward_at(self,index): 
+    def backward_at(self,index,record_value:bool=False): 
         assert 0 <= index < len(self.obs_seq)
         o = self.obs_seq[index] 
         O = self.obsstate2mat_map[o] 
@@ -109,15 +114,19 @@ class ForwardBackward:
             P = self.pr_backward[0]  
 
         q = np.dot(O,P) 
-        return normalize_vector(np.dot(self.T_mat,q)) 
+        X = normalize_vector(np.dot(self.T_mat,q)) 
+
+        if record_value:
+            self.pr_backward.insert(0,X) 
+        return 
 
     def smoothing(self): 
         for i in range(len(self.obs_seq) + 1): 
-            s = self.smooth_at(i)
-            self.pr_smoothed.append(s) 
+            self.smooth_at(i,record_value=True)
+
         return
 
-    def smooth_at(self,index): 
+    def smooth_at(self,index,record_value:bool=False): 
 
         if index == 0: 
             P = self.starting_pr
@@ -130,7 +139,11 @@ class ForwardBackward:
             P2 = self.pr_backward[index]
 
         pr = P * P2 
-        return normalize_vector(pr) 
+        pr = normalize_vector(pr) 
+
+        if record_value:
+            self.pr_smoothed.append(pr) 
+        return pr 
 
     #--------------------------- formatting methods, from dict to matrix. 
 

@@ -278,6 +278,10 @@ class MCSSearch:
             stat = self.__next__()
         return 
     
+    """
+    return: 
+    - 
+    """
     def kcomplexity(self,keys=None,diff_type="bool",diff_type2="contiguous"):
         assert diff_type in {"bool","abs"}
         assert diff_type2 in {"contiguous","best"}

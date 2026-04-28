@@ -86,7 +86,7 @@ def prg__LCG(start,multiplier,increment,modulo):
 
 #############------------------------------------------------------------
 
-# NOTE: __next__ not working. 
+# NOTE: more testing needed 
 class CycleMap:
 
     '''

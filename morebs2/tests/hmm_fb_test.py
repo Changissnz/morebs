@@ -24,7 +24,7 @@ class TestForwardBackwardClass(unittest.TestCase):
             np.array([0.17959, 0.82041]),\
             np.array([0.13266, 0.86734])] 
 
-        assert equal_iterables(fb.pr_smoothed,X) 
+        assert equal_iterables(fb.pr_smoothed,X), "got {}".format(fb.pr_smoothed)
 
     # NOTE: results cannot be verified to be correct. 
     def test__ForwardBackward__run__case_2(self):
