@@ -58,7 +58,7 @@ class ForwardBackward:
 
     def add_one_observation(self,o): 
         assert o in self.B 
-        self.obs_seq.append(O)
+        self.obs_seq.append(o) 
 
     """
     main method 

@@ -36,6 +36,17 @@ def vector_modulo_in_bounds(v,b):
         v2.append(v2_) 
     return np.array(v2)
 
+def sign_preserving_modulo(i,m): 
+    m = abs(m) 
+
+    if abs(i) > m:
+        if i < 0: 
+            i = i % -m
+        else:
+            i = i % m
+    return i 
+
+
 class LCG:
     '''
     linear congruential generator
@@ -631,6 +642,45 @@ def prg_to_prg__LCG_sequence__v2(prg,num_lcgs,mod_scale_range):
         p = prg_to_prg__LCG_sequence(prg,num_lcgs,moduli_scale=mod_scale)[0] 
         lcg_seq.append(p) 
     return lcg_seq 
+
+def prg_unique_sequence(prg,l): 
+
+    x = defaultdict(set) 
+    L = []
+    for i in range(l): 
+        p = prg() 
+        x[p] |= {i} 
+        L.append(p) 
+
+    # all unique 
+    if len(x) == l: 
+        return L 
+
+    # make unique
+    non_unique = sorted([k for k,v in x.items() if len(v) > 1]) 
+    prg_ = prg__single_to_int(prg) 
+    S = set(L) 
+    for n in non_unique:
+        indices = sorted(x[n]) 
+        indices = prg_seqsort(indices,prg) 
+        C = prg_choose_n(indices,len(indices) - 1,prg_,True)
+
+        for c in C: 
+            q = L[c] 
+
+            while q in S: 
+                p = prg()
+                
+                # case: p = 0, turn it to 1 
+                if p == 0: p = 1 
+                q += p 
+            
+            S |= {q}
+            L[c] = q 
+    return L 
+
+
+
 
     #------------------------------ copied from project<seqbuild> 
 

@@ -246,5 +246,23 @@ class TestNumericalGeneratorClass(unittest.TestCase):
             y = round(x(),5) 
             assert first_outputs[i] == y 
 
+    def test__prg_unique_sequence__case_1(self): 
+        
+        # subcase 1 
+        prg = numerical_generator.prg__constant(5)
+        Q = numerical_generator.prg_unique_sequence(prg,10)
+        assert Q == [10, 30, 15, 25, 20, 35, 5, 40, 50, 45]
+
+        # subcase 2 
+        prg2 = numerical_generator.prg__LCG(1,2,1,10) 
+        Q2 = numerical_generator.prg_unique_sequence(prg2,20) 
+        assert Q2 == [8, 12, 18, 17, 1, 13, 7, 14, 6, 10, 16, 11, 4, 3, 22, 15, 2, 9, 19, 5]
+        assert len(set(Q2)) == 20 
+
+        # subcase 3 
+        prg3 = numerical_generator.prg__constant(0)
+        Q3 = numerical_generator.prg_unique_sequence(prg3,15)
+        assert Q3 == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0]
+
 if __name__ == '__main__':
     unittest.main()
