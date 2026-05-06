@@ -14,7 +14,6 @@ class TestPR2LabelFunctions(unittest.TestCase):
         pr_vec = [i * 0.05 for i in range(21)] 
         labels = [] 
 
-        print("if you fuck me,tony... #Hispania") 
         for p in pr_vec: 
             p2 = probability_to_label(pr2label_vec,p)
             labels.append(p2) 
