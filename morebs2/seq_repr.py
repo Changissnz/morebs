@@ -83,7 +83,9 @@ def contiguous_cyclical_difference(V,sv,diff_type="bool"):
     
     if type(ir) == type(None): 
         return float('inf')
-    
+
+    if ir[0] == -1: ir = (0,ir[1])  
+
     vc = repeat_cycle_for_length(sv,len(V),ir[0])
     
     l = np.where(V != vc)[0]
