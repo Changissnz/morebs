@@ -1034,7 +1034,8 @@ def index_range_of_subvec(v,sv,is_contiguous=True):
 def contiguous_subvec_search(v,sv):
     indices = list(np.where(v == sv[0])[0]) 
     for i in indices:
-        q = v[i:i+len(sv)] 
+        q = v[i:i+len(sv)]
+        if len(q) != len(sv): continue 
         if np.all(q == sv):
             return i 
     return -1 
