@@ -169,6 +169,8 @@ class GraphComponentDecomposition:
         of static ordering, the depth rank of a node `n` in it is the index of the nodeset 
         that `n` is present in. 
 
+        NOTE: class is not suited for directed graphs of more than 50 nodes. 
+
         :param d: map representation of a graph 
         :type d: defaultdict(<set>)
         """
@@ -375,7 +377,8 @@ class GraphComponentDecomposition:
             self.components.pop(i)
             new_comps.extend(new_comp)
             cc |= cyclic_children
-        self.components.extend(new_comps) 
+
+        self.components.extend(new_comps)
         partition[0] -= {k}
         self.key_cache |= {k} 
         self.queue_update(partition)
