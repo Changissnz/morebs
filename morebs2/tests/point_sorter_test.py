@@ -172,5 +172,17 @@ class TestPointSorterClass(unittest.TestCase):
         assert q9 == [7, 6, 3, 4, 5, 2, 1]
         assert q10 == [7, 6, 5, 4, 3, 2, 1]
 
+    def test__sort_sequence_by_reference__case_1(self): 
+        s = [4,5,12,-89,100,2,3,4] 
+        ref = [5,12,4,2,2] 
+
+        x = point_sorter.sort_sequence_by_reference(s,ref)
+        assert x == [5, 12, 4, 2, -89, 100, 3, 4]
+
+        s2 = [2,4,3,13,5,3,2,25] 
+        ref2 = [2,3,2,2,4] 
+        x2 = point_sorter.sort_sequence_by_reference(s2,ref2)
+        assert x2 == [2, 3, 2, 4, 13, 5, 3, 25]
+
 if __name__ == "__main__":
     unittest.main()

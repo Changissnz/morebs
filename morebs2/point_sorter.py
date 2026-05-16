@@ -67,7 +67,7 @@ def sorted_vector_value_range_search(vector, value):
         if q >= vector.shape[0]: break
     return [head,q - 1], stat
 
-def sorted_vector_value_search(vector, value, irange = None):
+def sorted_vector_value_search(vector, value):
     """
     Iterates through a sorted vector for `value`.
     Outputs the "head" index of the value if it exists
@@ -112,6 +112,26 @@ def median_swap(S,r):
         i2 = (len(S) - 1) - i 
         S[i],S[i2] = S[i2],S[i]
     return S 
+
+"""
+sorts elements of v in order of elements of ref. 
+For any element of v not in ref, places them at the end in the same relative 
+ordering of original sequence v. 
+"""
+def sort_sequence_by_reference(s,ref): 
+    assert type(s) == type(ref) == list 
+
+    s_ = [] 
+
+    while len(ref) > 0: 
+        r = ref.pop(0) 
+        if r not in s: 
+            continue 
+        i = s.index(r) 
+        q = s.pop(i)
+        s_.append(q) 
+    s_.extend(s) 
+    return s_ 
 
 class PointSorter:
     """
