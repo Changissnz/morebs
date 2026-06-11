@@ -3,6 +3,9 @@ from .search_space_iterator import *
 from types import MethodType,FunctionType
 from copy import deepcopy
 
+"""
+Parent class for class<OneDimClassifier> and class<MultiDimModDivClassifier>. 
+"""
 class XClassifier: 
 
     def __init__(self,D,L,index): 
