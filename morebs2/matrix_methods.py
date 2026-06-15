@@ -701,7 +701,7 @@ def float_to_string(f,exclude_int:bool=False,exclude_exp:bool=False):
             sf = sf[q+1:] 
     
     if exclude_exp:
-        q = sf.find("E")
+        q = sf.find("e") 
         if q != -1:
             sf = sf[:q] 
     return sf  
