@@ -1,6 +1,7 @@
 import os
 import glob
 import csv
+import re 
 from collections import defaultdict
 from operator import add,sub,mul,truediv,floordiv
 import numpy as np 
@@ -86,8 +87,19 @@ def numberdict_op(d1,d2,f=sub):
     return d3 
 
 def equal_intdicts(d1,d2): 
-    K = set(d1.keys()) | set(d2.keys()) 
+
+    K0 = set(d1.keys()) 
+    K1 = set(d2.keys()) 
+    if K0 != K1: return False 
+    K = K0 | K1 
 
     for k in K: 
         if d1[k] != d2[k]: return False 
     return True 
+
+"""
+?is str alphanumeric? 
+"""
+def is_alphanumeric(s):
+    pattern = "^[a-zA-Z0-9]*$"
+    return bool(re.match(pattern, s))
