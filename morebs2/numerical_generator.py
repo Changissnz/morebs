@@ -711,6 +711,19 @@ def prg__single_to_decimal(prg,output_range=[0.,1.]):
 
     return f 
 
+"""
+produces a new generator function prg' from 
+prg. Every i'th value output v from prg' is 
+equal to 
+    `modulo_in_range(v,r)`.
+"""
+def wrap_ranged_modulo_over_generator(prg,r): 
+    #assert type(prg) in {MethodType,FunctionType} 
+    assert is_valid_range(r,True,False) or is_valid_range(r,False,False) 
+    def f():
+        return modulo_in_range(prg(),r) 
+    return f 
+
 def prg__combine_two_vectors(v1,v2,prg): 
     assert is_vector(v1) 
     assert is_vector(v2) 
