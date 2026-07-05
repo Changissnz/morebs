@@ -3,7 +3,7 @@ import numpy as np
 import unittest
 
 """
-python -m morebs2.tests.aprng_gauge_test  
+py -m morebs2.tests.aprng_gauge_test  
 """
 
 def equal_BatchIncrStruct_output(bis,wanted):
@@ -137,6 +137,18 @@ class TestAPRNGGaugeMethods(unittest.TestCase):
         assert nxx5 == [(30, 42), (45, 65)]
         assert nxx6 == [(45, 65), (75, 91)]
         assert nxx7 == [(75, 91), None]
+
+    def test__index_based_weighted_distance(self): 
+        p = 100 
+        V = np.array([1,2,40,90]) 
+        V2 = np.array([40,90,2,1]) 
+        V3 = np.array([90,40,1,2]) 
+
+        d1 = aprng_gauge.index_based_weighted_distance(p,V) 
+        d2 = aprng_gauge.index_based_weighted_distance(p,V2) 
+        d3 = aprng_gauge.index_based_weighted_distance(p,V3) 
+
+        assert d1 == 515 < d2 == 770 < d3 == 819 
 
     def test_APRNGGauge__measure_cycle(self):
 

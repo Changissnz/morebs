@@ -335,6 +335,20 @@ def max_float_uwpd(l,fr):
     for i in range(0,l): s += i
     return (fr[1] - fr[0]) * s  
 
+"""
+given a vector V = [v_0,v_1,...,v_{k-1}], the index-based weighted 
+distance of p to V is the cumulative sum of vector V_s, s.t. for every 
+index i of V, 
+
+    V_s[i] = |p - V[i]| * weight_mult_function() * (i + 1). 
+"""
+def index_based_weighted_distance(p,vec,weight_mult_function=lambda i: 1): 
+
+    def one_weighted_value(i): 
+        return abs(p - vec[i]) * weight_mult_function(i) * (i + 1)
+
+    return np.sum([one_weighted_value(i) for i in range(len(vec))])
+
 ###################################################
 
 class APRNGGauge: 
