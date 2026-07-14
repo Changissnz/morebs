@@ -644,17 +644,21 @@ def prg_to_prg__LCG_sequence__v2(prg,num_lcgs,mod_scale_range):
         lcg_seq.append(p) 
     return lcg_seq 
 
-def prg_unique_sequence(prg,l): 
+def prg_sequence_to_unique_sequence(prg,S): 
+    if type(S) != list: 
+        assert is_vector(S) 
+        S = list(S) 
+
+    if len(S) == 0: return []     
 
     x = defaultdict(set) 
     L = []
-    for i in range(l): 
-        p = prg() 
+    for i,p in enumerate(S): 
         x[p] |= {i} 
-        L.append(p) 
+        L.append(p)
 
     # all unique 
-    if len(x) == l: 
+    if len(x) == len(S): 
         return L 
 
     # make unique
@@ -680,7 +684,9 @@ def prg_unique_sequence(prg,l):
             L[c] = q 
     return L 
 
-
+def prg_unique_sequence(prg,l): 
+    S = [prg() for _ in range(l)] 
+    return prg_sequence_to_unique_sequence(prg,S) 
 
 
     #------------------------------ copied from project<seqbuild> 
