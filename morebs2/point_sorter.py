@@ -176,7 +176,7 @@ class PointSorter:
     def sort_at_column(self, columnIndex, submatrixIndices):
 
         if columnIndex >= self.newData.shape[1]:
-            print("doncesorded")
+            ##print("doncesorded")
             return
 
         # sort submatrix at column

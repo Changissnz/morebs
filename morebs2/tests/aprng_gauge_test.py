@@ -75,6 +75,24 @@ class TestAPRNGGaugeMethods(unittest.TestCase):
         cov = aprng_gauge.coverage_of_sequence(vf,rv,max_radius)
         assert cov == 0.75
 
+    def test__coverage_of_sequence__case2(self):
+        C = np.array([1002.,1898.,1386.,170.,1770.,554.,42.,938.,426.,\
+            1322.,810., 1706., 1194., 2090., 1578.]) 
+
+        F = (np.float64(42.0), np.float64(2090.0))
+        P = 127 
+
+        X = aprng_gauge.coverage_of_sequence(C,F,P) 
+        assert X == 0.99805 
+
+        P2 = 128 
+        X2 = aprng_gauge.coverage_of_sequence(C,F,P2) 
+
+        P3 = 1000 
+        X3 = aprng_gauge.coverage_of_sequence(C,F,P3) 
+
+        assert X2 == X3 == 1.0 
+
     def test__normalized_uwpd(self):
         v = np.array([0,1,5,-10,12])
         rv = [-10,20]

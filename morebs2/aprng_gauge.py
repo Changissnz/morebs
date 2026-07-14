@@ -1,4 +1,6 @@
 from .search_space_iterator import *
+from .point_sorter import * 
+
 from itertools import combinations 
 
 def range_op(rangez,default_value=0.,f_inner=np.subtract,f_outer=np.add):
@@ -126,6 +128,9 @@ similarity to original `rangez`.
 def to_noncontiguous_ranges(rangez,is_sorted=False):
     if not is_sorted:
         rangez = sorted(rangez,key=lambda x: x[0])
+
+        P = PointSorter(np.array(rangez))
+        rangez = list(P.newData)
     
     i = 0
     while i < len(rangez) - 1:
@@ -286,6 +291,7 @@ the section of library on functions `*improper_bounds*`)
 """
 def coverage_of_sequence(vf,rv,max_radius:float):
     rs = floatseq_to_rangeseq(vf,rv,max_radius)
+    #rs = to_noncontiguous_ranges(rs) 
     q = range_op(rs,default_value=0.,f_inner=np.subtract,f_outer=np.add)
     qmax = rv[1] - rv[0]
     return np.round(q/qmax,5)

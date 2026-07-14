@@ -47,6 +47,7 @@ def sign_preserving_modulo(i,m):
     return i 
 
 
+
 class LCG:
     '''
     linear congruential generator
@@ -722,6 +723,11 @@ def wrap_ranged_modulo_over_generator(prg,r):
     assert is_valid_range(r,True,False) or is_valid_range(r,False,False) 
     def f():
         return modulo_in_range(prg(),r) 
+    return f 
+
+def wrap_sp_modulo_over_generator(prg,m): 
+    def f(): 
+        return sign_preserving_modulo(prg(),m) 
     return f 
 
 def prg__combine_two_vectors(v1,v2,prg): 
