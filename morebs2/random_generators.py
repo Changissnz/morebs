@@ -1,5 +1,8 @@
 from .line import *
+#from .matrix_methods import is_valid_range
+#from types import MethodType,FunctionType
 import random
+
 ################ START: line generators
 
 def generate_random_line(startPoint, length):

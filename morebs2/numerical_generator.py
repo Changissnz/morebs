@@ -5,8 +5,9 @@ import random
 from math import ceil
 from .matrix_methods import *
 from .variance_works import *
-from .measures import zero_div,zero_div_  
+from .measures import zero_div,zero_div_,circle_degree_to_point 
 from collections import OrderedDict
+from types import FunctionType,MethodType
 
 def modulo_in_range(i,r): 
     assert r[0] < r[1], "invalid range {}".format(r) 
@@ -389,6 +390,55 @@ def random_noise_sequence(s,b,noiseRange):
 def generate_gaussian_sequence_in_bounds(mean, var):
     rng.normal()
     return -1
+
+"""
+Generates `psize` contour points centered around point `c`, 
+each contour point having distance d, rr[0] <= d < rr[1]. 
+
+Generation scheme goes clockwise, starting from 0, and assigns 
+every i'th contour point to a degree g in subrange s_i of [0,360], 
+s.t. 
+    s_i = [i,i+1] * (360 / psize). 
+
+c := center point, (x,y) 
+rr := radial range, [min radius, max radius]
+psize := positive integer, number of points 
+prg := (inputless function)|(None,defaults to Python std. random)
+
+return:
+- list::(degree,x,y)
+"""
+def generate_contour_points(c,rr,psize,prg,rounding_depth=5):  
+    assert is_valid_range(rr,True,False) or is_valid_range(rr,False,False) 
+    assert type(psize) == int and psize > 0 
+    assert type(prg) in {FunctionType,MethodType,type(None)} 
+
+    if type(prg) == type(None): 
+
+        def f(): 
+            r0 = random.uniform() 
+            r1 = random.randrange(0,2048)
+            return r0 * r1 
+        prg = f 
+
+    degree_prt = 360 / psize 
+
+    # first point at d = 0. 
+    r = modulo_in_range(prg(),rr)
+    p = circle_degree_to_point(c,r,0,rounding_depth)
+    points = [(0,p[0],p[1])] 
+
+    for i in range(psize): 
+        r = modulo_in_range(prg(),rr)
+        
+        prt = [degree_prt * i, degree_prt * (i+1)] 
+        d = modulo_in_range(prg(),prt)
+
+        p = circle_degree_to_point(c,r,d,rounding_depth)
+        p_ = (d,p[0],p[1]) 
+        points.append(p_)
+
+    return np.round(points,rounding_depth)
 
 def default_std_Python_prng(integer_seed=None,output_range=[-10**6,10**6],rounding_depth=0): 
     if type(integer_seed) == int:

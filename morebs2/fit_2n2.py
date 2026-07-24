@@ -15,7 +15,9 @@ class Fit22:
         assert len(direction) == 2 and set(direction) == {0,1}, "invalid direction"
         self.ps = ps
         self.direction = direction
-        assert self.ps[self.direction[1],1] > self.ps[self.direction[0],1], "invalid y's"
+        if not self.ps[self.direction[1],1] > self.ps[self.direction[0],1]: 
+            direction = [direction[1],direction[0]]
+
         self.f = None
 
 class LogFit22(Fit22):

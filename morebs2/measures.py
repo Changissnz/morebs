@@ -1,5 +1,5 @@
 from .matrix_methods import *
-from math import log 
+from math import log,sin,cos,radians 
 
 ########## START: stat measures
 
@@ -260,6 +260,22 @@ def is_line_in_circle(line, circleCenter, circleRadius):
         return True
 
     return False
+
+def circle_degree_to_point(center,radius,degree,rounding_depth=5): 
+    assert is_valid_point(center) 
+    assert radius > 0
+    assert rounding_depth >= 0 and type(rounding_depth) == int 
+
+    degree = degree % 360. 
+    degree_ = math.radians(degree) 
+
+    x = cos(degree_) * radius 
+    y = sin(degree_) * radius 
+
+    x += center[0] 
+    y += center[1] 
+
+    return (round(x,rounding_depth),round(y,rounding_depth))
 
 ########## END: formulas for equations and geometric shapes
 
