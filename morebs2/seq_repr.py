@@ -101,15 +101,18 @@ def subsequence_to_skewed_sequence(l,subseq,start_index):
     prt_size = ceil(l / len(subseq)) 
 
     S = subseq * prt_size 
-    prefix = subseq[start_index:]
 
+    rem_prt_size = ceil(start_index/len(subseq)) 
+    prefix = [] 
+
+    if rem_prt_size > 0: 
+        prefix = subseq * rem_prt_size
+        
     S = prefix + S 
 
-    ldiff = l - len(S)
+    ldiff = len(S) - l 
+    return S[ldiff:]
 
-    if ldiff < 0: 
-        return S[:ldiff]
-    return S 
 
 #------------------------------------------ methods for processing (value,freq) vectors 
 
@@ -369,6 +372,9 @@ class MCSSearch:
         return np.mean(q) 
 
     # NOTE: inefficient calls with `mcs_nth` 
+    """
+    main method #3
+    """
     def best_cyclical_kernel(self,lowest_frequency_rank=4):
         assert type(lowest_frequency_rank) == int and lowest_frequency_rank >= 0 
 
@@ -390,7 +396,7 @@ class MCSSearch:
         return list(string_to_vector(best_kernel,cr)),best_score 
 
     """
-    main method #3
+    main method #4
     """
     def cyclical_kernel_nth(self,nth=0): 
         q = self.mcs_nth(nth) 
