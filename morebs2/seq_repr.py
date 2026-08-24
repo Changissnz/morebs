@@ -1,7 +1,7 @@
 from .matrix_methods import * 
 from .measures import zero_div
 from copy import deepcopy
-from math import floor 
+from math import floor,ceil 
 
 #------------------------------------------- methods for contiguous representation 
 """
@@ -93,6 +93,24 @@ def contiguous_cyclical_difference(V,sv,diff_type="bool"):
     if diff_type == "bool": return len(l) 
     return np.sum(np.abs(V[l]))
 
+def subsequence_to_skewed_sequence(l,subseq,start_index): 
+    assert l > len(subseq) 
+    assert type(start_index) == int and start_index >= 0 
+
+    subseq = list(subseq) 
+    prt_size = ceil(l / len(subseq)) 
+
+    S = subseq * prt_size 
+    prefix = subseq[start_index:]
+
+    S = prefix + S 
+
+    ldiff = l - len(S)
+
+    if ldiff < 0: 
+        return S[:ldiff]
+    return S 
+
 #------------------------------------------ methods for processing (value,freq) vectors 
 
 """
@@ -112,6 +130,7 @@ def valuefreq_pair_vector__nth_place(V,i=0):
     for i_ in range(1,len(V)):
         if ip == i:
             if ref[1] != V[i_][1]:
+                seq.insert(0,ref[0])
                 break
             else: 
                 seq.append(V[i_][0]) 
@@ -300,7 +319,7 @@ class MCSSearch:
                 d = contiguous_cyclical_difference(self.l,v,diff_type=diff_type)
                 return d 
             ql = len(self.subseq_occurrences[k])
-            return len(self.l) - len(v) * ql   
+            return len(self.l) - len(v) * ql
             
         for k in keys:
             d = diff_func(k) 
@@ -315,6 +334,9 @@ class MCSSearch:
         qs = self.mcs_nth(i) 
         return self.kcomplexity(keys=qs,diff_type=diff_type,diff_type2=diff_type2)
 
+    """
+    main method #2
+    """
     def default_kcomplexity(self,diff_type="bool",diff_type2="contiguous",\
         basis="most frequent"):
 
@@ -345,6 +367,44 @@ class MCSSearch:
         res = self.kcomplexity(keys=q,diff_type=diff_type)
         q = [res_[1] for res_ in res] 
         return np.mean(q) 
+
+    # NOTE: inefficient calls with `mcs_nth` 
+    def best_cyclical_kernel(self,lowest_frequency_rank=4):
+        assert type(lowest_frequency_rank) == int and lowest_frequency_rank >= 0 
+
+        i = 0 
+        best_score,best_kernel = float('inf'),None 
+        while i <= lowest_frequency_rank: 
+            M = self.cyclical_kernel_nth(i) 
+            if len(M) == 0: break 
+            M = sorted([(k,v) for k,v in M.items()],key=lambda x:x[1]) 
+            x = M[0]
+
+            if x[1] < best_score: 
+                best_score,best_kernel = x[1],x[0] 
+            
+            if best_score == 0: break 
+
+            i += 1 
+
+        return list(string_to_vector(best_kernel,cr)),best_score 
+
+    """
+    main method #3
+    """
+    def cyclical_kernel_nth(self,nth=0): 
+        q = self.mcs_nth(nth) 
+        lengo = len(self.l)
+        M = dict() 
+
+        for q_ in q: 
+            v = string_to_vector(q_,cr) 
+            first_index = self.subseq_occurrences[q_][0] 
+            S = subsequence_to_skewed_sequence(lengo,v,first_index)
+            num_diff = len(np.where(np.array(S) != self.l)[0])
+            M[q_] = num_diff 
+
+        return M 
 
 def MCS_kcomplexity(L,cast_type,diff_type="bool",\
     diff_type2="contiguous",basis="most frequent"):

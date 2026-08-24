@@ -31,18 +31,19 @@ class TestSeqReprMethods(unittest.TestCase):
         ms = seq_repr.MCSSearch(L,cast_type=int,is_bfs=True)  
         ms.search() 
 
-        r0 = ['4', '3,4']
-        r1 = ['2', '2,3', '2,3,4']
-        r2 = ['4,1', '1,2,3', '3,4,1', '1,2,3,4', '2,3,4,1', '1,2,3,4,1']
-        r3 = ['3,4,1,2', '4,1,2,3', '2,3,4,1,2', '3,4,1,2,3', '4,1,2,3,4', \
-            '1,2,3,4,1,2', '2,3,4,1,2,3', '3,4,1,2,3,4', '4,1,2,3,4,1', \
-            '1,2,3,4,1,2,3', '2,3,4,1,2,3,4', '3,4,1,2,3,4,1', '1,2,3,4,1,2,3,4', \
-            '2,3,4,1,2,3,4,1', '1,2,3,4,1,2,3,4,1']
+        r0 = ['3','4', '3,4']
+        r1 = ['1', '2', '2,3', '2,3,4']
+        r2 = ['1,2', '4,1', '1,2,3', '3,4,1', '1,2,3,4', '2,3,4,1', '1,2,3,4,1']
+        r3 = ['4,1,2', '3,4,1,2', '4,1,2,3', '2,3,4,1,2', '3,4,1,2,3', \
+            '4,1,2,3,4', '1,2,3,4,1,2', '2,3,4,1,2,3', '3,4,1,2,3,4', \
+            '4,1,2,3,4,1', '1,2,3,4,1,2,3', '2,3,4,1,2,3,4', '3,4,1,2,3,4,1', \
+            '1,2,3,4,1,2,3,4', '2,3,4,1,2,3,4,1', '1,2,3,4,1,2,3,4,1']
         R = [r0,r1,r2,r3] 
 
         for i in range(4):
             q = R[i] 
-            assert ms.mcs_nth(i) == q 
+            q_ = ms.mcs_nth(i)
+            assert q_ == q, "{} got {}".format(i,q_)
 
     def test__MCSSearch__default_kcomplexity__case1(self): 
         L = [1,2,3,4,1,2,3,4,1,2,3,4,1,3,4,2,3,4] 
@@ -50,22 +51,22 @@ class TestSeqReprMethods(unittest.TestCase):
         ms.search() 
         kq = ms.kcomplexity(diff_type="bool")
 
-        kxdd = {4:86,3:15,2:6,1:3,0:2} 
+        kxdd = {4:86,3:16,2:7,1:4,0:3} 
         for j in range(0,5): 
             kc_ = ms.kcomplexity_at_nth_set(j,diff_type="bool")
-            assert len(kc_) == kxdd[j] 
+            assert len(kc_) == kxdd[j], "{} got {}".format(j,len(kc_))
 
         qdd = ms.default_kcomplexity()
-        assert qdd == 11.5 
+        assert qdd == 12.0, "got {}".format(qdd)
 
         qdd_ = ms.default_kcomplexity(diff_type2="best") 
-        assert qdd_ == 10.5 
+        assert round(qdd_,5) == 11.33333, "got {}".format(qdd_) 
 
         qdd2 = ms.default_kcomplexity(diff_type="bool",basis="median")
-        assert qdd2 == 5.0 
+        assert qdd2 == 5.0, "got {}".format(qdd2) 
 
         qdd3 = ms.default_kcomplexity(diff_type="bool",diff_type2="best",basis="median")
-        assert qdd3 == 5.0 
+        assert qdd3 == 5.0, "got {}".format(qdd3) 
 
     def test__MCSSearch__default_kcomplexity__case2(self): 
 
@@ -88,6 +89,41 @@ class TestSeqReprMethods(unittest.TestCase):
         assert kcxx3 == [('1,2,3,4', 2)]
         assert kcxx4 == [('1,2,3,4', 6)]
 
+    def test__MCSSearch__cyclical_kernel_nth__AND__best_cyclical_kernel__case1(self): 
+        # subcase 1 
+        L = [1,3,2]
+        L = L * 5
+        ms = seq_repr.MCSSearch(L,cast_type=int,is_bfs=True)  
+        ms.search() 
+
+        M = ms.cyclical_kernel_nth(0)
+        assert M == {'1': 10, '2': 10, '3': 10, '1,3': 9, '3,2': 9, '1,3,2': 0}
+
+        K,s = ms.best_cyclical_kernel() 
+        assert K == [1,3,2] and s == 0 
+
+        # subcase 2 
+        L = L[2:]
+        ms = seq_repr.MCSSearch(L,cast_type=int,is_bfs=True)  
+        ms.search() 
+
+        M = ms.cyclical_kernel_nth(0)
+        assert M == {'2': 8}
+
+        K,s = ms.best_cyclical_kernel() 
+        assert K == [2,1,3] and s == 0 
+
+        # subcase 3 
+        L = [1,2,3,4,5] * 5 
+        L = L[3:] 
+        ms = seq_repr.MCSSearch(L,cast_type=int,is_bfs=True)  
+        ms.search() 
+
+        M = ms.cyclical_kernel_nth(0)
+        assert M == {'4': 17, '5': 17, '4,5': 16}
+
+        K,s = ms.best_cyclical_kernel() 
+        assert K == [4,5,1,2,3] and s == 0 
 
 if __name__ == '__main__':
     unittest.main()
