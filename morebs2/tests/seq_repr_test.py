@@ -97,7 +97,7 @@ class TestSeqReprMethods(unittest.TestCase):
         ms.search() 
 
         M = ms.cyclical_kernel_nth(0)
-        assert M == {'1': 10, '2': 10, '3': 10, '1,3': 11, '3,2': 9, '1,3,2': 0},\
+        assert M == {'1': 10, '2': 10, '3': 10, '1,3': 9, '3,2': 11, '1,3,2': 0},\
             "got {}".format(M)
 
         K,s = ms.best_cyclical_kernel() 
@@ -112,7 +112,7 @@ class TestSeqReprMethods(unittest.TestCase):
         assert M == {'2': 8}
 
         K,s = ms.best_cyclical_kernel() 
-        assert K == [1,3,2] and s == 0, "got {}".format(K)
+        assert K == [2,1,3] and s == 0, "got {}".format(K)
 
         # subcase 3 
         L = [1,2,3,4,5] * 5 
@@ -124,7 +124,7 @@ class TestSeqReprMethods(unittest.TestCase):
         assert M == {'4': 17, '5': 17, '4,5': 16}
 
         K,s = ms.best_cyclical_kernel() 
-        assert K == [1,2,3,4,5] and s == 0, "got {}".format(K)
+        assert K == [4,5,1,2,3] and s == 0, "got {}".format(K)
 
 if __name__ == '__main__':
     unittest.main()

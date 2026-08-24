@@ -101,13 +101,16 @@ def subsequence_to_skewed_sequence(l,subseq,start_index):
     prt_size = ceil(l / len(subseq)) 
 
     S = subseq * prt_size 
+    rdiff = len(S) - l
+    if rdiff > 0: 
+        S = S[:-rdiff] 
 
     rem_prt_size = ceil(start_index/len(subseq)) 
     prefix = [] 
 
     if rem_prt_size > 0: 
         prefix = subseq * rem_prt_size
-        
+
     S = prefix + S 
 
     ldiff = len(S) - l 
