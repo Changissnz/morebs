@@ -94,7 +94,7 @@ def contiguous_cyclical_difference(V,sv,diff_type="bool"):
     return np.sum(np.abs(V[l]))
 
 def subsequence_to_skewed_sequence(l,subseq,start_index): 
-    assert l > len(subseq) 
+    assert l >= len(subseq) 
     assert type(start_index) == int and start_index >= 0 
 
     subseq = list(subseq) 
@@ -376,7 +376,7 @@ class MCSSearch:
 
     # NOTE: inefficient calls with `mcs_nth` 
     """
-    main method #3
+    main method #3.1
     """
     def best_cyclical_kernel(self,lowest_frequency_rank=4):
         assert type(lowest_frequency_rank) == int and lowest_frequency_rank >= 0 
@@ -397,6 +397,18 @@ class MCSSearch:
             i += 1 
 
         return list(string_to_vector(best_kernel,cr)),best_score 
+
+    def mean_cyclical_kernel_score(self,lowest_frequency_rank=0):
+        
+        i = 0 
+        scores = [] 
+        while i <= lowest_frequency_rank: 
+            M = self.cyclical_kernel_nth(i) 
+            scores.extend(list(M.values()))
+            i += 1 
+
+        if len(scores) == 0: return float('inf')
+        return np.mean(scores) 
 
     """
     main method #4
