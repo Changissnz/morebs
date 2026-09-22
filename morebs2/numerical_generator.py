@@ -668,6 +668,7 @@ def prg_partition_for_float__type2(F,df,px,m=1):
     v[-1] = F - np.sum(v[:-1]) 
     return v 
 
+# NOTE: wonky 
 def prg_to_prg__LCG_sequence(prg,n,moduli_scale=3): 
     l = [] 
     for i in range(n): 
