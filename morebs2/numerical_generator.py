@@ -825,3 +825,18 @@ def merge_two_prgs_into_LCG_sequence(prg1,prg2,num_lcg,mod_mult_range=[1.333,5.9
         oper = operations[i % len(operations)] 
         q.append(merge_two_prgs(p0,p1,oper)) 
     return q 
+
+"""
+produces a PRNG that is `num_lcgs` LCGs merged together by operators in `operator_seq`. 
+"""
+def prg_to_LCG_stack(prg,num_lcgs,operator_seq,mod_scale_range = [2+1/15,5-1/17]):
+    
+    assert num_lcgs > 0 
+
+    lcg_seq = prg_to_prg__LCG_sequence__v2(prg,num_lcgs,mod_scale_range)
+    P = lcg_seq[0] 
+
+    for i in range(1,len(lcg_seq)): 
+        operator = operator_seq[(i -1) % len(operator_seq)] 
+        P = merge_two_prgs(P,lcg_seq[i],operator)
+    return P   
