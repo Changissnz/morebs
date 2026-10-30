@@ -150,6 +150,11 @@ def flatten_setseq(s):
     for s2 in s: s_ |= s2 
     return s_
 
+def reverse_graph_edges(G): 
+    G_ = invert_map__seqvalue(G)
+    return defaultdict(set,\
+        {k:set(v) for k,v in G_.items()}) 
+
 class GraphComponentDecomposition:
 
     def __init__(self,d): 
@@ -202,6 +207,7 @@ class GraphComponentDecomposition:
     def decompose(self): 
         while not self.finstat:
             self.next_key()
+        print("AFTER")
         q = invert_map__seqvalue(self.cyclic_keys) 
         for k,v in q.items(): 
             self.cyclic_keys_inverted[k] = set(v) 
@@ -354,7 +360,10 @@ class GraphComponentDecomposition:
             self.components.append([{k} | partition[0]]) 
         else: 
             nc = [[{k} | partition[0],nc_] for nc_ in nc] 
-            self.components.extend(nc) 
+            for nc_ in nc: 
+                if nc_ in self.components: continue 
+                self.components.append(nc_) 
+            #self.components.extend(nc) 
 
         self.queue_update(partition)
         self.graph_edge_update(k,partition)
@@ -374,8 +383,19 @@ class GraphComponentDecomposition:
             if type(o1) == type(None): 
                 i += 1 
                 continue 
+            
+            # check for duplicates 
+            new_comp2 = [] 
+            for n in new_comp: 
+                if n not in new_comps: 
+                    new_comp2.append(n) 
+
+            if len(new_comp2) == 0: 
+                i+= 1 
+                continue 
+
             self.components.pop(i)
-            new_comps.extend(new_comp)
+            new_comps.extend(new_comp2)
             cc |= cyclic_children
 
         self.components.extend(new_comps)

@@ -18,7 +18,7 @@ def nx_mapcheck_with_functions(D,nx_map,is_np:bool):
     return 
 
 '''
-python -m morebs2.tests.graph_basics_test  
+py -m morebs2.tests.graph_basics_test  
 '''
 class TestGraphBasicsMethods(unittest.TestCase):
 
@@ -300,6 +300,19 @@ class TestGraphComponentDecompositionClass(unittest.TestCase):
         q2 = gd.depth_rank_map__component(1)
         assert q2 == defaultdict(int, {1: 0, 0: 1})
         return 
+
+    """
+    test on graph of 37 nodes 
+    """
+    def test__GraphComponentDecomposition__decompose__case_1(self): 
+
+        G = graph_case_37() 
+
+        Q = graph_basics.GraphComponentDecomposition(G) 
+
+        Q.decompose()
+
+        assert len(Q.components) == 348 
 
 
 if __name__ == '__main__':
