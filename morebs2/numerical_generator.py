@@ -654,6 +654,13 @@ def prg_decimal(prg,output_range):
     rx = zero_div(rx[0],rx[1],0.5) 
     return modulo_in_range(rx,output_range)
 
+def safe_prg_decimal(prg,output_range): 
+    assert 0.0 <= output_range[0] <= output_range[1] <= 1.0 
+
+    if output_range[0] == output_range[1]: 
+        return output_range[0] 
+    return prg_decimal(prg,output)
+
 def prg_partition_for_float__type2(F,df,px,m=1):  
     assert F != 0. 
     assert m >= 1. 
