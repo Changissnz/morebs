@@ -659,7 +659,7 @@ def safe_prg_decimal(prg,output_range):
 
     if output_range[0] == output_range[1]: 
         return output_range[0] 
-    return prg_decimal(prg,output)
+    return prg_decimal(prg,output_range)
 
 def prg_partition_for_float__type2(F,df,px,m=1):  
     assert F != 0. 
