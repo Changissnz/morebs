@@ -1,7 +1,7 @@
 from morebs2 import numerical_generator
 import numpy as np
 from collections import OrderedDict
-
+from math import ceil 
 import unittest
 
 '''
@@ -263,6 +263,43 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         prg3 = numerical_generator.prg__constant(0)
         Q3 = numerical_generator.prg_unique_sequence(prg3,15)
         assert Q3 == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0]
+
+    def test__prg_uniform_partition_sequence__case_1(self): 
+
+        S = [i for i in range(50)] 
+        psize = 37 
+        prg = numerical_generator.prg__LCG(-5.25,156.24,-123.4,-703.5) 
+
+        # subcase 1 
+        L = numerical_generator.prg_uniform_partition_sequence(S,psize,prg) 
+
+        L_ = [] 
+        for l in L: L_.extend(l) 
+
+        assert sorted(L_) == sorted(S) 
+
+        S2 = [i % ceil(i / 1.7) for i in range(1,101)] 
+        assert len(set(S2)) < len(S2)
+
+        # subcase 2 
+        psize2 = 9 
+        L2 = numerical_generator.prg_uniform_partition_sequence(S2,psize2,prg) 
+        lengths = [len(l) for l in L2]
+        assert lengths == [11, 12, 11, 11, 11, 11, 11, 11, 11]
+
+        L2_ = [] 
+        for l2 in L2: L2_.extend(l2) 
+        assert sorted(L2_) == sorted(S2) 
+
+        # subcase 3
+        psize3 = 20 
+        L3 = numerical_generator.prg_uniform_partition_sequence(S2,psize3,prg) 
+        lengths2 = [len(l) for l in L3]
+        assert lengths2 == [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+
+        L3_ = [] 
+        for l3 in L3: L3_.extend(l3) 
+        assert sorted(L3_) == sorted(S2) 
 
 if __name__ == '__main__':
     unittest.main()

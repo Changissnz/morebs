@@ -2,7 +2,7 @@
 (a(X_n) + c) modulo m
 '''
 import random
-from math import ceil
+from math import ceil,floor 
 from .matrix_methods import *
 from .variance_works import *
 from .measures import zero_div,zero_div_,circle_degree_to_point 
@@ -645,6 +645,29 @@ def prg_partition_for_float(F,df,px,var,n=1000,rounding_depth=5):
     q = prg_partition_for_sz__n_rounds(F_,df,px,var,n)
     q2 = [round(q_ / (10. ** scale),rounding_depth) for q_ in q]
     return np.array(q2)
+
+
+def prg_uniform_partition_sequence(S,psize,prg): 
+    assert 1 <= psize <= len(S) 
+    assert type(psize) == int 
+
+    S = list(S) 
+
+    q = floor(len(S) / psize)
+    L = [q] * (psize - 1) 
+    L.append(len(S) - q * (psize - 1))
+
+    L = prg_seqsort(L,prg) 
+
+    prg_ = prg__single_to_int(prg) 
+
+    P = [] 
+    for l in L: 
+        p = prg_choose_n(S,l,prg_,is_unique_picker=True)
+        P.append(p) 
+    return P 
+
+
 
 #---------------------------------------- conversions using PRNGs: outputting decimals, generating new PRNGs, etc. 
 
