@@ -703,9 +703,9 @@ operates identically to function<prg_uniform_partition_sequence>,
 in cases where `psize` <= |S|. Otherwise, it uses 
 function<prg_uniform__lesser_to_greater_partition>. 
 """
-def prg_safe_uniform_partition_sequence(S,psize,prg):
+def prg_safe_uniform_partition_sequence(S,psize,prg,distribute_remainder_evenly:bool=False):
     if 1 <= psize <= len(S): 
-        return prg_uniform_partition_sequence(S,psize,prg) 
+        return prg_uniform_partition_sequence(S,psize,prg,distribute_remainder_evenly) 
     return prg_uniform__lesser_to_greater_partition(S,psize,prg) 
 
 #---------------------------------------- conversions using PRNGs: outputting decimals, generating new PRNGs, etc. 

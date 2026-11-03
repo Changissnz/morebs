@@ -207,7 +207,6 @@ class GraphComponentDecomposition:
     def decompose(self): 
         while not self.finstat:
             self.next_key()
-        print("AFTER")
         q = invert_map__seqvalue(self.cyclic_keys) 
         for k,v in q.items(): 
             self.cyclic_keys_inverted[k] = set(v) 
