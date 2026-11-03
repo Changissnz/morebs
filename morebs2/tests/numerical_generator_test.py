@@ -1,6 +1,6 @@
 from morebs2 import numerical_generator
 import numpy as np
-from collections import OrderedDict
+from collections import OrderedDict,defaultdict
 from math import ceil 
 import unittest
 
@@ -300,6 +300,42 @@ class TestNumericalGeneratorClass(unittest.TestCase):
         L3_ = [] 
         for l3 in L3: L3_.extend(l3) 
         assert sorted(L3_) == sorted(S2) 
+
+    """
+    demonstrates the `distribute_remainder_evenly` feature. 
+    """ 
+    def test__prg_uniform_partition_sequence__case_2(self): 
+
+        S = [i for i in range(50)] 
+        psize = 22   
+        prg = numerical_generator.prg__LCG(-5.25,156.24,-123.4,-703.5) 
+
+        # subcase 1: distributes remainder evenly 
+        q = numerical_generator.prg_uniform_partition_sequence(S,psize,prg,distribute_remainder_evenly=True)
+        L = [len(q_) for q_ in q] 
+        assert L == [3, 2, 2, 3, 2, 2, 2, 2, 3, 2, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+
+        # subcase 2: does not distribute remainder evenly 
+
+        q2 = numerical_generator.prg_uniform_partition_sequence(S,psize,prg,distribute_remainder_evenly=False)
+        L2 = [len(q_) for q_ in q2] 
+        assert L2 == [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 8, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+
+    def test__prg_safe_uniform_partition_sequence__case_1(self): 
+        S = [i for i in range(50)] 
+        psize = 100  
+        prg = numerical_generator.prg__LCG(-5.25,156.24,-123.4,-703.5) 
+
+        q = numerical_generator.prg_safe_uniform_partition_sequence(S,psize,prg)
+
+        C = defaultdict(int) 
+        for q_ in q: C[len(q_)] += 1 
+        assert C == defaultdict(int,{0:50,1:50}) 
+
+        psize2 = 22 
+        q2 = numerical_generator.prg_safe_uniform_partition_sequence(S,psize2,prg)
+        L = [len(q) for q in q2] 
+        assert L == [2, 8, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 
 if __name__ == '__main__':
     unittest.main()

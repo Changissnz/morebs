@@ -646,16 +646,34 @@ def prg_partition_for_float(F,df,px,var,n=1000,rounding_depth=5):
     q2 = [round(q_ / (10. ** scale),rounding_depth) for q_ in q]
     return np.array(q2)
 
-
-def prg_uniform_partition_sequence(S,psize,prg): 
+"""
+more precise control over output than usage of function<prg_partition_for_sz> 
+and function<prg_partition_for_sz__n_rounds>, w/ variance set to 0.0 
+"""
+def prg_uniform_partition_sequence(S,psize,prg,distribute_remainder_evenly:bool=False):  
     assert 1 <= psize <= len(S) 
     assert type(psize) == int 
+    assert type(distribute_remainder_evenly) == bool 
 
     S = list(S) 
 
     q = floor(len(S) / psize)
     L = [q] * (psize - 1) 
-    L.append(len(S) - q * (psize - 1))
+
+    d = len(S) - q * (psize - 1)
+
+    if not distribute_remainder_evenly: 
+        L.append(d) 
+    else: 
+        if psize - 1 > 0: 
+            dx = d - q - 1 
+            for _ in range(dx): 
+                i = int(prg()) % (psize - 1) 
+                L[i] += 1 
+            
+            if dx > 0: 
+                d = d - dx 
+            L.append(d) 
 
     L = prg_seqsort(L,prg) 
 
@@ -667,7 +685,28 @@ def prg_uniform_partition_sequence(S,psize,prg):
         P.append(p) 
     return P 
 
+"""
+used in cases of `psize` > |`S`|. 
 
+Assigns one element from `S` to a unique part of the `psize`-partition, 
+and empty containers for the rest. 
+"""
+def prg_uniform__lesser_to_greater_partition(S,psize,prg): 
+    assert 1 <= len(S) < psize
+    d = psize - len(S)
+    q = prg_uniform_partition_sequence(S,len(S),prg)
+    q.extend([[] for _ in range(d)]) 
+    return prg_seqsort(q,prg) 
+
+"""
+operates identically to function<prg_uniform_partition_sequence>, 
+in cases where `psize` <= |S|. Otherwise, it uses 
+function<prg_uniform__lesser_to_greater_partition>. 
+"""
+def prg_safe_uniform_partition_sequence(S,psize,prg):
+    if 1 <= psize <= len(S): 
+        return prg_uniform_partition_sequence(S,psize,prg) 
+    return prg_uniform__lesser_to_greater_partition(S,psize,prg) 
 
 #---------------------------------------- conversions using PRNGs: outputting decimals, generating new PRNGs, etc. 
 
