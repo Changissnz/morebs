@@ -2,10 +2,6 @@ from morebs2 import point_sorter
 import unittest
 import numpy as np
 
-'''
-py -m morebs2.tests.point_sorter_test  
-'''
-
 def sample_pointsort_vector_1():
     return np.array([[0.0,5.0,12.0],\
         [0.0, 7.1, 6.3],\
@@ -32,6 +28,9 @@ def test_tie_sets_for_vector():
     assert [0,1] in ts and len(ts) == 1, "incorrect ties #2"
     return
 
+'''
+py -m morebs2.tests.point_sorter_test  
+'''
 class TestPointSorterClass(unittest.TestCase):
 
     def test__PointSorter_sort_it(self):
@@ -183,6 +182,16 @@ class TestPointSorterClass(unittest.TestCase):
         ref2 = [2,3,2,2,4] 
         x2 = point_sorter.sort_sequence_by_reference(s2,ref2)
         assert x2 == [2, 3, 2, 4, 13, 5, 3, 25]
+
+    def test__min_or_max_rank_in_sequence__case_1(self): 
+
+        S = [(1,1,1),(1,1),(1,1),(1,),(1,1,1),(1,)]  
+
+        S0 = point_sorter.min_or_max_rank_in_sequence(S,vf=lambda x:len(x),is_min_rank=True)
+        S1 = point_sorter.min_or_max_rank_in_sequence(S,vf=lambda x:len(x),is_min_rank=False)
+
+        assert S0 == [(1,), (1,)]
+        assert S1 == [(1, 1, 1), (1, 1, 1)]
 
 if __name__ == "__main__":
     unittest.main()

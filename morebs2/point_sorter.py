@@ -96,6 +96,26 @@ def rank_sequence(S,vf=lambda x:x[1],element_output_function=lambda x:x,output_t
         return S2 
     return {v[0]:v[1] for v in S2} 
 
+def min_or_max_rank_in_sequence(S,vf=lambda x:x[1],\
+    element_output_function=lambda x:x,is_min_rank:bool=False):  
+
+    S_ = rank_sequence(S,vf,element_output_function)
+
+    if is_min_rank: 
+        R = 0 
+    else: 
+        R = S_[-1][1] 
+        S_ = S_[::-1] 
+
+    L = [] 
+    for x in S_: 
+        if x[1] == R: 
+            L.append(x[0])
+        else: 
+            break 
+    return L 
+    
+
 """
 Starting from the leftmost element, 0'th index, swaps elements 
 0 through x with their right half complement in |S-1| through 
