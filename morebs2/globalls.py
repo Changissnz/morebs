@@ -67,13 +67,16 @@ def std_invert_map(m):
             q[v] = [k]
     return q
 
-def invert_map__seqvalue(m): 
+def invert_map__seqvalue(m,set_output:bool=False): 
     assert type(m) in {dict,defaultdict}
 
     q = defaultdict(list) 
     for k,v in m.items(): 
         for v_ in v: 
             q[v_].append(k) 
+    
+    if set_output: 
+        return defaultdict(set,{k:set(v) for k,v in q.items()})
     return q 
 
 def numberdict_op(d1,d2,f=sub):

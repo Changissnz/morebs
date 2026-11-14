@@ -14,6 +14,70 @@ def is_undirected_graph(d):
 def is_directed_graph(d): 
     return not is_undirected_graph(d)
 
+"""
+Performs preliminary check for `G` being a directed or 
+undirected path. Used by function<is_graph_path>, the 
+full check. 
+"""
+def is_graph_path_(G,is_directed:bool):
+
+    assert type(G) == defaultdict
+    assert type(is_directed) == bool 
+
+    exp_degs = {0,1} if is_directed else {1,2} 
+    all_nodes = set(G.keys())
+
+    for k,v in G.items(): 
+        if not len(v) in exp_degs: return False 
+        if not v.issubset(all_nodes): return False 
+    return True 
+
+def endpoints_of_path(G:defaultdict,is_directed:bool): 
+    if not is_graph_path_(G,is_directed): 
+        return None,None 
+
+    ends = set() 
+    G_deg = {k:{len(v)} for k,v in G.items()} 
+    G_deg = invert_map__seqvalue(G_deg,set_output=True) 
+
+    G_rev = invert_map__seqvalue(G,set_output=True) 
+    graph_childkey_fillin(G_rev) 
+    G_rev = {k:{len(v)} for k,v in G_rev.items()} 
+    G_rdeg = invert_map__seqvalue(G_rev,set_output=True) 
+
+    end0,end1 = None,None 
+
+    target_deg = 0 if is_directed else 1 
+
+    if is_directed: 
+        # check that there is only one start 
+        if not len(G_rdeg[target_deg]) == 1: 
+            return None,None 
+
+        end0 = deepcopy(G_rdeg[target_deg]).pop() 
+
+        # and only one end 
+        if not len(G_deg[target_deg]) == 1: 
+            return None, None 
+
+        end1 = deepcopy(G_deg[target_deg]).pop() 
+    else: 
+        # check for two ends 
+        if not len(G_rdeg[target_deg]) == 2: 
+            return None,None 
+        q = sorted(G_rdeg[target_deg])
+        end0,end1 = q 
+
+    return end0,end1 
+
+def is_graph_path(G,is_directed:bool):
+    try: 
+        end0,end1 = endpoints_of_path(G,is_directed)
+        if type(end0) == type(None): return False 
+        return True 
+    except:
+        return False 
+
 def graph_childkey_fillin(d): 
     kx = list(d.keys()) 
     for k in kx: 

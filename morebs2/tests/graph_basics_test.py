@@ -115,7 +115,40 @@ class TestGraphBasicsMethods(unittest.TestCase):
         assert npx == defaultdict(list, \
             {0: [0, 4], 1: [0, 0], 2: [0, 0], 3: [0, 0], 4: [0, 0]})
 
+    def test__GraphBasics__endpoints_of_path__case1(self):
+        G = defaultdict(set,{0:{1},1:{2},2:{4},4:{5},5:set()}) 
 
+        e0,e1 = graph_basics.endpoints_of_path(G,is_directed=True)
+        assert e0 == 0 and e1 == 5 
+
+        e10,e11 = graph_basics.endpoints_of_path(G,is_directed=False)
+        assert type(e10) == type(e11) == type(None)
+
+        G2 = defaultdict(set,{0:{1},1:{0,2},2:{1,4},4:{2,5},5:{4}}) 
+
+        e20,e21 = graph_basics.endpoints_of_path(G2,is_directed=False) 
+        assert e20 == 0 and e21 == 5 
+
+        e30,e31 = graph_basics.endpoints_of_path(G2,is_directed=True) 
+        assert type(e30) == type(e31) == type(None)
+
+    def test__GraphBasics__is_graph_path_case1(self):
+        # graph may satisfy vertex degrees, but not a path
+        G = defaultdict(set,{0:{1},1:{2},2:set(),4:set(),5:set()}) 
+
+        # function does not recognize G as undirected graph 
+        assert not graph_basics.is_graph_path_(G,False)
+
+        # partial check misses it 
+        assert graph_basics.is_graph_path_(G,True) 
+        # full check does not 
+        assert not graph_basics.is_graph_path(G,True)
+
+    def test__GraphBasics__is_graph_path_case2(self):
+        G = defaultdict(set,{0:{1},1:{0,3},3:{0,3},4:{3,5},5:{1}})  
+
+        assert graph_basics.is_graph_path_(G,False) 
+        assert not graph_basics.is_graph_path(G,False) 
 
 class TestGraphComponentDecompositionClass(unittest.TestCase):
 
