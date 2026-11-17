@@ -662,7 +662,13 @@ def floorceil_to_n_places(f, mode, places = 5):
 #
 cr = lambda x: round(float(x),5)
 
-# TODO: rename to `iterable`
+################################## START: stringize functions
+
+
+"""
+converts iterable to string. For every element, first applies 
+`castFunc` to it before changing the element to a string. 
+"""
 def vector_to_string(v, castFunc = int):
     assert castFunc in [int,float, float_func,cr], "invalid cast func"
     if len(v) == 0: return ""
@@ -672,7 +678,9 @@ def vector_to_string(v, castFunc = int):
         s += str(castFunc(v_)) + ","
     return s[:-1]
 
-# TODO: untested
+"""
+converts string to numerical vector. 
+"""
 def string_to_vector(s, castFunc = int):
     assert castFunc in [float, float_func, int,cr], "invalid cast func"
 
@@ -691,6 +699,54 @@ def string_to_vector(s, castFunc = int):
         q.append(v)
         s = s2
     return np.array(q)
+
+# NOTE: these functions <stringize_common_var>,<destringize_common_var> are for 
+#       more general use than the previous two functions <vector_to_string>, 
+#       <string_to_vector>, which are specialized for numerical forms. 
+"""
+A common variable is one of the following:
+- a number, 
+- a string without any commas, 
+- a one-dimensional vector,
+- a list 
+- a set. 
+"""
+def stringize_common_var(v): 
+
+    if type(v) == str: 
+        assert "," not in v 
+
+    # case: not an iterable, go ahead and stringize it 
+    #       as is
+    if not (is_vector(v) or type(v) == list or type(v) == set): 
+        return str(v) 
+
+    is_set = type(v) == set 
+
+    v = [str(v_) for v_ in v] 
+
+    # case: v is a set, convert to ordered list 
+    if is_set: 
+        v = sorted(v) 
+    
+    return ",".join(v) 
+
+"""
+inverse of function<stringize_common_var>. 
+"""
+def destringize_common_var(s,unit_type,output_set:bool):  
+
+    # case: s is not an iterable 
+    if "," not in s: 
+        q = unit_type(s) 
+        if output_set: return {q} 
+        return q 
+
+    s_ = s.split(",") 
+    s_ = [unit_type(s1) for s1 in s_] 
+
+    if output_set: return set(s_) 
+    return s_ 
 
 def float_to_string(f,exclude_int:bool=False,exclude_exp:bool=False):
     sf = str(f)
